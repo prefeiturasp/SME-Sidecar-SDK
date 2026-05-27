@@ -1,0 +1,34 @@
+SME Sidecar SDK
+===============
+
+Runtime SDK in-process que entrega resiliência (timeout, retry e circuit
+breaker) sem sidecar container e sem hop de rede.
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Conteúdo
+
+   getting_started
+   guia_resiliencia
+   configuration
+   arquitetura
+   api/index
+
+Visão geral
+-----------
+
+Uma aplicação consumidora habilita o runtime com uma única chamada::
+
+   from sme_sidecar_sdk import runtime
+
+   runtime.configure()
+
+Os pilares de resiliência (timeout, retry e circuit breaker) ficam
+expostos via os módulos em :mod:`sme_sidecar_sdk.resilience`.
+
+Índices e tabelas
+-----------------
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
