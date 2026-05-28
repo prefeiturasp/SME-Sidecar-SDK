@@ -6,6 +6,12 @@
 [![python](https://img.shields.io/badge/python-3.12-blue.svg)]()
 [![license](https://img.shields.io/badge/license-AGPL--3.0-green.svg)]()
 
+## Instalação
+
+```bash
+pip install git+https://github.com/prefeitura-sp/sme-sidecar-sdk.git
+```
+
 A aplicação consome a SDK assim:
 
 ```python

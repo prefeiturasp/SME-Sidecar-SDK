@@ -3,7 +3,7 @@
 ## Instalação
 
 ```bash
-pip install sme-sidecar-sdk
+pip install git+https://github.com/prefeitura-sp/sme-sidecar-sdk.git
 ```
 
 ## Configuração mínima
