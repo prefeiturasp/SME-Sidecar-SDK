@@ -156,13 +156,6 @@ Páginas principais:
   (feature-based) e critérios para contribuições alinhadas.
 - `api/` — referência automática da API a partir das docstrings.
 
-## Docker
-
-```bash
-docker build -t sme-sidecar-sdk:0.1.0 .
-docker run --rm -e SME_SERVICE_NAME=pedagogico-ms sme-sidecar-sdk:0.1.0
-```
-
 ## Licença
 
 GNU Affero General Public License v3.0 (AGPL-3.0). Texto completo em

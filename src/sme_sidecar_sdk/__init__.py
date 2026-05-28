@@ -13,9 +13,17 @@ from __future__ import annotations
 
 from . import runtime
 from .config import Settings, get_settings
+from .exceptions import (
+    CircuitOpenError,
+    RequestTimeoutError,
+    UpstreamHTTPError,
+)
 
 __all__ = [
+    "CircuitOpenError",
+    "RequestTimeoutError",
     "Settings",
+    "UpstreamHTTPError",
     "get_settings",
     "runtime",
 ]

@@ -153,7 +153,7 @@ não por chamada.
 ### Uso
 
 ```python
-import httpx
+from sme_sidecar_sdk import UpstreamHTTPError
 from sme_sidecar_sdk.config import Settings
 from sme_sidecar_sdk.resilience.retry import retry_policy
 from sme_sidecar_sdk.resilience.timeout import build_sync_client
@@ -161,15 +161,15 @@ from sme_sidecar_sdk.resilience.timeout import build_sync_client
 settings = Settings(SME_RETRY_ATTEMPTS=3)
 
 
-@retry_policy(settings=settings, exceptions=(httpx.HTTPStatusError,))
+@retry_policy(settings=settings, exceptions=(UpstreamHTTPError,))
 def consulta_turmas() -> dict:
     with build_sync_client(settings) as client:
         response = client.get("http://upstream.local/turmas")
-        response.raise_for_status()  # 4xx/5xx vira HTTPStatusError
+        response.raise_for_status()  # 4xx/5xx vira UpstreamHTTPError
         return response.json()
 ```
 
-Caso as primeiras tentativas levantem `HTTPStatusError`, novas
+Caso as primeiras tentativas levantem `UpstreamHTTPError`, novas
 tentativas são realizadas após o backoff até atingir o limite
 configurado. Quando o limite é atingido sem sucesso, a última exceção é
 reerguida e cabe ao chamador tratá-la.
@@ -241,8 +241,7 @@ aberto).
 ### Uso
 
 ```python
-import httpx
-import pybreaker
+from sme_sidecar_sdk import CircuitOpenError, UpstreamHTTPError
 from sme_sidecar_sdk.config import Settings
 from sme_sidecar_sdk.resilience.circuit_breaker import get_circuit_breaker
 from sme_sidecar_sdk.resilience.timeout import build_sync_client
@@ -260,17 +259,17 @@ def consulta_turmas() -> dict:
 
 try:
     payload = breaker.call(consulta_turmas)
-except pybreaker.CircuitBreakerError:
+except CircuitOpenError:
     # Breaker aberto: a chamada foi bloqueada antes da rede.
     payload = {"fallback": True}
 ```
 
 Duas exceções, com semânticas distintas:
 
-- `httpx.HTTPStatusError`: a chamada alcançou o upstream e recebeu uma
+- `UpstreamHTTPError`: a chamada alcançou o upstream e recebeu uma
   resposta de erro. Consumiu tempo e recursos de rede.
-- `pybreaker.CircuitBreakerError`: o breaker bloqueou a chamada antes
-  da rede. O custo é da ordem de microsegundos.
+- `CircuitOpenError`: o breaker bloqueou a chamada antes da rede. O
+  custo é da ordem de microsegundos.
 
 ### Impacto operacional
 
