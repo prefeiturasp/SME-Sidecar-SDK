@@ -12,7 +12,7 @@ def test_defaults_when_no_env_vars() -> None:
     assert settings.enabled is True
     assert settings.service_name == "unnamed-service"
     assert settings.environment == "dev"
-    assert settings.timeout_seconds == 10.0
+    assert settings.timeout_seconds == pytest.approx(10.0)
     assert settings.retry_attempts == 3
     assert settings.circuit_breaker_fail_max == 5
 
@@ -28,7 +28,7 @@ def test_env_vars_override_defaults(monkeypatch: pytest.MonkeyPatch) -> None:
 
     assert settings.service_name == "pedagogico-ms"
     assert settings.environment == "qa"
-    assert settings.timeout_seconds == 7.5
+    assert settings.timeout_seconds == pytest.approx(7.5)
     assert settings.retry_attempts == 5
     assert settings.circuit_breaker_fail_max == 10
 

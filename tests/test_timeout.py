@@ -16,7 +16,7 @@ from sme_sidecar_sdk.resilience.timeout import (
 def test_build_timeout_uses_setting() -> None:
     settings = Settings(SME_TIMEOUT_SECONDS=7.5)  # type: ignore[call-arg]
     timeout = build_timeout(settings)
-    assert timeout.read == 7.5
+    assert timeout.read == pytest.approx(7.5)
 
 
 def test_build_timeout_disabled() -> None:
@@ -34,7 +34,7 @@ def test_sync_client_applies_timeout() -> None:
     transport = httpx.MockTransport(handler)
     with build_sync_client(settings, transport=transport) as client:
         response = client.get("http://example.test/")
-        assert client.timeout.read == 3.0
+        assert client.timeout.read == pytest.approx(3.0)
         assert response.status_code == 200
 
 
@@ -55,5 +55,5 @@ async def test_async_client_applies_timeout() -> None:
     transport = httpx.MockTransport(handler)
     async with build_async_client(settings, transport=transport) as client:
         response = await client.get("http://example.test/")
-        assert client.timeout.read == 4.0
+        assert client.timeout.read == pytest.approx(4.0)
         assert response.status_code == 200
