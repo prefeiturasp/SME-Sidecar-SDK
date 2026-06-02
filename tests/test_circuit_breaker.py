@@ -33,9 +33,11 @@ def test_breaker_opens_after_fail_max() -> None:
     def fail() -> None:
         raise RuntimeError("boom")
 
-    for _ in range(2):
-        with pytest.raises(RuntimeError):
-            breaker.call(fail)
+    with pytest.raises(RuntimeError):
+        breaker.call(fail)
+
+    with pytest.raises(pybreaker.CircuitBreakerError):
+        breaker.call(fail)
 
     with pytest.raises(pybreaker.CircuitBreakerError):
         breaker.call(fail)
