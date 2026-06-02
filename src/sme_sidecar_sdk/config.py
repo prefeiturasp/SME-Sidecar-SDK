@@ -69,9 +69,7 @@ class Settings(BaseSettings):
     )
     service_name: str = Field(
         default="unnamed-service",
-        validation_alias=_aliases(
-            "SME_SERVICE_NAME", "service_name"
-        ),
+        validation_alias=_aliases("SME_SERVICE_NAME", "service_name"),
     )
     environment: str = Field(
         default="dev",
@@ -80,30 +78,22 @@ class Settings(BaseSettings):
 
     timeout_enabled: bool = Field(
         default=True,
-        validation_alias=_aliases(
-            "SME_TIMEOUT_ENABLED", "timeout_enabled"
-        ),
+        validation_alias=_aliases("SME_TIMEOUT_ENABLED", "timeout_enabled"),
     )
     timeout_seconds: float = Field(
         default=10.0,
         ge=0.1,
-        validation_alias=_aliases(
-            "SME_TIMEOUT_SECONDS", "timeout_seconds"
-        ),
+        validation_alias=_aliases("SME_TIMEOUT_SECONDS", "timeout_seconds"),
     )
 
     retry_enabled: bool = Field(
         default=True,
-        validation_alias=_aliases(
-            "SME_RETRY_ENABLED", "retry_enabled"
-        ),
+        validation_alias=_aliases("SME_RETRY_ENABLED", "retry_enabled"),
     )
     retry_attempts: int = Field(
         default=3,
         ge=1,
-        validation_alias=_aliases(
-            "SME_RETRY_ATTEMPTS", "retry_attempts"
-        ),
+        validation_alias=_aliases("SME_RETRY_ATTEMPTS", "retry_attempts"),
     )
     retry_backoff_min: float = Field(
         default=0.5,

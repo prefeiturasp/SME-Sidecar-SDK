@@ -27,7 +27,10 @@ def test_distinct_names_get_distinct_breakers() -> None:
 
 
 def test_breaker_opens_after_fail_max() -> None:
-    settings = Settings(SME_CIRCUIT_BREAKER_FAIL_MAX=2, SME_CIRCUIT_BREAKER_RESET_TIMEOUT=60)  # type: ignore[call-arg]
+    settings = Settings(  # type: ignore[call-arg]
+        SME_CIRCUIT_BREAKER_FAIL_MAX=2,
+        SME_CIRCUIT_BREAKER_RESET_TIMEOUT=60,
+    )
     breaker = build_circuit_breaker("flaky", settings)
 
     def fail() -> None:

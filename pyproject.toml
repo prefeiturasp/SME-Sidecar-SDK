@@ -60,11 +60,15 @@ include = ["sme_sidecar_sdk*"]
 sme_sidecar_sdk = ["py.typed"]
 
 [tool.black]
-line-length = 100
+line-length = 79
 target-version = ["py312"]
 
+[tool.isort]
+profile = "black"
+line_length = 79
+
 [tool.ruff]
-line-length = 100
+line-length = 79
 target-version = "py312"
 src = ["src", "tests"]
 
@@ -74,8 +78,10 @@ select = [
     "W",
     "F",
     "I",
+    "N",
     "B",
     "C4",
+    "SIM",
     "UP",
     "D",
 ]
