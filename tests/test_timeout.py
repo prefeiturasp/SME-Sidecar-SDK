@@ -14,19 +14,19 @@ from sme_sidecar_sdk.resilience.timeout import (
 
 
 def test_build_timeout_uses_setting() -> None:
-    settings = Settings(SME_TIMEOUT_SECONDS=7.5)  # type: ignore[call-arg]
+    settings = Settings(SME_TIMEOUT_SECONDS=7.5)
     timeout = build_timeout(settings)
     assert timeout.read == pytest.approx(7.5)
 
 
 def test_build_timeout_disabled() -> None:
-    settings = Settings(SME_TIMEOUT_ENABLED=False)  # type: ignore[call-arg]
+    settings = Settings(SME_TIMEOUT_ENABLED=False)
     timeout = build_timeout(settings)
     assert timeout.read is None
 
 
 def test_sync_client_applies_timeout() -> None:
-    settings = Settings(SME_TIMEOUT_SECONDS=3.0)  # type: ignore[call-arg]
+    settings = Settings(SME_TIMEOUT_SECONDS=3.0)
 
     def handler(request: httpx.Request) -> httpx.Response:
         return httpx.Response(200, json={"ok": True})
@@ -47,7 +47,7 @@ def test_reserved_kwargs_rejected() -> None:
 
 @pytest.mark.asyncio
 async def test_async_client_applies_timeout() -> None:
-    settings = Settings(SME_TIMEOUT_SECONDS=4.0)  # type: ignore[call-arg]
+    settings = Settings(SME_TIMEOUT_SECONDS=4.0)
 
     def handler(request: httpx.Request) -> httpx.Response:
         return httpx.Response(200, json={"ok": True})

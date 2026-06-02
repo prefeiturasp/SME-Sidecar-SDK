@@ -25,7 +25,7 @@ def test_configure_returns_state_with_resilience_flags(
 
 
 def test_configure_disabled_marks_subsystems_off() -> None:
-    settings = Settings(SME_SDK_ENABLED=False)  # type: ignore[call-arg]
+    settings = Settings(SME_SDK_ENABLED=False)
     state = runtime.configure(settings)
     try:
         assert state.settings.enabled is False
@@ -38,7 +38,7 @@ def test_configure_disabled_marks_subsystems_off() -> None:
 
 def test_state_returns_last_configuration() -> None:
     settings = Settings(
-        SME_CIRCUIT_BREAKER_ENABLED=False,  # type: ignore[call-arg]
+        SME_CIRCUIT_BREAKER_ENABLED=False,
     )
     runtime.configure(settings)
     try:

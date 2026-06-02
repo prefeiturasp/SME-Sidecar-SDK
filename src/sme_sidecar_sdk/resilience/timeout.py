@@ -55,7 +55,7 @@ def build_sync_client(
     _reject_reserved_kwargs(client_kwargs)
     return httpx.Client(
         timeout=build_timeout(settings),
-        **client_kwargs,  # type: ignore[arg-type]
+        **client_kwargs,  # type: ignore[arg-type, unused-ignore]
     )
 
 
@@ -81,7 +81,7 @@ def build_async_client(
     _reject_reserved_kwargs(client_kwargs)
     return httpx.AsyncClient(
         timeout=build_timeout(settings),
-        **client_kwargs,  # type: ignore[arg-type]
+        **client_kwargs,  # type: ignore[arg-type, unused-ignore]
     )
 
 

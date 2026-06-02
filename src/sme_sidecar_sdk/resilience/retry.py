@@ -81,7 +81,7 @@ def retry_policy(
 
         return passthrough
 
-    return retry(  # type: ignore[return-value]
+    return retry(  # type: ignore[no-any-return, unused-ignore]
         stop=stop_after_attempt(settings.retry_attempts),
         wait=wait_exponential(
             multiplier=1,

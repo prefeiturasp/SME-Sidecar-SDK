@@ -27,7 +27,7 @@ def test_distinct_names_get_distinct_breakers() -> None:
 
 
 def test_breaker_opens_after_fail_max() -> None:
-    settings = Settings(  # type: ignore[call-arg]
+    settings = Settings(
         SME_CIRCUIT_BREAKER_FAIL_MAX=2,
         SME_CIRCUIT_BREAKER_RESET_TIMEOUT=60,
     )
@@ -47,7 +47,7 @@ def test_breaker_opens_after_fail_max() -> None:
 
 
 def test_disabled_returns_noop_breaker() -> None:
-    settings = Settings(SME_CIRCUIT_BREAKER_ENABLED=False)  # type: ignore[call-arg]
+    settings = Settings(SME_CIRCUIT_BREAKER_ENABLED=False)
     breaker = get_circuit_breaker("disabled", settings)
     assert breaker.call(lambda: 42) == 42
 

@@ -9,7 +9,7 @@ from sme_sidecar_sdk.resilience.retry import retry_policy
 
 
 def test_retries_until_success() -> None:
-    settings = Settings(  # type: ignore[call-arg]
+    settings = Settings(
         SME_RETRY_ATTEMPTS=3,
         SME_RETRY_BACKOFF_MIN=0,
         SME_RETRY_BACKOFF_MAX=0,
@@ -28,7 +28,7 @@ def test_retries_until_success() -> None:
 
 
 def test_reraises_original_exception_after_max_attempts() -> None:
-    settings = Settings(  # type: ignore[call-arg]
+    settings = Settings(
         SME_RETRY_ATTEMPTS=2,
         SME_RETRY_BACKOFF_MIN=0,
         SME_RETRY_BACKOFF_MAX=0,
@@ -46,7 +46,7 @@ def test_reraises_original_exception_after_max_attempts() -> None:
 
 
 def test_does_not_retry_unmatched_exception() -> None:
-    settings = Settings(  # type: ignore[call-arg]
+    settings = Settings(
         SME_RETRY_ATTEMPTS=3,
         SME_RETRY_BACKOFF_MIN=0,
         SME_RETRY_BACKOFF_MAX=0,
@@ -64,7 +64,7 @@ def test_does_not_retry_unmatched_exception() -> None:
 
 
 def test_disabled_retry_returns_function_unchanged() -> None:
-    settings = Settings(SME_RETRY_ENABLED=False)  # type: ignore[call-arg]
+    settings = Settings(SME_RETRY_ENABLED=False)
 
     @retry_policy(settings=settings)
     def fn() -> str:
