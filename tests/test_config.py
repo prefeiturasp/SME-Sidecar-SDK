@@ -1,0 +1,50 @@
+"""Tests for ``sme_sidecar_sdk.config``."""
+
+from __future__ import annotations
+
+import pytest
+
+from sme_sidecar_sdk.config import Settings, get_settings, reset_settings_cache
+
+
+def test_defaults_when_no_env_vars() -> None:
+    settings = Settings()
+    assert settings.enabled is True
+    assert settings.service_name == "unnamed-service"
+    assert settings.environment == "dev"
+    assert settings.timeout_seconds == pytest.approx(10.0)
+    assert settings.retry_attempts == 3
+    assert settings.circuit_breaker_fail_max == 5
+
+
+def test_env_vars_override_defaults(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("SME_SERVICE_NAME", "pedagogico-ms")
+    monkeypatch.setenv("SME_ENVIRONMENT", "qa")
+    monkeypatch.setenv("SME_TIMEOUT_SECONDS", "7.5")
+    monkeypatch.setenv("SME_RETRY_ATTEMPTS", "5")
+    monkeypatch.setenv("SME_CIRCUIT_BREAKER_FAIL_MAX", "10")
+
+    settings = Settings()
+
+    assert settings.service_name == "pedagogico-ms"
+    assert settings.environment == "qa"
+    assert settings.timeout_seconds == pytest.approx(7.5)
+    assert settings.retry_attempts == 5
+    assert settings.circuit_breaker_fail_max == 10
+
+
+def test_get_settings_is_cached(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("SME_SERVICE_NAME", "first")
+    first = get_settings()
+    monkeypatch.setenv("SME_SERVICE_NAME", "second")
+    cached = get_settings()
+    assert cached is first
+    reset_settings_cache()
+    refreshed = get_settings()
+    assert refreshed.service_name == "second"
+
+
+def test_invalid_timeout_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("SME_TIMEOUT_SECONDS", "0")
+    with pytest.raises(ValueError):
+        Settings()
