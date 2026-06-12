@@ -13,19 +13,19 @@ from __future__ import annotations
 
 from . import runtime
 from .config import Settings, get_settings
-from .correlation import (
+from .exceptions import (
+    CircuitOpenError,
+    RequestTimeoutError,
+    UpstreamHTTPError,
+)
+from .observability.context import (
     correlation_context,
     get_correlation_id,
     new_correlation_id,
     reset_correlation_id,
     set_correlation_id,
 )
-from .exceptions import (
-    CircuitOpenError,
-    RequestTimeoutError,
-    UpstreamHTTPError,
-)
-from .logging import configure_logging, get_logger
+from .observability.logging import configure_logging, get_logger
 
 __all__ = [
     "CircuitOpenError",

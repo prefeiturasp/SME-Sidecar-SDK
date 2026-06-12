@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ..config import Settings
+from ....config import Settings
 from .base import LogProvider
 from .rabbitmq import RabbitMQLogProvider
 

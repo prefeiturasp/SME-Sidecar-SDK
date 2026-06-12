@@ -10,7 +10,7 @@ from typing import Any
 
 import pika
 
-from ..config import Settings
+from ....config import Settings
 
 _STOP = object()
 

@@ -6,7 +6,7 @@ import httpx
 import pytest
 
 from sme_sidecar_sdk.config import Settings
-from sme_sidecar_sdk.correlation import correlation_context
+from sme_sidecar_sdk.observability.context import correlation_context
 from sme_sidecar_sdk.resilience.timeout import (
     build_async_client,
     build_sync_client,

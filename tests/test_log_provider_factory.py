@@ -1,6 +1,10 @@
 from sme_sidecar_sdk.config import Settings
-from sme_sidecar_sdk.log_providers.factory import build_log_providers
-from sme_sidecar_sdk.log_providers.rabbitmq import RabbitMQLogProvider
+from sme_sidecar_sdk.observability.logging.providers.factory import (
+    build_log_providers,
+)
+from sme_sidecar_sdk.observability.logging.providers.rabbitmq import (
+    RabbitMQLogProvider,
+)
 
 
 def test_no_provider_is_created_without_queue() -> None:

@@ -1,4 +1,4 @@
-"""Providers opcionais para transporte de logs estruturados."""
+"""Providers opcionais da feature de logs estruturados."""
 
 from .base import LogProvider
 from .rabbitmq import RabbitMQLogProvider

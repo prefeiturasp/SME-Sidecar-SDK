@@ -5,8 +5,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from sme_sidecar_sdk.correlation import get_correlation_id
 from sme_sidecar_sdk.integrations.django import ObservabilityMiddleware
+from sme_sidecar_sdk.observability.context import get_correlation_id
 
 
 @dataclass
@@ -43,7 +43,9 @@ def test_middleware_reuses_request_id_and_clears_context() -> None:
 
 
 def test_middleware_generates_request_id() -> None:
-    middleware = ObservabilityMiddleware(lambda _: FakeResponse())
+    middleware: ObservabilityMiddleware[FakeRequest, FakeResponse] = (
+        ObservabilityMiddleware(lambda _: FakeResponse())
+    )
 
     response = middleware(FakeRequest(headers={}))
 
@@ -67,8 +69,8 @@ def test_middleware_records_http_attributes() -> None:
             side_effect=[10.0, 10.125],
         ),
     ):
-        middleware = ObservabilityMiddleware(
-            lambda _: FakeResponse(status_code=204)
+        middleware: ObservabilityMiddleware[FakeRequest, FakeResponse] = (
+            ObservabilityMiddleware(lambda _: FakeResponse(status_code=204))
         )
         middleware(FakeRequest(headers={}, method="POST", path="/turmas/"))
 

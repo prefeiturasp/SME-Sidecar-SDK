@@ -4,13 +4,14 @@ from __future__ import annotations
 
 import json
 import logging
+from typing import cast
 from unittest.mock import patch
 
 import pytest
 
 from sme_sidecar_sdk.config import Settings
-from sme_sidecar_sdk.correlation import correlation_context
-from sme_sidecar_sdk.logging import (
+from sme_sidecar_sdk.observability.context import correlation_context
+from sme_sidecar_sdk.observability.logging import (
     configure_logging,
     get_logger,
     shutdown_logging,
@@ -43,7 +44,7 @@ class _CapturingProvider:
 def _last_payload(capsys: pytest.CaptureFixture[str]) -> dict[str, object]:
     lines = capsys.readouterr().out.strip().splitlines()
     assert lines
-    return json.loads(lines[-1])
+    return cast(dict[str, object], json.loads(lines[-1]))
 
 
 def test_structured_log_contains_standard_context(
@@ -91,7 +92,10 @@ def test_external_provider_receives_structured_json(
 ) -> None:
     provider = _CapturingProvider()
     with patch(
-        "sme_sidecar_sdk.logging.build_log_providers",
+        (
+            "sme_sidecar_sdk.observability.logging.configuration."
+            "build_log_providers"
+        ),
         return_value=[provider],
     ):
         configure_logging(

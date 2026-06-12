@@ -1,4 +1,4 @@
-"""Configuração centralizada de logs estruturados."""
+"""Implementação da configuração centralizada de logs estruturados."""
 
 from __future__ import annotations
 
@@ -10,10 +10,10 @@ from typing import Any, cast
 import structlog
 from structlog.types import EventDict, Processor
 
-from .config import Settings, get_settings
-from .correlation import get_correlation_id
-from .log_providers.base import LogProvider
-from .log_providers.factory import build_log_providers
+from ...config import Settings, get_settings
+from ..context import get_correlation_id
+from .providers.base import LogProvider
+from .providers.factory import build_log_providers
 
 _LOG_PROVIDERS: list[LogProvider] = []
 

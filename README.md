@@ -42,10 +42,17 @@ src/sme_sidecar_sdk/
   __init__.py
   runtime.py
   config.py
-  correlation.py
-  logging.py
   observability/
+    __init__.py
+    context.py
     tracing.py
+    logging/
+      __init__.py
+      configuration.py
+      providers/
+        base.py
+        factory.py
+        rabbitmq.py
   resilience/
     timeout.py
     retry.py

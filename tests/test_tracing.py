@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import pytest
 from opentelemetry import trace
+from opentelemetry.instrumentation.httpx import HTTPXClientInstrumentor
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export.in_memory_span_exporter import (
     InMemorySpanExporter,
@@ -44,21 +46,21 @@ def test_trace_context_round_trip() -> None:
 
 
 def test_configure_tracing_builds_exporter_and_instruments_httpx(
-    monkeypatch,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     exporter_arguments: dict[str, object] = {}
     instrument_arguments: dict[str, object] = {}
 
-    def build_exporter(**kwargs):
+    def build_exporter(**kwargs: object) -> InMemorySpanExporter:
         exporter_arguments.update(kwargs)
         return InMemorySpanExporter()
 
-    def instrument(_self, **kwargs):
+    def instrument(_self: object, **kwargs: object) -> None:
         instrument_arguments.update(kwargs)
 
     monkeypatch.setattr(tracing, "OTLPSpanExporter", build_exporter)
     monkeypatch.setattr(
-        tracing.HTTPXClientInstrumentor,
+        HTTPXClientInstrumentor,
         "instrument",
         instrument,
     )

@@ -4,13 +4,13 @@ from __future__ import annotations
 
 import time
 from collections.abc import Callable, Mapping
-from typing import Protocol
+from typing import Generic, Protocol, TypeVar
 
 from opentelemetry import trace
 
 from ..config import Settings, get_settings
-from ..logging import get_logger
 from ..observability import get_tracer, request_context
+from ..observability.logging import get_logger
 
 log = get_logger(__name__)
 
@@ -18,16 +18,31 @@ log = get_logger(__name__)
 class _Request(Protocol):
     """Campos do HttpRequest usados pela integração."""
 
-    headers: Mapping[str, str]
-    method: str
-    path: str
+    @property
+    def headers(self) -> Mapping[str, str]:
+        """Retorna os headers recebidos."""
+        ...
+
+    @property
+    def method(self) -> str:
+        """Retorna o método HTTP."""
+        ...
+
+    @property
+    def path(self) -> str:
+        """Retorna o caminho da requisição."""
+        ...
+
     request_id: str
 
 
 class _Response(Protocol):
     """Campos do HttpResponse usados pela integração."""
 
-    status_code: int
+    @property
+    def status_code(self) -> int:
+        """Retorna o status HTTP da resposta."""
+        ...
 
     def __setitem__(self, key: str, value: str) -> None:
         """Define um header na resposta.
@@ -39,22 +54,28 @@ class _Response(Protocol):
         ...
 
 
-class ObservabilityMiddleware:
+RequestT = TypeVar("RequestT", bound=_Request)
+ResponseT = TypeVar("ResponseT", bound=_Response)
+
+
+class ObservabilityMiddleware(
+    Generic[RequestT, ResponseT],  # noqa: UP046
+):
     """Ativa correlação, tracing e logging para cada requisição Django."""
 
     def __init__(
         self,
-        get_response: Callable[[_Request], _Response],
+        get_response: Callable[[RequestT], ResponseT],
     ) -> None:
         """Inicializa o middleware com o próximo callable da cadeia."""
         self.get_response = get_response
         self.settings: Settings = get_settings()
         self.tracer: trace.Tracer = get_tracer(__name__)
 
-    def __call__(self, request: _Request) -> _Response:
+    def __call__(self, request: RequestT) -> ResponseT:
         """Processa uma requisição dentro do contexto da SDK."""
         started_at = time.monotonic()
-        response: _Response | None = None
+        response: ResponseT | None = None
 
         with request_context(request.headers, self.settings) as current:
             request.request_id = current.request_id

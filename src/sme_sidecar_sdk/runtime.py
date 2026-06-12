@@ -17,7 +17,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .config import Settings, get_settings, reset_settings_cache
-from .logging import configure_logging, get_logger, shutdown_logging
+from .observability.logging import (
+    configure_logging,
+    get_logger,
+    shutdown_logging,
+)
 from .observability.tracing import configure_tracing, shutdown_tracing
 
 

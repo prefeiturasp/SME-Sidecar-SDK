@@ -5,7 +5,7 @@ import queue
 from unittest.mock import MagicMock, patch
 
 from sme_sidecar_sdk.config import Settings
-from sme_sidecar_sdk.log_providers.rabbitmq import (
+from sme_sidecar_sdk.observability.logging.providers.rabbitmq import (
     RabbitMQLogProvider,
     _RabbitMQHandler,
 )
@@ -56,7 +56,10 @@ def test_provider_declares_queue_and_publishes_persistent_json() -> None:
     channel = connection.channel.return_value
 
     with patch(
-        "sme_sidecar_sdk.log_providers.rabbitmq.pika.BlockingConnection",
+        (
+            "sme_sidecar_sdk.observability.logging.providers.rabbitmq."
+            "pika.BlockingConnection"
+        ),
         return_value=connection,
     ):
         provider = RabbitMQLogProvider(_settings())
@@ -76,7 +79,10 @@ def test_provider_declares_queue_and_publishes_persistent_json() -> None:
 
 def test_provider_swallows_connection_failure() -> None:
     with patch(
-        "sme_sidecar_sdk.log_providers.rabbitmq.pika.BlockingConnection",
+        (
+            "sme_sidecar_sdk.observability.logging.providers.rabbitmq."
+            "pika.BlockingConnection"
+        ),
         side_effect=ConnectionError("rabbit unavailable"),
     ):
         provider = RabbitMQLogProvider(_settings())

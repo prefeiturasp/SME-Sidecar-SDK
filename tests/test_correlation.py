@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from sme_sidecar_sdk.correlation import (
+from sme_sidecar_sdk.observability.context import (
     correlation_context,
     correlation_id_from_headers,
     get_correlation_id,

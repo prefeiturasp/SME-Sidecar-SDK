@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 from sme_sidecar_sdk.config import Settings
-from sme_sidecar_sdk.correlation import get_correlation_id
-from sme_sidecar_sdk.observability import request_context
+from sme_sidecar_sdk.observability.context import (
+    get_correlation_id,
+    request_context,
+)
 
 
 def test_request_context_uses_configured_header_and_restores_state() -> None:

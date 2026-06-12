@@ -18,7 +18,7 @@ from typing import Any, cast
 import httpx
 
 from ..config import Settings, get_settings
-from ..correlation import get_correlation_id
+from ..observability.context import get_correlation_id
 
 
 def build_timeout(settings: Settings | None = None) -> httpx.Timeout:
