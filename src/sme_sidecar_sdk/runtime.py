@@ -27,7 +27,7 @@ from .observability.tracing import configure_tracing, shutdown_tracing
 
 @dataclass(frozen=True)
 class RuntimeState:
-    """Snapshot dos primitivos de resiliência ativos no processo.
+    """Snapshot dos recursos de resiliência e observabilidade ativos.
 
     Attributes:
         settings: Configuração efetiva utilizada durante o ``configure``.
@@ -63,7 +63,8 @@ def configure(settings: Settings | None = None) -> RuntimeState:
             instância cacheada por :func:`sme_sidecar_sdk.config.get_settings`.
 
     Returns:
-        RuntimeState: Snapshot dos primitivos de resiliência ativos.
+        RuntimeState: Snapshot dos recursos de resiliência e
+        observabilidade ativos.
     """
     global _STATE
     settings = settings or get_settings()

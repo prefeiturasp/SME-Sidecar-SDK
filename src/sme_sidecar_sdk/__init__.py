@@ -1,8 +1,9 @@
 """SME Sidecar SDK: resiliência e observabilidade in-process.
 
 Entrega timeouts HTTP padronizados, retry com backoff exponencial e
-circuit breaker, configurados por convenção a partir de variáveis de
-ambiente ``SME_*``.
+circuit breaker, além de logging estruturado, correlação e tracing
+distribuído. Os recursos são configurados por convenção a partir de
+variáveis de ambiente ``SME_*``.
 
 Example:
     >>> from sme_sidecar_sdk import runtime

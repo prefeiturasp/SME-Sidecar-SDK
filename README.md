@@ -6,6 +6,18 @@
 [![python](https://img.shields.io/badge/python-3.12-blue.svg)]()
 [![license](https://img.shields.io/badge/license-AGPL--3.0-green.svg)]()
 
+## Objetivo e escopo
+
+A SME Sidecar SDK padroniza recursos transversais em aplicações Python,
+com foco em serviços Django que realizam chamadas HTTP para outros
+microsserviços. A SDK centraliza resiliência, correlação, logs
+estruturados e tracing distribuído sem exigir um container sidecar.
+
+Use a SDK para integrar aplicações aos padrões de observabilidade e
+resiliência da SME. Regras de negócio, autenticação e contratos
+específicos de cada serviço permanecem sob responsabilidade da
+aplicação.
+
 ## Instalação
 
 ```bash
@@ -20,7 +32,7 @@ from sme_sidecar_sdk import runtime
 runtime.configure()
 ```
 
-A partir daí ficam ativos:
+## Features
 
 - timeout padronizado em `httpx` (sync e async);
 - retry com backoff exponencial via `tenacity`;
@@ -31,8 +43,8 @@ A partir daí ficam ativos:
 - provider assíncrono opcional de logs para RabbitMQ.
 
 > A explicação conceitual de cada primitivo, com exemplos executáveis e
-> impacto operacional, está no **Guia de resiliência** da documentação
-> viva: `docs/guia_resiliencia.md` (rodar `make livehtml` em `docs/` ou
+> impacto operacional, está na documentação
+> viva: `docs` (rodar `make livehtml` em `docs/` ou
 > acessar a versão publicada).
 
 ## Integração com Django
@@ -73,11 +85,6 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
 ]
 ```
-
-Após a integração, as chamadas a serviços externos passam a usar os
-primitivos da SDK em vez de instâncias cruas de `httpx`/`requests`. A
-seção **Uso** de cada cenário no Guia de resiliência traz exemplos
-prontos.
 
 ## Desenvolvimento
 

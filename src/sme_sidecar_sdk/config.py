@@ -4,8 +4,9 @@ Este módulo expõe :class:`Settings`, um modelo ``pydantic-settings`` que
 carrega a configuração do SDK a partir de variáveis de ambiente
 prefixadas com ``SME_``.
 
-Cobre o ajuste fino dos primitivos de resiliência: timeout, retry e
-circuit breaker.
+Cobre os recursos de resiliência e observabilidade, incluindo timeout,
+retry, circuit breaker, logging estruturado, correlação e tracing
+distribuído.
 
 Example:
     >>> from sme_sidecar_sdk.config import Settings
