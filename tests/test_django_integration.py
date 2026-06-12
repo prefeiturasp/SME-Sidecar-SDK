@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from unittest.mock import MagicMock, patch
 
 import pytest
+from opentelemetry.trace import StatusCode
 
 from sme_sidecar_sdk.integrations.django import ObservabilityMiddleware
 from sme_sidecar_sdk.observability.context import get_correlation_id
@@ -90,7 +91,7 @@ def test_middleware_logs_500_and_restores_context_on_exception() -> None:
     def raise_error(_: FakeRequest) -> FakeResponse:
         raise RuntimeError("falha")
 
-    with patch("sme_sidecar_sdk.integrations.django.log.info") as log_info:
+    with patch("sme_sidecar_sdk.integrations.django.log.error") as log_error:
         middleware = ObservabilityMiddleware(raise_error)
 
         with pytest.raises(RuntimeError, match="falha"):
@@ -99,4 +100,46 @@ def test_middleware_logs_500_and_restores_context_on_exception() -> None:
             )
 
     assert get_correlation_id() is None
-    assert log_info.call_args.kwargs["http_status_code"] == 500
+    assert log_error.call_args.kwargs["http_status_code"] == 500
+
+
+def test_middleware_marks_500_response_as_error() -> None:
+    span = MagicMock()
+    span.__enter__.return_value = span
+    tracer = MagicMock()
+    tracer.start_as_current_span.return_value = span
+
+    with patch(
+        "sme_sidecar_sdk.integrations.django.get_tracer",
+        return_value=tracer,
+    ):
+        middleware: ObservabilityMiddleware[FakeRequest, FakeResponse] = (
+            ObservabilityMiddleware(lambda _: FakeResponse(status_code=503))
+        )
+        middleware(FakeRequest(headers={}))
+
+    span.set_attribute.assert_any_call("http.response.status_code", 503)
+    span.set_attribute.assert_any_call("error.type", "503")
+    assert span.set_status.call_args.args[0].status_code is StatusCode.ERROR
+
+
+def test_process_exception_records_error_on_current_span() -> None:
+    span = MagicMock()
+    request = FakeRequest(headers={}, method="POST", path="/turmas/")
+    exception = RuntimeError("falha")
+    middleware: ObservabilityMiddleware[FakeRequest, FakeResponse] = (
+        ObservabilityMiddleware(lambda _: FakeResponse())
+    )
+
+    with patch(
+        "sme_sidecar_sdk.integrations.django.trace.get_current_span",
+        return_value=span,
+    ):
+        middleware.process_exception(request, exception)
+
+    span.record_exception.assert_called_once_with(exception)
+    span.set_attribute.assert_called_once_with(
+        "error.type",
+        "builtins.RuntimeError",
+    )
+    assert span.set_status.call_args.args[0].status_code is StatusCode.ERROR

@@ -19,6 +19,7 @@ import httpx
 
 from ..config import Settings, get_settings
 from ..observability.context import get_correlation_id
+from ..observability.tracing import inject_trace_context
 
 
 def build_timeout(settings: Settings | None = None) -> httpx.Timeout:
@@ -141,6 +142,7 @@ def _sync_propagation_hook(settings: Settings) -> EventHook:
                 settings.correlation_id_header,
                 correlation_id,
             )
+        inject_trace_context(request.headers)
 
     return hook
 
@@ -169,6 +171,7 @@ def _async_propagation_hook(
                 settings.correlation_id_header,
                 correlation_id,
             )
+        inject_trace_context(request.headers)
 
     return hook
 

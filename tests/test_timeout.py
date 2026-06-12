@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from unittest.mock import patch
+
 import httpx
 import pytest
 
@@ -62,6 +64,32 @@ def test_sync_client_propagates_request_id_and_preserves_hooks() -> None:
         "custom": "/recurso",
         "request_id": "request-123",
     }
+
+
+def test_sync_client_injects_trace_context() -> None:
+    seen: dict[str, str] = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen["traceparent"] = request.headers["traceparent"]
+        return httpx.Response(200)
+
+    with (
+        patch(
+            "sme_sidecar_sdk.resilience.timeout.inject_trace_context",
+            side_effect=lambda headers: headers.__setitem__(
+                "traceparent",
+                "00-" + ("1" * 32) + "-" + ("2" * 16) + "-01",
+            ),
+        ),
+        build_sync_client(
+            transport=httpx.MockTransport(handler),
+        ) as client,
+    ):
+        client.get("http://example.test/recurso")
+
+    assert seen["traceparent"] == (
+        "00-" + ("1" * 32) + "-" + ("2" * 16) + "-01"
+    )
 
 
 def test_reserved_kwargs_rejected() -> None:

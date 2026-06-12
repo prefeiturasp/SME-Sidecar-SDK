@@ -125,7 +125,8 @@ def extract_trace_context(headers: Mapping[str, str]) -> context.Context:
     Returns:
         Contexto OpenTelemetry extraído dos headers.
     """
-    return propagate.extract(dict(headers))
+    carrier = {name.casefold(): value for name, value in headers.items()}
+    return propagate.extract(carrier)
 
 
 @contextmanager

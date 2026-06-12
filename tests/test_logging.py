@@ -129,3 +129,10 @@ def test_error_level_filters_warning_from_standard_library(
     logging.getLogger("legado").warning("nao deve aparecer")
 
     assert capsys.readouterr().out == ""
+
+
+def test_noisy_dependency_loggers_only_emit_warnings() -> None:
+    configure_logging(Settings(SME_LOG_LEVEL="INFO"))
+
+    assert logging.getLogger("httpx").level == logging.WARNING
+    assert logging.getLogger("pika").level == logging.WARNING

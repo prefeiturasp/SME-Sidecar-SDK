@@ -143,6 +143,8 @@ def configure_logging(settings: Settings | None = None) -> None:
     for provider in _LOG_PROVIDERS:
         root.addHandler(provider.build_handler(provider_formatter))
     root.setLevel(settings.log_level)
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+    logging.getLogger("pika").setLevel(logging.WARNING)
 
     structlog.configure(
         processors=[

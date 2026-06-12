@@ -7,6 +7,7 @@ from collections.abc import Callable, Mapping
 from typing import Generic, Protocol, TypeVar
 
 from opentelemetry import trace
+from opentelemetry.trace import Status, StatusCode
 
 from ..config import Settings, get_settings
 from ..observability import get_tracer, request_context
@@ -88,6 +89,12 @@ class ObservabilityMiddleware(
                         "http.response.status_code",
                         response.status_code,
                     )
+                    if response.status_code >= 500:
+                        span.set_attribute(
+                            "error.type",
+                            str(response.status_code),
+                        )
+                        span.set_status(Status(StatusCode.ERROR))
                     return response
                 finally:
                     duration_ms = round(
@@ -97,7 +104,8 @@ class ObservabilityMiddleware(
                     status_code = (
                         response.status_code if response is not None else 500
                     )
-                    log.info(
+                    log_method = log.error if status_code >= 500 else log.info
+                    log_method(
                         "http_request_completed",
                         http_method=request.method,
                         http_path=request.path,
@@ -108,3 +116,22 @@ class ObservabilityMiddleware(
                         response[self.settings.correlation_id_header] = (
                             current.request_id
                         )
+
+    def process_exception(
+        self,
+        request: RequestT,
+        exception: Exception,
+    ) -> None:
+        """Registra no span uma exceção levantada pela view.
+
+        Args:
+            request: Requisição que estava sendo processada.
+            exception: Exceção levantada pela view.
+        """
+        span = trace.get_current_span()
+        exception_type = (
+            f"{type(exception).__module__}.{type(exception).__qualname__}"
+        )
+        span.record_exception(exception)
+        span.set_attribute("error.type", exception_type)
+        span.set_status(Status(StatusCode.ERROR, str(exception)))
