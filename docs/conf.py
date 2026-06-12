@@ -52,6 +52,7 @@ suppress_warnings = ["sphinx_autodoc_typehints.forward_reference"]
 
 # HTML
 html_theme = "sphinx_rtd_theme"
+html_baseurl = "https://prefeiturasp.github.io/SME-Sidecar-SDK/"
 
 # Intersphinx
 intersphinx_mapping = {

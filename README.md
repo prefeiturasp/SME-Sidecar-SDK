@@ -21,7 +21,7 @@ aplicação.
 ## Instalação
 
 ```bash
-pip install git+https://github.com/prefeitura-sp/sme-sidecar-sdk.git
+pip install git+https://github.com/prefeiturasp/SME-Sidecar-SDK.git
 ```
 
 A aplicação consome a SDK assim:
@@ -102,6 +102,9 @@ pre-commit run --all-files
 A documentação completa — incluindo o **Guia de resiliência**, o
 **Getting Started** e a referência da API — é gerada pelo Sphinx a
 partir das docstrings do código e dos arquivos em `docs/`.
+
+Documentação publicada:
+[prefeiturasp.github.io/SME-Sidecar-SDK](https://prefeiturasp.github.io/SME-Sidecar-SDK/)
 
 ```bash
 cd docs

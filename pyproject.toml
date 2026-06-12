@@ -54,9 +54,9 @@ docs = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/prefeitura-sp/sme-sidecar-sdk"
-Documentation = "https://prefeitura-sp.github.io/sme-sidecar-sdk"
-Repository = "https://github.com/prefeitura-sp/sme-sidecar-sdk"
+Homepage = "https://github.com/prefeiturasp/SME-Sidecar-SDK"
+Documentation = "https://prefeiturasp.github.io/SME-Sidecar-SDK/"
+Repository = "https://github.com/prefeiturasp/SME-Sidecar-SDK"
 
 [tool.setuptools.packages.find]
 where = ["src"]
