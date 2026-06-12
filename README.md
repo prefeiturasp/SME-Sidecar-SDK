@@ -30,36 +30,14 @@ A partir daí ficam ativos:
 - tracing OpenTelemetry com exportação OTLP para collector ou Elastic APM.
 - provider assíncrono opcional de logs para RabbitMQ.
 
-> A explicação conceitual de cada primitivo, com exemplos rodáveis e
+> A explicação conceitual de cada primitivo, com exemplos executáveis e
 > impacto operacional, está no **Guia de resiliência** da documentação
 > viva: `docs/guia_resiliencia.md` (rodar `make livehtml` em `docs/` ou
 > acessar a versão publicada).
 
-## Estrutura
-
-```
-src/sme_sidecar_sdk/
-  __init__.py
-  runtime.py
-  config.py
-  observability/
-    __init__.py
-    context.py
-    tracing.py
-    logging/
-      __init__.py
-      configuration.py
-      providers/
-        base.py
-        factory.py
-        rabbitmq.py
-  resilience/
-    timeout.py
-    retry.py
-    circuit_breaker.py
-```
-
 ## Integração com Django
+
+> Consulte a documentação para integração correta.
 
 Em projetos Django, o ponto correto para inicializar o runtime é o
 método `ready()` do `AppConfig` de um dos apps carregados em
@@ -86,39 +64,20 @@ class CoreConfig(AppConfig):
         runtime.configure()
 ```
 
-Pontos importantes:
+Registre o middleware da SDK antes dos demais middlewares do projeto:
 
-- O import dentro de `ready()` (não no topo do módulo) evita problemas
-  de inicialização circular e mantém o `apps.py` carregável mesmo em
-  cenários onde a SDK ainda não esteja instalada.
-- O método `ready()` é executado pelo Django uma vez por processo. Em
-  servidores multi-worker (gunicorn, uvicorn), `configure()` será
-  chamado em cada worker — comportamento esperado, dado que cada worker
-  é um processo independente.
-- O runtime configura logging e instrumenta chamadas `httpx` quando tracing
-  está habilitado. O middleware da aplicação deve abrir o contexto da
-  requisição recebida com `correlation_context()` e `use_trace_context()`.
+```python
+MIDDLEWARE = [
+    "sme_sidecar_sdk.integrations.django.ObservabilityMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "django.middleware.common.CommonMiddleware",
+]
+```
 
 Após a integração, as chamadas a serviços externos passam a usar os
 primitivos da SDK em vez de instâncias cruas de `httpx`/`requests`. A
 seção **Uso** de cada cenário no Guia de resiliência traz exemplos
 prontos.
-
-### Integração com outros frameworks
-
-O padrão é equivalente em outros frameworks: chame `runtime.configure()`
-**uma única vez** no boot da aplicação.
-
-- **FastAPI / Starlette**: dentro do `lifespan` ou em um evento de
-  `startup`.
-- **Flask**: no factory da aplicação, após a criação da instância `Flask`.
-- **Scripts e workers**: no início da função principal, antes de qualquer
-  chamada de rede.
-
-## Variáveis de ambiente
-
-A descrição detalhada de cada variável está em
-`docs/configuration.md` (acessível no Sphinx).
 
 ## Desenvolvimento
 
@@ -128,8 +87,7 @@ pip install -e ".[dev,docs]"
 pre-commit install
 
 pytest
-ruff check src tests
-mypy src
+pre-commit run --all-files
 ```
 
 ## Documentação viva (Sphinx)
