@@ -1,8 +1,8 @@
 SME Sidecar SDK
 ===============
 
-Runtime SDK in-process que entrega resiliência (timeout, retry e circuit
-breaker) sem sidecar container e sem hop de rede.
+Runtime SDK in-process que entrega resiliência, logs estruturados e tracing
+distribuído sem sidecar container e sem hop de rede.
 
 .. toctree::
    :maxdepth: 2
@@ -10,6 +10,7 @@ breaker) sem sidecar container e sem hop de rede.
 
    getting_started
    guia_resiliencia
+   guia_observabilidade
    configuration
    arquitetura
    api/index
