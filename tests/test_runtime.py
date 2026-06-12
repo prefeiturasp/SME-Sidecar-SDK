@@ -20,6 +20,8 @@ def test_configure_returns_state_with_resilience_flags(
         assert state.timeout_enabled is True
         assert state.retry_enabled is True
         assert state.circuit_breaker_enabled is True
+        assert state.logging_enabled is True
+        assert state.tracing_enabled is False
     finally:
         runtime.shutdown()
 
@@ -32,6 +34,8 @@ def test_configure_disabled_marks_subsystems_off() -> None:
         assert state.timeout_enabled is False
         assert state.retry_enabled is False
         assert state.circuit_breaker_enabled is False
+        assert state.logging_enabled is False
+        assert state.tracing_enabled is False
     finally:
         runtime.shutdown()
 
