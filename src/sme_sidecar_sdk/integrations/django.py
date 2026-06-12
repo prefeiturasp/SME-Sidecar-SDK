@@ -80,7 +80,8 @@ class ObservabilityMiddleware(
 
         with request_context(request.headers, self.settings) as current:
             request.request_id = current.request_id
-            with self.tracer.start_as_current_span("django.request") as span:
+            span_name = f"{request.method} {request.path}"
+            with self.tracer.start_as_current_span(span_name) as span:
                 span.set_attribute("http.request.method", request.method)
                 span.set_attribute("url.path", request.path)
                 try:

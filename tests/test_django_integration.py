@@ -78,6 +78,7 @@ def test_middleware_records_http_attributes() -> None:
     span.set_attribute.assert_any_call("http.request.method", "POST")
     span.set_attribute.assert_any_call("url.path", "/turmas/")
     span.set_attribute.assert_any_call("http.response.status_code", 204)
+    tracer.start_as_current_span.assert_called_once_with("POST /turmas/")
     log_info.assert_called_once_with(
         "http_request_completed",
         http_method="POST",
