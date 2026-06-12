@@ -85,12 +85,15 @@ def _build_formatter(
     renderer: Processor,
 ) -> logging.Formatter:
     """Cria um formatter compatível com logging e structlog."""
-    return structlog.stdlib.ProcessorFormatter(
-        foreign_pre_chain=shared_processors,
-        processors=[
-            structlog.stdlib.ProcessorFormatter.remove_processors_meta,
-            renderer,
-        ],
+    return cast(
+        logging.Formatter,
+        structlog.stdlib.ProcessorFormatter(
+            foreign_pre_chain=shared_processors,
+            processors=[
+                structlog.stdlib.ProcessorFormatter.remove_processors_meta,
+                renderer,
+            ],
+        ),
     )
 
 
