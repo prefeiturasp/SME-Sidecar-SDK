@@ -26,6 +26,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 LogFormat = Literal["json", "console"]
 Broker = Literal["rabbitmq"]
+ObservabilityBackend = Literal["elastic"]
 
 
 def _aliases(env_name: str, field_name: str) -> AliasChoices:
@@ -71,8 +72,10 @@ class Settings(BaseSettings):
         log_queue_poll_interval: Intervalo de consulta ao buffer de logs.
         log_queue_shutdown_timeout: Tempo máximo de espera no encerramento.
         correlation_id_header: Header usado para propagar o request ID.
+        observability_backend: Backend de observabilidade homologado.
         otel_enabled: Habilita tracing distribuído.
-        otel_exporter_otlp_endpoint: Endpoint OTLP gRPC do collector ou APM.
+        otel_exporter_otlp_endpoint: Endpoint OTLP gRPC do collector ou
+            backend compatível.
         otel_exporter_otlp_headers: Headers de autenticação do exporter.
         otel_exporter_otlp_insecure: Desabilita TLS no transporte OTLP.
     """
@@ -232,6 +235,13 @@ class Settings(BaseSettings):
         ),
     )
 
+    observability_backend: ObservabilityBackend = Field(
+        default="elastic",
+        validation_alias=_aliases(
+            "SME_OBSERVABILITY_BACKEND",
+            "observability_backend",
+        ),
+    )
     otel_enabled: bool = Field(
         default=False,
         validation_alias=_aliases("SME_OTEL_ENABLED", "otel_enabled"),

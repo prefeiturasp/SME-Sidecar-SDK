@@ -39,7 +39,7 @@ runtime.configure()
 - circuit breaker via `pybreaker`.
 - logs JSON com serviço, ambiente, request ID, trace ID e span ID;
 - propagação automática de `X-Request-ID` nos clientes HTTP do SDK;
-- tracing OpenTelemetry com exportação OTLP para collector ou Elastic APM.
+- tracing OpenTelemetry com exportação OTLP para backend de observabilidade.
 - provider assíncrono opcional de logs para fila.
 
 > A explicação conceitual de cada primitivo, com exemplos executáveis e
@@ -125,7 +125,7 @@ Páginas principais:
 - `guia_resiliencia.md` — explicação dos três primitivos (problema,
   mecanismo, uso, impacto).
 - `guia_observabilidade.md` — integração completa de logs, correlação,
-  tracing e Elastic APM.
+  tracing e backend de observabilidade.
 - `configuration.md` — referência completa das variáveis de ambiente.
 - `arquitetura.md` — princípio de empacotamento adotado
   (feature-based) e critérios para contribuições alinhadas.

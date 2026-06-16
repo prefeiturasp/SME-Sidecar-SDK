@@ -71,7 +71,8 @@ cria os spans HTTP da requisição.
 
 O tracing é opt-in. Quando desabilitado, os logs e a correlação continuam
 funcionando, mas nenhum span é exportado. Consulte {doc}`configuration`
-para conhecer as opções disponíveis.
+para conhecer as opções disponíveis. Atualmente, `elastic` é o único
+backend de observabilidade homologado pela SDK.
 
 ## Logs estruturados
 

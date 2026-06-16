@@ -73,24 +73,32 @@ buffer limitado e retorna imediatamente. A publicação ocorre em uma thread
 daemon. Se o buffer estiver cheio ou o broker indisponível, a API continua
 respondendo e o `stdout` permanece como fallback.
 
-## OpenTelemetry e Elastic APM
+## OpenTelemetry e backend de observabilidade
+
+A SDK exporta traces usando OpenTelemetry e OTLP. Atualmente, `elastic` é
+o único backend de observabilidade homologado. Backends como Jaeger,
+Grafana Tempo, Datadog, New Relic ou outros destinos compatíveis com OTLP
+exigem validação de configuração, documentação própria e, se necessário,
+ajustes de implementação.
 
 | Variável | Padrão | Descrição |
 | --- | --- | --- |
+| `SME_OBSERVABILITY_BACKEND` | `elastic` | Backend de observabilidade suportado pela configuração documentada. Atualmente, apenas `elastic` é aceito. |
 | `SME_OTEL_ENABLED` | `false` | Habilita provider, exporter e instrumentações HTTPX/Django. |
-| `SME_OTEL_EXPORTER_OTLP_ENDPOINT` | `http://localhost:4317` | Endpoint OTLP gRPC do OpenTelemetry Collector ou Elastic APM. |
+| `SME_OTEL_EXPORTER_OTLP_ENDPOINT` | `http://localhost:4317` | Endpoint OTLP gRPC do OpenTelemetry Collector ou backend compatível. |
 | `SME_OTEL_EXPORTER_OTLP_HEADERS` | vazio | Headers de autenticação no formato `chave=valor`, separados por vírgula. Valores percent-encoded são decodificados pela SDK. |
 | `SME_OTEL_EXPORTER_OTLP_INSECURE` | `true` | Quando `true`, usa transporte sem TLS; defina `false` para endpoints HTTPS. |
 
-### OpenTelemetry direto para o Elastic APM
+### Envio direto via OpenTelemetry
 
 O envio direto utiliza OpenTelemetry e OTLP; ele apenas dispensa um Collector
-intermediário:
+intermediário. As variáveis de identidade do serviço, como
+`SME_SERVICE_NAME`, `SME_SERVICE_VERSION` e `SME_ENVIRONMENT`, são globais
+da SDK e ficam descritas em [Master switch e identidade](#master-switch-e-identidade).
+Para este cenário, configure somente o backend homologado e o exporter OTLP:
 
 ```bash
-SME_SERVICE_NAME=pedagogico-ms
-SME_SERVICE_VERSION=1.0.0
-SME_ENVIRONMENT=production
+SME_OBSERVABILITY_BACKEND=elastic
 SME_OTEL_ENABLED=true
 SME_OTEL_EXPORTER_OTLP_ENDPOINT=https://apm.exemplo:8200
 SME_OTEL_EXPORTER_OTLP_HEADERS=Authorization=Bearer%20seu-token
@@ -100,9 +108,11 @@ SME_OTEL_EXPORTER_OTLP_INSECURE=false
 ### Via OpenTelemetry Collector
 
 Use um Collector quando a infraestrutura precisar centralizar autenticação,
-amostragem, processamento ou roteamento:
+amostragem, processamento ou roteamento. O backend continua sendo `elastic`
+quando o Collector encaminha os dados para o Elastic APM:
 
 ```bash
+SME_OBSERVABILITY_BACKEND=elastic
 SME_OTEL_ENABLED=true
 SME_OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
 SME_OTEL_EXPORTER_OTLP_INSECURE=true

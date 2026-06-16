@@ -199,6 +199,8 @@ Quando habilitado, o runtime:
 O protocolo OTLP permite enviar os spans a um OpenTelemetry Collector ou
 diretamente a uma plataforma compatível, como o Elastic APM. Nos dois
 casos, a instrumentação continua sendo exclusivamente OpenTelemetry.
+Atualmente, `elastic` é o único backend de observabilidade homologado na
+configuração da SDK.
 
 O Collector é recomendado quando a infraestrutura precisa centralizar
 autenticação, amostragem, processamento ou roteamento da telemetria.
