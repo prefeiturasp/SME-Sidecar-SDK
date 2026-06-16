@@ -94,7 +94,8 @@ ajustes de implementação.
 O envio direto utiliza OpenTelemetry e OTLP; ele apenas dispensa um Collector
 intermediário. As variáveis de identidade do serviço, como
 `SME_SERVICE_NAME`, `SME_SERVICE_VERSION` e `SME_ENVIRONMENT`, são globais
-da SDK e ficam descritas em [Master switch e identidade](#master-switch-e-identidade).
+da SDK e ficam descritas em
+<a href="#master-switch-e-identidade">Master switch e identidade</a>.
 Para este cenário, configure somente o backend homologado e o exporter OTLP:
 
 ```bash
