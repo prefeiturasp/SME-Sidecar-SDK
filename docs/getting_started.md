@@ -84,18 +84,19 @@ log.info("turmas_consultadas", quantidade=12)
 
 Logs emitidos pelo `logging` padrão também usam o mesmo formato.
 
-## Envio opcional de logs ao RabbitMQ
+## Envio opcional de logs para fila
 
-Com a URL do broker injetada pela infraestrutura, cada aplicação precisa
-informar somente sua fila:
+Com o broker configurado pela infraestrutura, cada aplicação precisa
+informar somente sua fila de logs:
 
 ```bash
-SME_LOG_RABBITMQ_QUEUE=ms.pedagogico.logs
+SME_BROKER=rabbitmq
+SME_LOG_QUEUE=ms.pedagogico.logs
 ```
 
 O runtime detecta a fila, conecta o provider automaticamente e publica os
 logs estruturados em background. Nenhuma configuração de logging Django é
-necessária.
+necessária. Atualmente, RabbitMQ é a única implementação disponível.
 
 ## Contexto de uma requisição recebida
 

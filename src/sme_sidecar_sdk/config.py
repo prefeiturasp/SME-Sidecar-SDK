@@ -25,6 +25,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 LogFormat = Literal["json", "console"]
+Broker = Literal["rabbitmq"]
 
 
 def _aliases(env_name: str, field_name: str) -> AliasChoices:
@@ -62,12 +63,13 @@ class Settings(BaseSettings):
         logging_enabled: Habilita a padronização de logs.
         log_level: Nível mínimo emitido pelos loggers.
         log_format: Formato de saída, JSON ou console.
-        rabbitmq_url: URL de conexão compartilhada com o RabbitMQ.
-        log_rabbitmq_queue: Fila que ativa o provider RabbitMQ de logs.
-        log_rabbitmq_buffer_size: Limite do buffer local não bloqueante.
-        log_rabbitmq_socket_timeout: Timeout de conexão com o RabbitMQ.
-        log_rabbitmq_poll_interval: Intervalo de consulta ao buffer de logs.
-        log_rabbitmq_shutdown_timeout: Tempo máximo de espera no encerramento.
+        broker: Broker usado pelo provider de fila de logs.
+        broker_url: URL de conexão compartilhada com o broker.
+        log_queue: Fila que ativa o provider de fila de logs.
+        log_queue_buffer_size: Limite do buffer local não bloqueante.
+        log_queue_socket_timeout: Timeout de conexão com o broker.
+        log_queue_poll_interval: Intervalo de consulta ao buffer de logs.
+        log_queue_shutdown_timeout: Tempo máximo de espera no encerramento.
         correlation_id_header: Header usado para propagar o request ID.
         otel_enabled: Habilita tracing distribuído.
         otel_exporter_otlp_endpoint: Endpoint OTLP gRPC do collector ou APM.
@@ -176,48 +178,49 @@ class Settings(BaseSettings):
         default="json",
         validation_alias=_aliases("SME_LOG_FORMAT", "log_format"),
     )
-    rabbitmq_url: str = Field(
+    broker: Broker = Field(
+        default="rabbitmq",
+        validation_alias=_aliases("SME_BROKER", "broker"),
+    )
+    broker_url: str = Field(
         default="amqp://guest:guest@localhost:5672/%2F",
         min_length=1,
-        validation_alias=_aliases("SME_RABBITMQ_URL", "rabbitmq_url"),
+        validation_alias=_aliases("SME_BROKER_URL", "broker_url"),
     )
-    log_rabbitmq_queue: str = Field(
+    log_queue: str = Field(
         default="",
-        validation_alias=_aliases(
-            "SME_LOG_RABBITMQ_QUEUE",
-            "log_rabbitmq_queue",
-        ),
+        validation_alias=_aliases("SME_LOG_QUEUE", "log_queue"),
     )
-    log_rabbitmq_buffer_size: int = Field(
+    log_queue_buffer_size: int = Field(
         default=10_000,
         ge=1,
         validation_alias=_aliases(
-            "SME_LOG_RABBITMQ_BUFFER_SIZE",
-            "log_rabbitmq_buffer_size",
+            "SME_LOG_QUEUE_BUFFER_SIZE",
+            "log_queue_buffer_size",
         ),
     )
-    log_rabbitmq_socket_timeout: float = Field(
+    log_queue_socket_timeout: float = Field(
         default=2.0,
         ge=0.1,
         validation_alias=_aliases(
-            "SME_LOG_RABBITMQ_SOCKET_TIMEOUT",
-            "log_rabbitmq_socket_timeout",
+            "SME_LOG_QUEUE_SOCKET_TIMEOUT",
+            "log_queue_socket_timeout",
         ),
     )
-    log_rabbitmq_poll_interval: float = Field(
+    log_queue_poll_interval: float = Field(
         default=0.25,
         ge=0.01,
         validation_alias=_aliases(
-            "SME_LOG_RABBITMQ_POLL_INTERVAL",
-            "log_rabbitmq_poll_interval",
+            "SME_LOG_QUEUE_POLL_INTERVAL",
+            "log_queue_poll_interval",
         ),
     )
-    log_rabbitmq_shutdown_timeout: float = Field(
+    log_queue_shutdown_timeout: float = Field(
         default=2.0,
         ge=0.0,
         validation_alias=_aliases(
-            "SME_LOG_RABBITMQ_SHUTDOWN_TIMEOUT",
-            "log_rabbitmq_shutdown_timeout",
+            "SME_LOG_QUEUE_SHUTDOWN_TIMEOUT",
+            "log_queue_shutdown_timeout",
         ),
     )
     correlation_id_header: str = Field(

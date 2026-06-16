@@ -14,10 +14,10 @@ from sme_sidecar_sdk.observability.logging.providers.rabbitmq import (
 def _settings() -> Settings:
     return Settings(
         SME_LOG_LEVEL="ERROR",
-        SME_LOG_RABBITMQ_QUEUE="logs.pedagogico",
-        SME_LOG_RABBITMQ_BUFFER_SIZE=2,
-        SME_LOG_RABBITMQ_POLL_INTERVAL=0.01,
-        SME_LOG_RABBITMQ_SHUTDOWN_TIMEOUT=0.1,
+        SME_LOG_QUEUE="logs.pedagogico",
+        SME_LOG_QUEUE_BUFFER_SIZE=2,
+        SME_LOG_QUEUE_POLL_INTERVAL=0.01,
+        SME_LOG_QUEUE_SHUTDOWN_TIMEOUT=0.1,
     )
 
 

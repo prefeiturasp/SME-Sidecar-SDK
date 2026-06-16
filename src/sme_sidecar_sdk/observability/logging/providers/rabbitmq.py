@@ -56,7 +56,7 @@ class RabbitMQLogProvider:
         """
         self._settings = settings
         self._messages: queue.Queue[str | object] = queue.Queue(
-            maxsize=settings.log_rabbitmq_buffer_size
+            maxsize=settings.log_queue_buffer_size
         )
         self._handler: _RabbitMQHandler | None = None
         self._thread: threading.Thread | None = None
@@ -92,16 +92,16 @@ class RabbitMQLogProvider:
 
     def _connect(self) -> None:
         """Abre a conexão e declara a fila durável."""
-        parameters = pika.URLParameters(self._settings.rabbitmq_url)
+        parameters = pika.URLParameters(self._settings.broker_url)
         parameters.connection_attempts = 1
-        parameters.socket_timeout = self._settings.log_rabbitmq_socket_timeout
+        parameters.socket_timeout = self._settings.log_queue_socket_timeout
         parameters.blocked_connection_timeout = (
-            self._settings.log_rabbitmq_socket_timeout
+            self._settings.log_queue_socket_timeout
         )
         self._connection = pika.BlockingConnection(parameters)
         self._channel = self._connection.channel()
         self._channel.queue_declare(
-            queue=self._settings.log_rabbitmq_queue,
+            queue=self._settings.log_queue,
             durable=True,
         )
 
@@ -122,7 +122,7 @@ class RabbitMQLogProvider:
         try:
             self._channel.basic_publish(
                 exchange="",
-                routing_key=self._settings.log_rabbitmq_queue,
+                routing_key=self._settings.log_queue,
                 body=body,
                 properties=pika.BasicProperties(
                     delivery_mode=pika.DeliveryMode.Persistent,
@@ -139,7 +139,7 @@ class RabbitMQLogProvider:
         while not self._stopping.is_set():
             try:
                 message = self._messages.get(
-                    timeout=self._settings.log_rabbitmq_poll_interval
+                    timeout=self._settings.log_queue_poll_interval
                 )
             except queue.Empty:
                 continue
@@ -162,7 +162,7 @@ class RabbitMQLogProvider:
             self._messages.put_nowait(_STOP)
         if self._thread is not None:
             self._thread.join(
-                timeout=self._settings.log_rabbitmq_shutdown_timeout
+                timeout=self._settings.log_queue_shutdown_timeout
             )
         try:
             if self._connection is not None and self._connection.is_open:

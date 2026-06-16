@@ -40,7 +40,7 @@ runtime.configure()
 - logs JSON com serviço, ambiente, request ID, trace ID e span ID;
 - propagação automática de `X-Request-ID` nos clientes HTTP do SDK;
 - tracing OpenTelemetry com exportação OTLP para collector ou Elastic APM.
-- provider assíncrono opcional de logs para RabbitMQ.
+- provider assíncrono opcional de logs para fila.
 
 > A explicação conceitual de cada primitivo, com exemplos executáveis e
 > impacto operacional, está na documentação

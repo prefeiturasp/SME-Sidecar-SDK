@@ -17,6 +17,6 @@ def build_log_providers(settings: Settings) -> list[LogProvider]:
         Providers habilitados para transporte de logs.
     """
     providers: list[LogProvider] = []
-    if settings.log_rabbitmq_queue:
+    if settings.log_queue and settings.broker == "rabbitmq":
         providers.append(RabbitMQLogProvider(settings))
     return providers

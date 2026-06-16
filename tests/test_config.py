@@ -18,8 +18,9 @@ def test_defaults_when_no_env_vars() -> None:
     assert settings.logging_enabled is True
     assert settings.log_level == "ERROR"
     assert settings.log_format == "json"
-    assert settings.log_rabbitmq_queue == ""
-    assert settings.log_rabbitmq_buffer_size == 10_000
+    assert settings.broker == "rabbitmq"
+    assert settings.log_queue == ""
+    assert settings.log_queue_buffer_size == 10_000
     assert settings.correlation_id_header == "X-Request-ID"
     assert settings.otel_enabled is False
 
@@ -57,5 +58,11 @@ def test_get_settings_is_cached(monkeypatch: pytest.MonkeyPatch) -> None:
 
 def test_invalid_timeout_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("SME_TIMEOUT_SECONDS", "0")
+    with pytest.raises(ValueError):
+        Settings()
+
+
+def test_invalid_broker_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("SME_BROKER", "redis")
     with pytest.raises(ValueError):
         Settings()
