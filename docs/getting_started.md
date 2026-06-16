@@ -65,8 +65,9 @@ MIDDLEWARE = [
 ```
 
 O middleware reutiliza ou gera o `X-Request-ID`, devolve o identificador
-na resposta, registra método, path, status e duração e cria o span
-`django.request` quando o tracing está habilitado.
+na resposta e registra método, path, status e duração. Quando o tracing
+está habilitado, a instrumentação oficial do OpenTelemetry para Django
+cria os spans HTTP da requisição.
 
 O tracing é opt-in. Quando desabilitado, os logs e a correlação continuam
 funcionando, mas nenhum span é exportado. Consulte {doc}`configuration`
@@ -108,9 +109,10 @@ def processar(headers):
             ...
 ```
 
-O contexto deve ser aberto pelo middleware HTTP da aplicação. Se o header
-`X-Request-ID` não existir, o SDK gera um UUID. Os clientes construídos pelo
-SDK propagam esse identificador e, com tracing habilitado, o contexto W3C.
+Use `request_context()` em workers, scripts ou integrações sem middleware
+HTTP. Se o header `X-Request-ID` não existir, o SDK gera um UUID. Os
+clientes construídos pelo SDK propagam esse identificador e, com tracing
+habilitado, o contexto W3C.
 
 ## Usando os clientes HTTP com timeout padronizado
 

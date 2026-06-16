@@ -144,7 +144,10 @@ MIDDLEWARE = [
 ]
 ```
 
-Registre o middleware antes das camadas que emitem logs.
+Registre o middleware antes das camadas que emitem logs. Ele cuida de
+`X-Request-ID` e do log estruturado da requisição; os spans HTTP do Django
+são criados pela instrumentação oficial do OpenTelemetry quando o tracing
+está habilitado.
 
 ### Propagação nas chamadas HTTP
 
@@ -267,7 +270,7 @@ de integração ou validações operacionais.
 | Propagação de `X-Request-ID` em HTTPX síncrono e assíncrono | Testes unitários com `MockTransport` |
 | Preservação de headers e hooks definidos pelo consumidor | Testes unitários dos clientes HTTP |
 | Injeção e extração de `traceparent` | Testes unitários de propagação OpenTelemetry |
-| Configuração do exporter OTLP e instrumentação HTTPX | Testes unitários com exporter e instrumentador simulados |
+| Configuração do exporter OTLP e instrumentações HTTPX/Django | Testes unitários com exporter e instrumentadores simulados |
 | Valores padrão e leitura da configuração | Testes unitários de `Settings` |
 
 Esses testes fazem parte da suíte da SDK e devem ser executados no CI antes da
@@ -302,4 +305,5 @@ contínuo do ambiente.
 - [OpenTelemetry com Elastic APM](https://www.elastic.co/docs/solutions/observability/apm/opentelemetry)
 - [Propagação OpenTelemetry](https://opentelemetry.io/docs/languages/python/propagation/)
 - [Instrumentação HTTPX](https://opentelemetry-python-contrib.readthedocs.io/en/latest/instrumentation/httpx/httpx.html)
+- [Instrumentação Django](https://opentelemetry-python-contrib.readthedocs.io/en/latest/instrumentation/django/django.html)
 - [Exporter OTLP para Python](https://opentelemetry-python.readthedocs.io/en/latest/exporter/otlp/otlp.html)

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from collections.abc import Iterator, Mapping, MutableMapping
 from contextlib import contextmanager
+from importlib import import_module
+from typing import Any
 from urllib.parse import unquote
 
 from opentelemetry import context, propagate, trace
@@ -19,6 +21,7 @@ from ..config import Settings, get_settings
 
 _PROVIDER: TracerProvider | None = None
 _HTTPX_INSTRUMENTED = False
+_DJANGO_INSTRUMENTED = False
 
 
 def _parse_headers(value: str) -> tuple[tuple[str, str], ...]:
@@ -50,7 +53,7 @@ def _parse_headers(value: str) -> tuple[tuple[str, str], ...]:
 def configure_tracing(
     settings: Settings | None = None,
 ) -> TracerProvider | None:
-    """Configura provider OTLP e instrumentação automática do HTTPX.
+    """Configura provider OTLP e instrumentações automáticas suportadas.
 
     Args:
         settings: Configuração opcional. Quando omitida, utiliza a instância
@@ -89,8 +92,30 @@ def configure_tracing(
     if not _HTTPX_INSTRUMENTED:
         HTTPXClientInstrumentor().instrument(tracer_provider=provider)
         _HTTPX_INSTRUMENTED = True
+    _instrument_django(provider)
     _PROVIDER = provider
     return provider
+
+
+def _instrument_django(provider: TracerProvider) -> None:
+    """Instrumenta Django quando a dependência estiver disponível.
+
+    Args:
+        provider: Provider OpenTelemetry configurado para o processo.
+    """
+    global _DJANGO_INSTRUMENTED
+    if _DJANGO_INSTRUMENTED:
+        return
+    try:
+        django_module: Any = import_module(
+            "opentelemetry.instrumentation.django"
+        )
+    except ModuleNotFoundError as exc:
+        if exc.name in {"django", "opentelemetry.instrumentation.django"}:
+            return
+        raise
+    django_module.DjangoInstrumentor().instrument(tracer_provider=provider)
+    _DJANGO_INSTRUMENTED = True
 
 
 def get_tracer(name: str) -> trace.Tracer:

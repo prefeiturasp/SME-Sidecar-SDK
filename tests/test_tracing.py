@@ -50,6 +50,7 @@ def test_configure_tracing_builds_exporter_and_instruments_httpx(
 ) -> None:
     exporter_arguments: dict[str, object] = {}
     instrument_arguments: dict[str, object] = {}
+    django_instrument_arguments: dict[str, object] = {}
 
     def build_exporter(**kwargs: object) -> InMemorySpanExporter:
         exporter_arguments.update(kwargs)
@@ -64,6 +65,22 @@ def test_configure_tracing_builds_exporter_and_instruments_httpx(
         "instrument",
         instrument,
     )
+    monkeypatch.setattr(tracing, "_PROVIDER", None)
+    monkeypatch.setattr(tracing, "_HTTPX_INSTRUMENTED", False)
+    monkeypatch.setattr(tracing, "_DJANGO_INSTRUMENTED", False)
+
+    class FakeDjangoInstrumentor:
+        def instrument(self, **kwargs: object) -> None:
+            django_instrument_arguments.update(kwargs)
+
+    class FakeDjangoModule:
+        DjangoInstrumentor = FakeDjangoInstrumentor
+
+    def import_module(name: str) -> object:
+        assert name == "opentelemetry.instrumentation.django"
+        return FakeDjangoModule
+
+    monkeypatch.setattr(tracing, "import_module", import_module)
 
     provider = tracing.configure_tracing(
         Settings(
@@ -83,3 +100,32 @@ def test_configure_tracing_builds_exporter_and_instruments_httpx(
         "insecure": False,
     }
     assert instrument_arguments["tracer_provider"] is provider
+    assert django_instrument_arguments["tracer_provider"] is provider
+
+
+def test_configure_tracing_skips_django_when_dependency_is_absent(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(tracing, "_PROVIDER", None)
+    monkeypatch.setattr(tracing, "_HTTPX_INSTRUMENTED", False)
+    monkeypatch.setattr(tracing, "_DJANGO_INSTRUMENTED", False)
+    monkeypatch.setattr(
+        tracing,
+        "OTLPSpanExporter",
+        lambda **_: InMemorySpanExporter(),
+    )
+    monkeypatch.setattr(
+        HTTPXClientInstrumentor,
+        "instrument",
+        lambda _self, **__: None,
+    )
+
+    def import_module(_: str) -> object:
+        raise ModuleNotFoundError(name="django")
+
+    monkeypatch.setattr(tracing, "import_module", import_module)
+
+    provider = tracing.configure_tracing(Settings(SME_OTEL_ENABLED=True))
+
+    assert isinstance(provider, TracerProvider)
+    assert tracing._DJANGO_INSTRUMENTED is False

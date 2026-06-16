@@ -71,7 +71,7 @@ respondendo e o `stdout` permanece como fallback.
 
 | Variável | Padrão | Descrição |
 | --- | --- | --- |
-| `SME_OTEL_ENABLED` | `false` | Habilita provider, exporter e instrumentação HTTPX. |
+| `SME_OTEL_ENABLED` | `false` | Habilita provider, exporter e instrumentações HTTPX/Django. |
 | `SME_OTEL_EXPORTER_OTLP_ENDPOINT` | `http://localhost:4317` | Endpoint OTLP gRPC do OpenTelemetry Collector ou Elastic APM. |
 | `SME_OTEL_EXPORTER_OTLP_HEADERS` | vazio | Headers de autenticação no formato `chave=valor`, separados por vírgula. Valores percent-encoded são decodificados pela SDK. |
 | `SME_OTEL_EXPORTER_OTLP_INSECURE` | `true` | Quando `true`, usa transporte sem TLS; defina `false` para endpoints HTTPS. |

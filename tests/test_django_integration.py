@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
-from opentelemetry.trace import StatusCode
 
 from sme_sidecar_sdk.integrations.django import ObservabilityMiddleware
 from sme_sidecar_sdk.observability.context import get_correlation_id
@@ -53,17 +52,8 @@ def test_middleware_generates_request_id() -> None:
     assert response.headers["X-Request-ID"]
 
 
-def test_middleware_records_http_attributes() -> None:
-    span = MagicMock()
-    span.__enter__.return_value = span
-    tracer = MagicMock()
-    tracer.start_as_current_span.return_value = span
-
+def test_middleware_logs_completed_request() -> None:
     with (
-        patch(
-            "sme_sidecar_sdk.integrations.django.get_tracer",
-            return_value=tracer,
-        ),
         patch("sme_sidecar_sdk.integrations.django.log.info") as log_info,
         patch(
             "sme_sidecar_sdk.integrations.django.time.monotonic",
@@ -75,10 +65,6 @@ def test_middleware_records_http_attributes() -> None:
         )
         middleware(FakeRequest(headers={}, method="POST", path="/turmas/"))
 
-    span.set_attribute.assert_any_call("http.request.method", "POST")
-    span.set_attribute.assert_any_call("url.path", "/turmas/")
-    span.set_attribute.assert_any_call("http.response.status_code", 204)
-    tracer.start_as_current_span.assert_called_once_with("POST /turmas/")
     log_info.assert_called_once_with(
         "http_request_completed",
         http_method="POST",
@@ -104,43 +90,12 @@ def test_middleware_logs_500_and_restores_context_on_exception() -> None:
     assert log_error.call_args.kwargs["http_status_code"] == 500
 
 
-def test_middleware_marks_500_response_as_error() -> None:
-    span = MagicMock()
-    span.__enter__.return_value = span
-    tracer = MagicMock()
-    tracer.start_as_current_span.return_value = span
-
-    with patch(
-        "sme_sidecar_sdk.integrations.django.get_tracer",
-        return_value=tracer,
-    ):
+def test_middleware_logs_500_response_as_error() -> None:
+    with patch("sme_sidecar_sdk.integrations.django.log.error") as log_error:
         middleware: ObservabilityMiddleware[FakeRequest, FakeResponse] = (
             ObservabilityMiddleware(lambda _: FakeResponse(status_code=503))
         )
-        middleware(FakeRequest(headers={}))
+        response = middleware(FakeRequest(headers={}))
 
-    span.set_attribute.assert_any_call("http.response.status_code", 503)
-    span.set_attribute.assert_any_call("error.type", "503")
-    assert span.set_status.call_args.args[0].status_code is StatusCode.ERROR
-
-
-def test_process_exception_records_error_on_current_span() -> None:
-    span = MagicMock()
-    request = FakeRequest(headers={}, method="POST", path="/turmas/")
-    exception = RuntimeError("falha")
-    middleware: ObservabilityMiddleware[FakeRequest, FakeResponse] = (
-        ObservabilityMiddleware(lambda _: FakeResponse())
-    )
-
-    with patch(
-        "sme_sidecar_sdk.integrations.django.trace.get_current_span",
-        return_value=span,
-    ):
-        middleware.process_exception(request, exception)
-
-    span.record_exception.assert_called_once_with(exception)
-    span.set_attribute.assert_called_once_with(
-        "error.type",
-        "builtins.RuntimeError",
-    )
-    assert span.set_status.call_args.args[0].status_code is StatusCode.ERROR
+    assert response.status_code == 503
+    assert log_error.call_args.kwargs["http_status_code"] == 503
