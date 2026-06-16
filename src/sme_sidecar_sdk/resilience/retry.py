@@ -77,6 +77,14 @@ def retry_policy(
     if not settings.retry_enabled or settings.retry_attempts <= 1:
 
         def passthrough(func: F) -> F:
+            """Retorna o callable sem aplicar tentativas adicionais.
+
+            Args:
+                func: Callable que seria decorado.
+
+            Returns:
+                O mesmo callable recebido.
+            """
             return func
 
         return passthrough

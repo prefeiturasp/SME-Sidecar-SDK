@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+from unittest.mock import patch
+
 import httpx
 import pytest
 
 from sme_sidecar_sdk.config import Settings
+from sme_sidecar_sdk.observability.context import correlation_context
 from sme_sidecar_sdk.resilience.timeout import (
     build_async_client,
     build_sync_client,
@@ -38,6 +41,57 @@ def test_sync_client_applies_timeout() -> None:
         assert response.status_code == 200
 
 
+def test_sync_client_propagates_request_id_and_preserves_hooks() -> None:
+    seen: dict[str, str] = {}
+
+    def custom_hook(request: httpx.Request) -> None:
+        seen["custom"] = request.url.path
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen["request_id"] = request.headers["X-Request-ID"]
+        return httpx.Response(200)
+
+    with (
+        correlation_context(correlation_id="request-123"),
+        build_sync_client(
+            transport=httpx.MockTransport(handler),
+            event_hooks={"request": [custom_hook]},
+        ) as client,
+    ):
+        client.get("http://example.test/recurso")
+
+    assert seen == {
+        "custom": "/recurso",
+        "request_id": "request-123",
+    }
+
+
+def test_sync_client_injects_trace_context() -> None:
+    seen: dict[str, str] = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen["traceparent"] = request.headers["traceparent"]
+        return httpx.Response(200)
+
+    with (
+        patch(
+            "sme_sidecar_sdk.resilience.timeout.inject_trace_context",
+            side_effect=lambda headers: headers.__setitem__(
+                "traceparent",
+                "00-" + ("1" * 32) + "-" + ("2" * 16) + "-01",
+            ),
+        ),
+        build_sync_client(
+            transport=httpx.MockTransport(handler),
+        ) as client,
+    ):
+        client.get("http://example.test/recurso")
+
+    assert seen["traceparent"] == (
+        "00-" + ("1" * 32) + "-" + ("2" * 16) + "-01"
+    )
+
+
 def test_reserved_kwargs_rejected() -> None:
     with pytest.raises(ValueError):
         build_sync_client(timeout=1)
@@ -57,3 +111,20 @@ async def test_async_client_applies_timeout() -> None:
         response = await client.get("http://example.test/")
         assert client.timeout.read == pytest.approx(4.0)
         assert response.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_async_client_propagates_request_id() -> None:
+    seen: dict[str, str] = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen["request_id"] = request.headers["X-Request-ID"]
+        return httpx.Response(200)
+
+    with correlation_context(correlation_id="async-123"):
+        async with build_async_client(
+            transport=httpx.MockTransport(handler),
+        ) as client:
+            await client.get("http://example.test/")
+
+    assert seen["request_id"] == "async-123"

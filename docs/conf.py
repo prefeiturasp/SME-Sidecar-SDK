@@ -37,6 +37,7 @@ napoleon_numpy_docstring = False
 napoleon_include_init_with_doc = True
 napoleon_include_private_with_doc = False
 napoleon_include_special_with_doc = True
+napoleon_use_ivar = True
 
 # autodoc
 autodoc_default_options = {
@@ -47,9 +48,11 @@ autodoc_default_options = {
 }
 autodoc_typehints = "description"
 autodoc_typehints_format = "short"
+suppress_warnings = ["sphinx_autodoc_typehints.forward_reference"]
 
 # HTML
 html_theme = "sphinx_rtd_theme"
+html_baseurl = "https://prefeiturasp.github.io/SME-Sidecar-SDK/"
 
 # Intersphinx
 intersphinx_mapping = {

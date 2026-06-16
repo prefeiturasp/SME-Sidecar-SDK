@@ -65,10 +65,10 @@ Três valores diferentes coexistem no mesmo serviço, sendo um deles
 ausente. Em produção, isso dificulta a previsibilidade do comportamento
 e a investigação de incidentes.
 
-A SDK resolve essa inconsistência por **convenção do serviço**: o valor
-de `SME_TIMEOUT_SECONDS` é definido no ambiente, e toda chamada HTTP
-criada via `build_sync_client()` ou `build_async_client()` herda o
-timeout configurado, sem necessidade de repeti-lo a cada chamada.
+A SDK resolve essa inconsistência por **convenção do serviço**: toda chamada
+HTTP criada via `build_sync_client()` ou `build_async_client()` herda o
+timeout configurado, sem necessidade de repeti-lo a cada chamada. Consulte
+{doc}`configuration` para opções e valores padrão.
 
 ### Uso
 
@@ -76,7 +76,7 @@ timeout configurado, sem necessidade de repeti-lo a cada chamada.
 from sme_sidecar_sdk.config import Settings
 from sme_sidecar_sdk.resilience.timeout import build_sync_client
 
-settings = Settings(SME_TIMEOUT_SECONDS=2.0)
+settings = Settings(timeout_seconds=2.0)
 
 with build_sync_client(settings) as client:
     response = client.get("http://upstream.local/recurso")
@@ -103,7 +103,7 @@ except httpx.TimeoutException:
     print(f"Timeout em {elapsed:.2f}s")
 ```
 
-Configurando `SME_TIMEOUT_SECONDS=2` contra um upstream que responderia
+Configurando o timeout em 2 segundos contra um upstream que responderia
 em 15 segundos, o valor de `elapsed` ficará próximo de 2 — evidência de
 que o cliente interrompeu a chamada no limite definido.
 
@@ -145,10 +145,9 @@ Backoff exponencial introduz uma pausa crescente entre tentativas
 - Múltiplos clientes deixam de retentar em sincronia, evitando picos
   artificiais.
 
-A SDK utiliza Tenacity como mecanismo subjacente, configurado pelas
-variáveis `SME_RETRY_ATTEMPTS`, `SME_RETRY_BACKOFF_MIN` e
-`SME_RETRY_BACKOFF_MAX`. Como no timeout, a configuração é por serviço,
-não por chamada.
+A SDK utiliza Tenacity como mecanismo subjacente. Como no timeout, a
+configuração é definida por serviço, não por chamada. Consulte
+{doc}`configuration` para opções e valores padrão.
 
 ### Uso
 
@@ -158,7 +157,7 @@ from sme_sidecar_sdk.config import Settings
 from sme_sidecar_sdk.resilience.retry import retry_policy
 from sme_sidecar_sdk.resilience.timeout import build_sync_client
 
-settings = Settings(SME_RETRY_ATTEMPTS=3)
+settings = Settings(retry_attempts=3)
 
 
 @retry_policy(settings=settings, exceptions=(UpstreamHTTPError,))
@@ -233,10 +232,9 @@ São três estados:
   uma única chamada de teste. Se a chamada for bem-sucedida, o breaker
   retorna ao estado fechado; caso contrário, retorna ao estado aberto.
 
-A SDK utiliza PyBreaker como mecanismo subjacente, configurado pelas
-variáveis `SME_CIRCUIT_BREAKER_FAIL_MAX` (número de falhas até abrir) e
-`SME_CIRCUIT_BREAKER_RESET_TIMEOUT` (tempo em segundos no estado
-aberto).
+A SDK utiliza PyBreaker como mecanismo subjacente. O limiar de falhas e o
+tempo de recuperação são definidos por serviço, conforme
+{doc}`configuration`.
 
 ### Uso
 
@@ -246,7 +244,7 @@ from sme_sidecar_sdk.config import Settings
 from sme_sidecar_sdk.resilience.circuit_breaker import get_circuit_breaker
 from sme_sidecar_sdk.resilience.timeout import build_sync_client
 
-settings = Settings(SME_CIRCUIT_BREAKER_FAIL_MAX=3)
+settings = Settings(circuit_breaker_fail_max=3)
 breaker = get_circuit_breaker("turmas-upstream", settings)
 
 

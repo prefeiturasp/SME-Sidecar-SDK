@@ -3,7 +3,7 @@
 ## Instalação
 
 ```bash
-pip install git+https://github.com/prefeitura-sp/sme-sidecar-sdk.git
+pip install git+https://github.com/prefeiturasp/SME-Sidecar-SDK.git
 ```
 
 ## Configuração mínima
@@ -15,8 +15,106 @@ state = runtime.configure()
 print(state.settings.service_name)
 ```
 
-O `configure()` lê variáveis `SME_*` do ambiente (ou de um `.env`) e
-deixa o `state` disponível para inspeção.
+O `configure()` lê a configuração do ambiente, configura os logs e,
+quando habilitado, inicializa o tracing. Consulte {doc}`configuration`
+para opções e valores padrão.
+
+(integracao-django)=
+## Integração com Django
+
+Inicialize a SDK uma vez no boot de cada processo por meio do `ready()` do
+`AppConfig`, preferencialmente no app `core`:
+
+```python
+from django.apps import AppConfig
+
+
+class CoreConfig(AppConfig):
+    """Configuração do app core."""
+
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "apps.core"
+
+    def ready(self) -> None:
+        """Inicializa os recursos compartilhados da SDK."""
+        from sme_sidecar_sdk import runtime
+
+        runtime.configure()
+```
+
+O import dentro de `ready()` evita problemas de inicialização circular. Em
+servidores com múltiplos workers, o Django executa o método uma vez em cada
+processo, que é o comportamento esperado para logging e tracing.
+
+Confirme que o app está registrado em `INSTALLED_APPS`:
+
+```python
+INSTALLED_APPS = [
+    "apps.core.apps.CoreConfig",
+]
+```
+
+Registre o middleware fornecido pela SDK antes das camadas que emitem
+logs:
+
+```python
+MIDDLEWARE = [
+    "sme_sidecar_sdk.integrations.django.ObservabilityMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+]
+```
+
+O middleware reutiliza ou gera o `X-Request-ID`, devolve o identificador
+na resposta e registra método, path, status e duração. Quando o tracing
+está habilitado, a instrumentação oficial do OpenTelemetry para Django
+cria os spans HTTP da requisição.
+
+O tracing é opt-in. Quando desabilitado, os logs e a correlação continuam
+funcionando, mas nenhum span é exportado. Consulte {doc}`configuration`
+para conhecer as opções disponíveis. Atualmente, `elastic` é o único
+backend de observabilidade homologado pela SDK.
+
+## Logs estruturados
+
+```python
+from sme_sidecar_sdk import get_logger
+
+log = get_logger(__name__)
+log.info("turmas_consultadas", quantidade=12)
+```
+
+Logs emitidos pelo `logging` padrão também usam o mesmo formato.
+
+## Envio opcional de logs para fila
+
+Com o broker configurado pela infraestrutura, cada aplicação precisa
+informar somente sua fila de logs:
+
+```bash
+SME_BROKER=rabbitmq
+SME_LOG_QUEUE=ms.pedagogico.logs
+```
+
+O runtime detecta a fila, conecta o provider automaticamente e publica os
+logs estruturados em background. Nenhuma configuração de logging Django é
+necessária. Atualmente, RabbitMQ é a única implementação disponível.
+
+## Contexto de uma requisição recebida
+
+```python
+from sme_sidecar_sdk.observability import get_tracer, request_context
+
+def processar(headers):
+    with request_context(headers):
+        tracer = get_tracer(__name__)
+        with tracer.start_as_current_span("processar_requisicao"):
+            ...
+```
+
+Use `request_context()` em workers, scripts ou integrações sem middleware
+HTTP. Se o header `X-Request-ID` não existir, o SDK gera um UUID. Os
+clientes construídos pelo SDK propagam esse identificador e, com tracing
+habilitado, o contexto W3C.
 
 ## Usando os clientes HTTP com timeout padronizado
 

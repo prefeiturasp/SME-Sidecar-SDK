@@ -17,11 +17,17 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .config import Settings, get_settings, reset_settings_cache
+from .observability.logging import (
+    configure_logging,
+    get_logger,
+    shutdown_logging,
+)
+from .observability.tracing import configure_tracing, shutdown_tracing
 
 
 @dataclass(frozen=True)
 class RuntimeState:
-    """Snapshot dos primitivos de resiliência ativos no processo.
+    """Snapshot dos recursos de resiliência e observabilidade ativos.
 
     Attributes:
         settings: Configuração efetiva utilizada durante o ``configure``.
@@ -30,12 +36,16 @@ class RuntimeState:
         retry_enabled: ``True`` quando o decorador de retry está habilitado.
         circuit_breaker_enabled: ``True`` quando o circuit breaker está
             habilitado.
+        logging_enabled: ``True`` quando os logs estruturados estão ativos.
+        tracing_enabled: ``True`` quando o provider OpenTelemetry está ativo.
     """
 
     settings: Settings
     timeout_enabled: bool
     retry_enabled: bool
     circuit_breaker_enabled: bool
+    logging_enabled: bool
+    tracing_enabled: bool
 
 
 _STATE: RuntimeState | None = None
@@ -53,26 +63,39 @@ def configure(settings: Settings | None = None) -> RuntimeState:
             instância cacheada por :func:`sme_sidecar_sdk.config.get_settings`.
 
     Returns:
-        RuntimeState: Snapshot dos primitivos de resiliência ativos.
+        RuntimeState: Snapshot dos recursos de resiliência e
+        observabilidade ativos.
     """
     global _STATE
     settings = settings or get_settings()
 
     if not settings.enabled:
+        shutdown_logging()
         _STATE = RuntimeState(
             settings=settings,
             timeout_enabled=False,
             retry_enabled=False,
             circuit_breaker_enabled=False,
+            logging_enabled=False,
+            tracing_enabled=False,
         )
         return _STATE
 
+    configure_logging(settings)
+    tracer_provider = configure_tracing(settings)
     _STATE = RuntimeState(
         settings=settings,
         timeout_enabled=settings.timeout_enabled,
         retry_enabled=settings.retry_enabled,
         circuit_breaker_enabled=settings.circuit_breaker_enabled,
+        logging_enabled=settings.logging_enabled,
+        tracing_enabled=tracer_provider is not None,
     )
+    if settings.logging_enabled:
+        get_logger(__name__).info(
+            "sdk_configured",
+            tracing_enabled=_STATE.tracing_enabled,
+        )
     return _STATE
 
 
@@ -88,5 +111,7 @@ def shutdown() -> None:
     configurações, devolvendo o processo ao estado anterior ao boot.
     """
     global _STATE
+    shutdown_logging()
+    shutdown_tracing()
     _STATE = None
     reset_settings_cache()

@@ -4,8 +4,9 @@ Este módulo expõe :class:`Settings`, um modelo ``pydantic-settings`` que
 carrega a configuração do SDK a partir de variáveis de ambiente
 prefixadas com ``SME_``.
 
-Cobre o ajuste fino dos primitivos de resiliência: timeout, retry e
-circuit breaker.
+Cobre os recursos de resiliência e observabilidade, incluindo timeout,
+retry, circuit breaker, logging estruturado, correlação e tracing
+distribuído.
 
 Example:
     >>> from sme_sidecar_sdk.config import Settings
@@ -17,9 +18,15 @@ Example:
 from __future__ import annotations
 
 from functools import lru_cache
+from typing import Literal
 
 from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+LogFormat = Literal["json", "console"]
+Broker = Literal["rabbitmq"]
+ObservabilityBackend = Literal["elastic"]
 
 
 def _aliases(env_name: str, field_name: str) -> AliasChoices:
@@ -33,6 +40,7 @@ class Settings(BaseSettings):
     Attributes:
         enabled: Chave geral que liga/desliga o runtime do SDK.
         service_name: Nome lógico do serviço consumidor.
+        service_version: Versão do serviço consumidor.
         environment: Ambiente de deploy (``dev``, ``qa``, ``prod``).
         timeout_enabled: Habilita o wrapper de timeout padronizado
             para HTTP.
@@ -53,6 +61,23 @@ class Settings(BaseSettings):
         circuit_breaker_reset_timeout: Tempo (em segundos) que o
             circuito permanece aberto antes de transitar para o estado
             meio-aberto.
+        logging_enabled: Habilita a padronização de logs.
+        log_level: Nível mínimo emitido pelos loggers.
+        log_format: Formato de saída, JSON ou console.
+        broker: Broker usado pelo provider de fila de logs.
+        broker_url: URL de conexão compartilhada com o broker.
+        log_queue: Fila que ativa o provider de fila de logs.
+        log_queue_buffer_size: Limite do buffer local não bloqueante.
+        log_queue_socket_timeout: Timeout de conexão com o broker.
+        log_queue_poll_interval: Intervalo de consulta ao buffer de logs.
+        log_queue_shutdown_timeout: Tempo máximo de espera no encerramento.
+        correlation_id_header: Header usado para propagar o request ID.
+        observability_backend: Backend de observabilidade homologado.
+        otel_enabled: Habilita tracing distribuído.
+        otel_exporter_otlp_endpoint: Endpoint OTLP gRPC do collector ou
+            backend compatível.
+        otel_exporter_otlp_headers: Headers de autenticação do exporter.
+        otel_exporter_otlp_insecure: Desabilita TLS no transporte OTLP.
     """
 
     model_config = SettingsConfigDict(
@@ -74,6 +99,13 @@ class Settings(BaseSettings):
     environment: str = Field(
         default="dev",
         validation_alias=_aliases("SME_ENVIRONMENT", "environment"),
+    )
+    service_version: str = Field(
+        default="unknown",
+        validation_alias=_aliases(
+            "SME_SERVICE_VERSION",
+            "service_version",
+        ),
     )
 
     timeout_enabled: bool = Field(
@@ -131,6 +163,109 @@ class Settings(BaseSettings):
         validation_alias=_aliases(
             "SME_CIRCUIT_BREAKER_RESET_TIMEOUT",
             "circuit_breaker_reset_timeout",
+        ),
+    )
+
+    logging_enabled: bool = Field(
+        default=True,
+        validation_alias=_aliases(
+            "SME_LOGGING_ENABLED",
+            "logging_enabled",
+        ),
+    )
+    log_level: LogLevel = Field(
+        default="ERROR",
+        validation_alias=_aliases("SME_LOG_LEVEL", "log_level"),
+    )
+    log_format: LogFormat = Field(
+        default="json",
+        validation_alias=_aliases("SME_LOG_FORMAT", "log_format"),
+    )
+    broker: Broker = Field(
+        default="rabbitmq",
+        validation_alias=_aliases("SME_BROKER", "broker"),
+    )
+    broker_url: str = Field(
+        default="amqp://guest:guest@localhost:5672/%2F",
+        min_length=1,
+        validation_alias=_aliases("SME_BROKER_URL", "broker_url"),
+    )
+    log_queue: str = Field(
+        default="",
+        validation_alias=_aliases("SME_LOG_QUEUE", "log_queue"),
+    )
+    log_queue_buffer_size: int = Field(
+        default=10_000,
+        ge=1,
+        validation_alias=_aliases(
+            "SME_LOG_QUEUE_BUFFER_SIZE",
+            "log_queue_buffer_size",
+        ),
+    )
+    log_queue_socket_timeout: float = Field(
+        default=2.0,
+        ge=0.1,
+        validation_alias=_aliases(
+            "SME_LOG_QUEUE_SOCKET_TIMEOUT",
+            "log_queue_socket_timeout",
+        ),
+    )
+    log_queue_poll_interval: float = Field(
+        default=0.25,
+        ge=0.01,
+        validation_alias=_aliases(
+            "SME_LOG_QUEUE_POLL_INTERVAL",
+            "log_queue_poll_interval",
+        ),
+    )
+    log_queue_shutdown_timeout: float = Field(
+        default=2.0,
+        ge=0.0,
+        validation_alias=_aliases(
+            "SME_LOG_QUEUE_SHUTDOWN_TIMEOUT",
+            "log_queue_shutdown_timeout",
+        ),
+    )
+    correlation_id_header: str = Field(
+        default="X-Request-ID",
+        min_length=1,
+        validation_alias=_aliases(
+            "SME_CORRELATION_ID_HEADER",
+            "correlation_id_header",
+        ),
+    )
+
+    observability_backend: ObservabilityBackend = Field(
+        default="elastic",
+        validation_alias=_aliases(
+            "SME_OBSERVABILITY_BACKEND",
+            "observability_backend",
+        ),
+    )
+    otel_enabled: bool = Field(
+        default=False,
+        validation_alias=_aliases("SME_OTEL_ENABLED", "otel_enabled"),
+    )
+    otel_exporter_otlp_endpoint: str = Field(
+        default="http://localhost:4317",
+        min_length=1,
+        validation_alias=_aliases(
+            "SME_OTEL_EXPORTER_OTLP_ENDPOINT",
+            "otel_exporter_otlp_endpoint",
+        ),
+    )
+    otel_exporter_otlp_headers: str = Field(
+        default="",
+        validation_alias=_aliases(
+            "SME_OTEL_EXPORTER_OTLP_HEADERS",
+            "otel_exporter_otlp_headers",
+        ),
+    )
+    otel_exporter_otlp_insecure: bool = Field(
+        default=True,
+        validation_alias=_aliases(
+            "SME_OTEL_EXPORTER_OTLP_INSECURE",
+            "otel_exporter_otlp_insecure",
         ),
     )
 

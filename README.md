@@ -1,15 +1,27 @@
 # SME Sidecar SDK
 
-> Runtime SDK **in-process** que entrega resiliência (timeout, retry e
-> circuit breaker) sem sidecar container e sem hop de rede.
+> Runtime SDK **in-process** que entrega resiliência, logs estruturados
+> e tracing distribuído sem sidecar container e sem hop de rede.
 
 [![python](https://img.shields.io/badge/python-3.12-blue.svg)]()
 [![license](https://img.shields.io/badge/license-AGPL--3.0-green.svg)]()
 
+## Objetivo e escopo
+
+A SME Sidecar SDK padroniza recursos transversais em aplicações Python,
+com foco em serviços Django que realizam chamadas HTTP para outros
+microsserviços. A SDK centraliza resiliência, correlação, logs
+estruturados e tracing distribuído sem exigir um container sidecar.
+
+Use a SDK para integrar aplicações aos padrões de observabilidade e
+resiliência da SME. Regras de negócio, autenticação e contratos
+específicos de cada serviço permanecem sob responsabilidade da
+aplicação.
+
 ## Instalação
 
 ```bash
-pip install git+https://github.com/prefeitura-sp/sme-sidecar-sdk.git
+pip install git+https://github.com/prefeiturasp/SME-Sidecar-SDK.git
 ```
 
 A aplicação consome a SDK assim:
@@ -20,31 +32,24 @@ from sme_sidecar_sdk import runtime
 runtime.configure()
 ```
 
-A partir daí ficam ativos:
+## Features
 
 - timeout padronizado em `httpx` (sync e async);
 - retry com backoff exponencial via `tenacity`;
 - circuit breaker via `pybreaker`.
+- logs JSON com serviço, ambiente, request ID, trace ID e span ID;
+- propagação automática de `X-Request-ID` nos clientes HTTP do SDK;
+- tracing OpenTelemetry com exportação OTLP para backend de observabilidade.
+- provider assíncrono opcional de logs para fila.
 
-> A explicação conceitual de cada primitivo, com exemplos rodáveis e
-> impacto operacional, está no **Guia de resiliência** da documentação
-> viva: `docs/guia_resiliencia.md` (rodar `make livehtml` em `docs/` ou
+> A explicação conceitual de cada primitivo, com exemplos executáveis e
+> impacto operacional, está na documentação
+> viva: `docs` (rodar `make livehtml` em `docs/` ou
 > acessar a versão publicada).
 
-## Estrutura
-
-```
-src/sme_sidecar_sdk/
-  __init__.py
-  runtime.py
-  config.py
-  resilience/
-    timeout.py
-    retry.py
-    circuit_breaker.py
-```
-
 ## Integração com Django
+
+> Consulte a documentação para integração correta.
 
 Em projetos Django, o ponto correto para inicializar o runtime é o
 método `ready()` do `AppConfig` de um dos apps carregados em
@@ -71,55 +76,15 @@ class CoreConfig(AppConfig):
         runtime.configure()
 ```
 
-Pontos importantes:
+Registre o middleware da SDK antes dos demais middlewares do projeto:
 
-- O import dentro de `ready()` (não no topo do módulo) evita problemas
-  de inicialização circular e mantém o `apps.py` carregável mesmo em
-  cenários onde a SDK ainda não esteja instalada.
-- O método `ready()` é executado pelo Django uma vez por processo. Em
-  servidores multi-worker (gunicorn, uvicorn), `configure()` será
-  chamado em cada worker — comportamento esperado, dado que cada worker
-  é um processo independente.
-- Não é necessário envolver os middlewares nem registrar handlers
-  globais: a SDK fornece **primitivos** (`build_sync_client`,
-  `retry_policy`, `get_circuit_breaker`) que são invocados explicitamente
-  no código que faz chamadas externas.
-
-Após a integração, as chamadas a serviços externos passam a usar os
-primitivos da SDK em vez de instâncias cruas de `httpx`/`requests`. A
-seção **Uso** de cada cenário no Guia de resiliência traz exemplos
-prontos.
-
-### Integração com outros frameworks
-
-O padrão é equivalente em outros frameworks: chame `runtime.configure()`
-**uma única vez** no boot da aplicação.
-
-- **FastAPI / Starlette**: dentro do `lifespan` ou em um evento de
-  `startup`.
-- **Flask**: no factory da aplicação, após a criação da instância `Flask`.
-- **Scripts e workers**: no início da função principal, antes de qualquer
-  chamada de rede.
-
-## Variáveis de ambiente
-
-| Variável                            | Padrão            |
-| ----------------------------------- | ----------------- |
-| `SME_SDK_ENABLED`                   | `true`            |
-| `SME_SERVICE_NAME`                  | `unnamed-service` |
-| `SME_ENVIRONMENT`                   | `dev`             |
-| `SME_TIMEOUT_ENABLED`               | `true`            |
-| `SME_TIMEOUT_SECONDS`               | `10`              |
-| `SME_RETRY_ENABLED`                 | `true`            |
-| `SME_RETRY_ATTEMPTS`                | `3`               |
-| `SME_RETRY_BACKOFF_MIN`             | `0.5`             |
-| `SME_RETRY_BACKOFF_MAX`             | `5`               |
-| `SME_CIRCUIT_BREAKER_ENABLED`       | `true`            |
-| `SME_CIRCUIT_BREAKER_FAIL_MAX`      | `5`               |
-| `SME_CIRCUIT_BREAKER_RESET_TIMEOUT` | `30`              |
-
-A descrição detalhada de cada variável está em
-`docs/configuration.md` (acessível no Sphinx).
+```python
+MIDDLEWARE = [
+    "sme_sidecar_sdk.integrations.django.ObservabilityMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "django.middleware.common.CommonMiddleware",
+]
+```
 
 ## Desenvolvimento
 
@@ -129,8 +94,7 @@ pip install -e ".[dev,docs]"
 pre-commit install
 
 pytest
-ruff check src tests
-mypy src
+pre-commit run --all-files
 ```
 
 ## Documentação viva (Sphinx)
@@ -138,6 +102,9 @@ mypy src
 A documentação completa — incluindo o **Guia de resiliência**, o
 **Getting Started** e a referência da API — é gerada pelo Sphinx a
 partir das docstrings do código e dos arquivos em `docs/`.
+
+Documentação publicada:
+[prefeiturasp.github.io/SME-Sidecar-SDK](https://prefeiturasp.github.io/SME-Sidecar-SDK/)
 
 ```bash
 cd docs
@@ -157,6 +124,8 @@ Páginas principais:
 - `getting_started.md` — instalação e uso básico.
 - `guia_resiliencia.md` — explicação dos três primitivos (problema,
   mecanismo, uso, impacto).
+- `guia_observabilidade.md` — integração completa de logs, correlação,
+  tracing e backend de observabilidade.
 - `configuration.md` — referência completa das variáveis de ambiente.
 - `arquitetura.md` — princípio de empacotamento adotado
   (feature-based) e critérios para contribuições alinhadas.
