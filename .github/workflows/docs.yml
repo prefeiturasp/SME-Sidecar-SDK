@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - feature/146729-observabilidade
     paths:
       - ".github/workflows/docs.yml"
       - "docs/**"
