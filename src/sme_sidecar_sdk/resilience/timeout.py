@@ -12,6 +12,7 @@ Example:
 
 from __future__ import annotations
 
+from asyncio import sleep
 from collections.abc import Callable, Mapping
 from typing import Any, cast
 
@@ -136,13 +137,7 @@ def _sync_propagation_hook(settings: Settings) -> EventHook:
         Args:
             request: Requisição HTTPX que será enviada.
         """
-        correlation_id = get_correlation_id()
-        if correlation_id:
-            request.headers.setdefault(
-                settings.correlation_id_header,
-                correlation_id,
-            )
-        inject_trace_context(request.headers)
+        _propagate_request_context(request, settings)
 
     return hook
 
@@ -165,15 +160,29 @@ def _async_propagation_hook(
         Args:
             request: Requisição HTTPX que será enviada.
         """
-        correlation_id = get_correlation_id()
-        if correlation_id:
-            request.headers.setdefault(
-                settings.correlation_id_header,
-                correlation_id,
-            )
-        inject_trace_context(request.headers)
+        _propagate_request_context(request, settings)
+        await sleep(0)
 
     return hook
+
+
+def _propagate_request_context(
+    request: httpx.Request,
+    settings: Settings,
+) -> None:
+    """Propaga headers de correlação e tracing para uma requisição HTTPX.
+
+    Args:
+        request: Requisição HTTPX que receberá os headers.
+        settings: Configuração que define o nome do header de correlação.
+    """
+    correlation_id = get_correlation_id()
+    if correlation_id:
+        request.headers.setdefault(
+            settings.correlation_id_header,
+            correlation_id,
+        )
+    inject_trace_context(request.headers)
 
 
 def _merge_event_hooks(
