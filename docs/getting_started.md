@@ -1,29 +1,37 @@
 # Getting Started
 
+Este guia mostra o caminho mínimo para instalar a SDK, integrar com Django
+e começar a usar os recursos principais.
+
 ## Instalação
+
+Instale a SDK no serviço consumidor:
 
 ```bash
 pip install git+https://github.com/prefeiturasp/SME-Sidecar-SDK.git
 ```
 
-## Configuração mínima
+Configure a identidade do serviço por variáveis de ambiente:
 
-```python
-from sme_sidecar_sdk import runtime
-
-state = runtime.configure()
-print(state.settings.service_name)
+```bash
+SME_SERVICE_NAME=pedagogico-ms
+SME_SERVICE_VERSION=1.0.0
+SME_ENVIRONMENT=local
 ```
 
-O `configure()` lê a configuração do ambiente, configura os logs e,
-quando habilitado, inicializa o tracing. Consulte {doc}`configuration`
-para opções e valores padrão.
+O runtime lê as variáveis `SME_*`, configura logging e inicializa tracing
+quando estiver habilitado. A referência completa fica em
+{doc}`configuration`.
 
 (integracao-django)=
 ## Integração com Django
 
-Inicialize a SDK uma vez no boot de cada processo por meio do `ready()` do
-`AppConfig`, preferencialmente no app `core`:
+### Inicializar o runtime
+
+Inicialize a SDK uma vez no boot do processo Django, preferencialmente no
+`AppConfig` do app `core`.
+
+`apps/core/apps.py`:
 
 ```python
 from django.apps import AppConfig
@@ -42,39 +50,59 @@ class CoreConfig(AppConfig):
         runtime.configure()
 ```
 
-O import dentro de `ready()` evita problemas de inicialização circular. Em
-servidores com múltiplos workers, o Django executa o método uma vez em cada
-processo, que é o comportamento esperado para logging e tracing.
+### Registrar o middleware
 
-Confirme que o app está registrado em `INSTALLED_APPS`:
-
-```python
-INSTALLED_APPS = [
-    "apps.core.apps.CoreConfig",
-]
-```
-
-Registre o middleware fornecido pela SDK antes das camadas que emitem
-logs:
+Adicione o middleware da SDK antes das camadas que emitem logs:
 
 ```python
 MIDDLEWARE = [
     "sme_sidecar_sdk.integrations.django.ObservabilityMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "django.middleware.common.CommonMiddleware",
 ]
 ```
 
-O middleware reutiliza ou gera o `X-Request-ID`, devolve o identificador
-na resposta e registra método, path, status e duração. Quando o tracing
-está habilitado, a instrumentação oficial do OpenTelemetry para Django
-cria os spans HTTP da requisição.
+O middleware reutiliza ou gera o `X-Request-ID`, devolve esse valor na
+resposta e registra o log HTTP da requisição. Quando tracing está ativo,
+a instrumentação oficial do OpenTelemetry para Django cria os spans HTTP.
 
-O tracing é opt-in. Quando desabilitado, os logs e a correlação continuam
-funcionando, mas nenhum span é exportado. Consulte {doc}`configuration`
-para conhecer as opções disponíveis. Atualmente, `elastic` é o único
-backend de observabilidade homologado pela SDK.
+## Como Utilizar Os Recursos
 
-## Logs estruturados
+### Cliente HTTP compartilhado
+
+Use o cliente HTTP da SDK para chamadas entre serviços. Ele já embute
+timeout, retry, circuit breaker, logging, tracing e propagação de headers.
+
+```python
+from sme_sidecar_sdk import build_http_client
+
+with build_http_client(
+    "pedagogico-ms",
+    base_url="https://pedagogico.exemplo.gov.br",
+) as client:
+    response = client.get("/api/v1/turmas")
+    turmas = response.json()
+```
+
+O primeiro argumento (`"pedagogico-ms"`) identifica o upstream nos logs e
+no circuit breaker.
+
+Para código assíncrono, use o equivalente async:
+
+```python
+from sme_sidecar_sdk import build_async_http_client
+
+async with build_async_http_client(
+    "pedagogico-ms",
+    base_url="https://pedagogico.exemplo.gov.br",
+) as client:
+    response = await client.get("/api/v1/turmas")
+    turmas = response.json()
+```
+
+### Logs estruturados
+
+Use `get_logger()` para emitir logs no padrão da SDK:
 
 ```python
 from sme_sidecar_sdk import get_logger
@@ -83,66 +111,71 @@ log = get_logger(__name__)
 log.info("turmas_consultadas", quantidade=12)
 ```
 
-Logs emitidos pelo `logging` padrão também usam o mesmo formato.
+Os logs recebem automaticamente `service`, `environment`, `request_id` e,
+quando houver span ativo, `trace_id` e `span_id`.
 
-## Envio opcional de logs para fila
+### Tracing OpenTelemetry
 
-Com o broker configurado pela infraestrutura, cada aplicação precisa
-informar somente sua fila de logs:
+O tracing é opt-in. Para habilitar exportação OTLP:
 
 ```bash
-SME_BROKER=rabbitmq
+SME_OTEL_ENABLED=true
+SME_OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+```
+
+Atualmente, `elastic` é o único backend de observabilidade homologado pela
+SDK. O endpoint pode apontar para um OpenTelemetry Collector ou para um
+destino OTLP compatível, conforme a infraestrutura.
+
+### Contexto fora de uma requisição Django
+
+Em workers, scripts ou integrações sem middleware HTTP, use
+`request_context()` para criar ou reaproveitar o contexto de correlação:
+
+```python
+from sme_sidecar_sdk.observability import request_context
+
+def processar(headers: dict[str, str]) -> None:
+    with request_context(headers):
+        ...
+```
+
+Dentro desse escopo, logs e chamadas feitas pelo cliente HTTP da SDK usam
+o mesmo `X-Request-ID`.
+
+### Envio opcional de logs para fila
+
+Quando a infraestrutura usar fila para centralizar logs, configure a fila
+do serviço:
+
+```bash
 SME_LOG_QUEUE=ms.pedagogico.logs
 ```
 
-O runtime detecta a fila, conecta o provider automaticamente e publica os
-logs estruturados em background. Nenhuma configuração de logging Django é
-necessária. Atualmente, RabbitMQ é a única implementação disponível.
+RabbitMQ é a única implementação disponível atualmente. Outros brokers
+exigem uma nova implementação de provider.
 
-## Contexto de uma requisição recebida
+### Primitivos de resiliência isolados
 
-```python
-from sme_sidecar_sdk.observability import get_tracer, request_context
-
-def processar(headers):
-    with request_context(headers):
-        tracer = get_tracer(__name__)
-        with tracer.start_as_current_span("processar_requisicao"):
-            ...
-```
-
-Use `request_context()` em workers, scripts ou integrações sem middleware
-HTTP. Se o header `X-Request-ID` não existir, o SDK gera um UUID. Os
-clientes construídos pelo SDK propagam esse identificador e, com tracing
-habilitado, o contexto W3C.
-
-## Usando os clientes HTTP com timeout padronizado
-
-```python
-from sme_sidecar_sdk.resilience.timeout import build_sync_client
-
-with build_sync_client() as client:
-    response = client.get("https://api.exemplo.gov.br/v1/turmas")
-```
-
-## Retry com backoff exponencial
+O uso recomendado para chamadas HTTP é o cliente compartilhado. Quando
+precisar dos primitivos isolados, eles continuam disponíveis:
 
 ```python
 from sme_sidecar_sdk.resilience.retry import retry_policy
 
+
 @retry_policy(exceptions=(ConnectionError, TimeoutError))
-def carrega_turmas():
+def carregar_dados() -> None:
     ...
 ```
-
-## Circuit breaker
 
 ```python
 from sme_sidecar_sdk.resilience.circuit_breaker import get_circuit_breaker
 
 breaker = get_circuit_breaker("turmas-api")
 
+
 @breaker
-def chama_turmas():
+def chamar_turmas() -> None:
     ...
 ```

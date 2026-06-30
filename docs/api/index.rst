@@ -6,6 +6,7 @@ API Reference
 
    runtime
    config
+   http
    observability
    resilience
    exceptions

@@ -65,20 +65,22 @@ Três valores diferentes coexistem no mesmo serviço, sendo um deles
 ausente. Em produção, isso dificulta a previsibilidade do comportamento
 e a investigação de incidentes.
 
-A SDK resolve essa inconsistência por **convenção do serviço**: toda chamada
-HTTP criada via `build_sync_client()` ou `build_async_client()` herda o
-timeout configurado, sem necessidade de repeti-lo a cada chamada. Consulte
-{doc}`configuration` para opções e valores padrão.
+A SDK resolve essa inconsistência por **convenção do serviço**: chamadas
+feitas pelo cliente HTTP compartilhado herdam timeout, retry, circuit
+breaker e propagação de headers sem repetir configuração em cada chamada.
+Os builders de baixo nível `build_sync_client()` e `build_async_client()`
+continuam disponíveis quando o serviço precisar apenas do timeout.
+Consulte {doc}`configuration` para opções e valores padrão.
 
 ### Uso
 
 ```python
+from sme_sidecar_sdk import build_http_client
 from sme_sidecar_sdk.config import Settings
-from sme_sidecar_sdk.resilience.timeout import build_sync_client
 
 settings = Settings(timeout_seconds=2.0)
 
-with build_sync_client(settings) as client:
+with build_http_client("turmas-api", settings=settings) as client:
     response = client.get("http://upstream.local/recurso")
 ```
 

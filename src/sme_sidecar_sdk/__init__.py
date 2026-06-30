@@ -19,6 +19,7 @@ from .exceptions import (
     RequestTimeoutError,
     UpstreamHTTPError,
 )
+from .http import build_async_http_client, build_http_client
 from .observability.context import (
     correlation_context,
     get_correlation_id,
@@ -33,6 +34,8 @@ __all__ = [
     "RequestTimeoutError",
     "Settings",
     "UpstreamHTTPError",
+    "build_async_http_client",
+    "build_http_client",
     "configure_logging",
     "correlation_context",
     "get_correlation_id",

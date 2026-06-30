@@ -58,7 +58,6 @@ exige a criação de uma nova implementação de provider.
 Configuração comum da infraestrutura:
 
 ```bash
-SME_BROKER=rabbitmq
 SME_BROKER_URL=amqp://usuario:senha@rabbitmq:5672/vhost
 ```
 
@@ -99,7 +98,6 @@ da SDK e ficam descritas em
 Para este cenário, configure somente o backend homologado e o exporter OTLP:
 
 ```bash
-SME_OBSERVABILITY_BACKEND=elastic
 SME_OTEL_ENABLED=true
 SME_OTEL_EXPORTER_OTLP_ENDPOINT=https://apm.exemplo:8200
 SME_OTEL_EXPORTER_OTLP_HEADERS=Authorization=Bearer%20seu-token
@@ -113,8 +111,6 @@ amostragem, processamento ou roteamento. O backend continua sendo `elastic`
 quando o Collector encaminha os dados para o Elastic APM:
 
 ```bash
-SME_OBSERVABILITY_BACKEND=elastic
 SME_OTEL_ENABLED=true
 SME_OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
-SME_OTEL_EXPORTER_OTLP_INSECURE=true
 ```

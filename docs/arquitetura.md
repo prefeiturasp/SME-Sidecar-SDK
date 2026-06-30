@@ -20,6 +20,10 @@ src/sme_sidecar_sdk/
 ├── __init__.py
 ├── runtime.py            # fachada pública
 ├── config.py             # configuração base
+├── http/                 # cliente HTTP compartilhado
+│   ├── __init__.py
+│   ├── _types.py         # contratos públicos de tipagem
+│   └── client.py
 ├── resilience/           # capacidade
 │   ├── __init__.py
 │   ├── timeout.py        # tudo sobre timeout
@@ -84,6 +88,7 @@ config.py                 ← infraestrutura compartilhada
    │
    ├── resilience/        ← capacidades de resiliência
    ├── observability/     ← contexto, tracing e logging
+   ├── http/              ← cliente que compõe resiliência e observabilidade
    ├── integrations/      ← adaptadores que compõem features
    └── runtime.py         ← fachada que orquestra o boot
 ```
@@ -97,7 +102,7 @@ Regras concretas verificáveis em revisão de código:
   `observability/logging/providers/`, não em um pacote técnico na raiz.
 - Correlação pertence ao contexto de observabilidade; logging e tracing
   consomem esse contexto para enriquecer e propagar telemetria.
-- `runtime.py`, `integrations/` e os `__init__.py` públicos podem
+- `http/`, `runtime.py`, `integrations/` e os `__init__.py` públicos podem
   compor múltiplas features porque exercem papel de orquestração.
 - Dependências compartilhadas de contexto podem ser usadas pelas
   features que enriquecem ou propagam esse contexto.

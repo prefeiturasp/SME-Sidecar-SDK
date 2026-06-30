@@ -25,7 +25,8 @@ Uma aplicação consumidora habilita o runtime com uma única chamada::
    runtime.configure()
 
 Os pilares de resiliência (timeout, retry e circuit breaker) ficam
-expostos via os módulos em :mod:`sme_sidecar_sdk.resilience`.
+expostos via os módulos em :mod:`sme_sidecar_sdk.resilience` e reunidos
+no cliente HTTP compartilhado em :mod:`sme_sidecar_sdk.http`.
 
 Índices e tabelas
 -----------------

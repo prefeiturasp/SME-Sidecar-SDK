@@ -151,13 +151,14 @@ está habilitado.
 
 ### Propagação nas chamadas HTTP
 
-Os clientes da SDK propagam automaticamente o `X-Request-ID`. Quando o
-tracing está ativo, a instrumentação HTTPX também injeta `traceparent`.
+O cliente HTTP compartilhado da SDK propaga automaticamente o
+`X-Request-ID`. Quando o tracing está ativo, a instrumentação HTTPX também
+injeta `traceparent`.
 
 ```python
-from sme_sidecar_sdk.resilience.timeout import build_sync_client
+from sme_sidecar_sdk import build_http_client
 
-with build_sync_client() as client:
+with build_http_client("turmas-api") as client:
     response = client.get("https://servico-interno/api/v1/turmas")
 ```
 
