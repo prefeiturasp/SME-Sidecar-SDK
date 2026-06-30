@@ -30,7 +30,103 @@ _RETRYABLE_HTTP_EXCEPTIONS: tuple[type[BaseException], ...] = (
 EventHook = Callable[..., Any]
 
 
-class HTTPClient:
+class _BaseHTTPClient:
+    """Base interna com estado e logging compartilhados."""
+
+    def __init__(self, name: str, settings: Settings | None = None) -> None:
+        """Inicializa dependências comuns aos clientes HTTP.
+
+        Args:
+            name: Nome lógico do upstream.
+            settings: Configuração opcional da SDK.
+        """
+        self.name = name
+        self.settings = settings or get_settings()
+        self._breaker = get_circuit_breaker(name, self.settings)
+        self._logger = get_logger(__name__)
+
+    def _prepare_client_kwargs(
+        self,
+        base_url: str | httpx.URL | None,
+        client_kwargs: dict[str, object],
+        request_hook: EventHook,
+    ) -> dict[str, object]:
+        """Prepara argumentos repassados ao cliente HTTPX.
+
+        Args:
+            base_url: URL base opcional do upstream.
+            client_kwargs: Argumentos recebidos pela factory pública.
+            request_hook: Hook de propagação do contexto ativo.
+
+        Returns:
+            Cópia dos argumentos com ``base_url`` e ``event_hooks`` ajustados.
+        """
+        prepared = dict(client_kwargs)
+        if base_url is not None:
+            prepared["base_url"] = base_url
+        prepared["event_hooks"] = _merge_event_hooks(
+            prepared.get("event_hooks"),
+            request_hook=request_hook,
+        )
+        return prepared
+
+    def _log_success(
+        self,
+        method: str,
+        response: httpx.Response,
+        started_at: float,
+    ) -> None:
+        """Registra sucesso de uma chamada HTTP de saída.
+
+        Args:
+            method: Método HTTP executado.
+            response: Resposta recebida do upstream.
+            started_at: Instante de início medido por ``perf_counter``.
+        """
+        self._logger.info(
+            "http_client_request_completed",
+            upstream=self.name,
+            http_method=method.upper(),
+            http_url=str(response.request.url),
+            http_path=response.request.url.path,
+            http_status_code=response.status_code,
+            http_duration_ms=_duration_ms(started_at),
+            retry_enabled=self.settings.retry_enabled,
+            circuit_breaker_enabled=self.settings.circuit_breaker_enabled,
+        )
+
+    def _log_failure(
+        self,
+        method: str,
+        url: str | httpx.URL,
+        started_at: float,
+        exc: Exception,
+    ) -> None:
+        """Registra falha de uma chamada HTTP de saída.
+
+        Args:
+            method: Método HTTP executado.
+            url: URL solicitada.
+            started_at: Instante de início medido por ``perf_counter``.
+            exc: Exceção capturada durante a chamada.
+        """
+        event: dict[str, object] = {
+            "upstream": self.name,
+            "http_method": method.upper(),
+            "http_url": str(url),
+            "http_duration_ms": _duration_ms(started_at),
+            "retry_enabled": self.settings.retry_enabled,
+            "circuit_breaker_enabled": self.settings.circuit_breaker_enabled,
+            "error_type": type(exc).__name__,
+        }
+        if isinstance(exc, httpx.HTTPStatusError):
+            event["http_status_code"] = exc.response.status_code
+            event["http_path"] = exc.request.url.path
+            event["http_url"] = str(exc.request.url)
+        self._logger.error("http_client_request_failed", **event)
+
+
+class HTTPClient(_BaseHTTPClient):
     """Cliente HTTP síncrono com capacidades técnicas da SDK.
 
     Args:
@@ -51,17 +147,13 @@ class HTTPClient:
         **client_kwargs: object,
     ) -> None:
         """Inicializa o cliente síncrono compartilhado."""
-        self.name = name
-        self.settings = settings or get_settings()
-        if base_url is not None:
-            client_kwargs["base_url"] = base_url
-        client_kwargs["event_hooks"] = _merge_event_hooks(
-            client_kwargs.get("event_hooks"),
-            request_hook=_sync_propagation_hook(self.settings),
+        super().__init__(name, settings)
+        prepared_kwargs = self._prepare_client_kwargs(
+            base_url,
+            client_kwargs,
+            _sync_propagation_hook(self.settings),
         )
-        self._client = build_sync_client(self.settings, **client_kwargs)
-        self._breaker = get_circuit_breaker(name, self.settings)
-        self._logger = get_logger(__name__)
+        self._client = build_sync_client(self.settings, **prepared_kwargs)
 
     def __enter__(self) -> Self:
         """Entra no contexto do cliente HTTP."""
@@ -175,48 +267,8 @@ class HTTPClient:
         self._log_success(method, response, started_at)
         return response
 
-    def _log_success(
-        self,
-        method: str,
-        response: httpx.Response,
-        started_at: float,
-    ) -> None:
-        self._logger.info(
-            "http_client_request_completed",
-            upstream=self.name,
-            http_method=method.upper(),
-            http_url=str(response.request.url),
-            http_path=response.request.url.path,
-            http_status_code=response.status_code,
-            http_duration_ms=_duration_ms(started_at),
-            retry_enabled=self.settings.retry_enabled,
-            circuit_breaker_enabled=self.settings.circuit_breaker_enabled,
-        )
 
-    def _log_failure(
-        self,
-        method: str,
-        url: str | httpx.URL,
-        started_at: float,
-        exc: Exception,
-    ) -> None:
-        event: dict[str, object] = {
-            "upstream": self.name,
-            "http_method": method.upper(),
-            "http_url": str(url),
-            "http_duration_ms": _duration_ms(started_at),
-            "retry_enabled": self.settings.retry_enabled,
-            "circuit_breaker_enabled": self.settings.circuit_breaker_enabled,
-            "error_type": type(exc).__name__,
-        }
-        if isinstance(exc, httpx.HTTPStatusError):
-            event["http_status_code"] = exc.response.status_code
-            event["http_path"] = exc.request.url.path
-            event["http_url"] = str(exc.request.url)
-        self._logger.error("http_client_request_failed", **event)
-
-
-class AsyncHTTPClient:
+class AsyncHTTPClient(_BaseHTTPClient):
     """Cliente HTTP assíncrono com capacidades técnicas da SDK.
 
     Args:
@@ -237,17 +289,13 @@ class AsyncHTTPClient:
         **client_kwargs: object,
     ) -> None:
         """Inicializa o cliente assíncrono compartilhado."""
-        self.name = name
-        self.settings = settings or get_settings()
-        if base_url is not None:
-            client_kwargs["base_url"] = base_url
-        client_kwargs["event_hooks"] = _merge_event_hooks(
-            client_kwargs.get("event_hooks"),
-            request_hook=_async_propagation_hook(self.settings),
+        super().__init__(name, settings)
+        prepared_kwargs = self._prepare_client_kwargs(
+            base_url,
+            client_kwargs,
+            _async_propagation_hook(self.settings),
         )
-        self._client = build_async_client(self.settings, **client_kwargs)
-        self._breaker = get_circuit_breaker(name, self.settings)
-        self._logger = get_logger(__name__)
+        self._client = build_async_client(self.settings, **prepared_kwargs)
 
     async def __aenter__(self) -> Self:
         """Entra no contexto assíncrono do cliente HTTP."""
@@ -384,46 +432,6 @@ class AsyncHTTPClient:
             raise
         self._log_success(method, response, started_at)
         return response
-
-    def _log_success(
-        self,
-        method: str,
-        response: httpx.Response,
-        started_at: float,
-    ) -> None:
-        self._logger.info(
-            "http_client_request_completed",
-            upstream=self.name,
-            http_method=method.upper(),
-            http_url=str(response.request.url),
-            http_path=response.request.url.path,
-            http_status_code=response.status_code,
-            http_duration_ms=_duration_ms(started_at),
-            retry_enabled=self.settings.retry_enabled,
-            circuit_breaker_enabled=self.settings.circuit_breaker_enabled,
-        )
-
-    def _log_failure(
-        self,
-        method: str,
-        url: str | httpx.URL,
-        started_at: float,
-        exc: Exception,
-    ) -> None:
-        event: dict[str, object] = {
-            "upstream": self.name,
-            "http_method": method.upper(),
-            "http_url": str(url),
-            "http_duration_ms": _duration_ms(started_at),
-            "retry_enabled": self.settings.retry_enabled,
-            "circuit_breaker_enabled": self.settings.circuit_breaker_enabled,
-            "error_type": type(exc).__name__,
-        }
-        if isinstance(exc, httpx.HTTPStatusError):
-            event["http_status_code"] = exc.response.status_code
-            event["http_path"] = exc.request.url.path
-            event["http_url"] = str(exc.request.url)
-        self._logger.error("http_client_request_failed", **event)
 
 
 def build_http_client(
