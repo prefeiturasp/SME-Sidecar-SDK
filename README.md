@@ -36,10 +36,12 @@ runtime.configure()
 
 - timeout padronizado em `httpx` (sync e async);
 - retry com backoff exponencial via `tenacity`;
-- circuit breaker via `pybreaker`.
+- circuit breaker via `pybreaker`;
+- cliente HTTP compartilhado com timeout, retry, circuit breaker, logs,
+  tracing e propagação de headers;
 - logs JSON com serviço, ambiente, request ID, trace ID e span ID;
 - propagação automática de `X-Request-ID` nos clientes HTTP do SDK;
-- tracing OpenTelemetry com exportação OTLP para backend de observabilidade.
+- tracing OpenTelemetry com exportação OTLP para backend de observabilidade;
 - provider assíncrono opcional de logs para fila.
 
 > A explicação conceitual de cada primitivo, com exemplos executáveis e
