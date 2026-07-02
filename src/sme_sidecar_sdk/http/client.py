@@ -156,7 +156,11 @@ class HTTPClient(_BaseHTTPClient):
         self._client = build_sync_client(self.settings, **prepared_kwargs)
 
     def __enter__(self) -> Self:
-        """Entra no contexto do cliente HTTP."""
+        """Entra no contexto do cliente HTTP.
+
+        Returns:
+            Instância atual do cliente.
+        """
         self._client.__enter__()
         return self
 
@@ -166,7 +170,13 @@ class HTTPClient(_BaseHTTPClient):
         exc_value: BaseException | None,
         traceback: TracebackType | None,
     ) -> None:
-        """Fecha o cliente HTTP ao sair do contexto."""
+        """Fecha o cliente HTTP ao sair do contexto.
+
+        Args:
+            exc_type: Tipo da exceção capturada pelo context manager.
+            exc_value: Instância da exceção capturada pelo context manager.
+            traceback: Traceback associado à exceção capturada.
+        """
         self._client.__exit__(exc_type, exc_value, traceback)
 
     def close(self) -> None:
@@ -231,6 +241,20 @@ class HTTPClient(_BaseHTTPClient):
         url: str | httpx.URL,
         **kwargs: Any,
     ) -> httpx.Response:
+        """Envia uma requisição síncrona ao upstream.
+
+        Args:
+            method: Método HTTP.
+            url: URL absoluta ou relativa à ``base_url``.
+            **kwargs: Argumentos repassados ao ``httpx.Client.request``.
+
+        Returns:
+            Resposta HTTPX validada com ``raise_for_status()``.
+
+        Raises:
+            httpx.HTTPStatusError: Quando a resposta é 4xx ou 5xx.
+            httpx.RequestError: Quando ocorre falha de transporte.
+        """
         response = self._client.request(method, url, **kwargs)
         response.raise_for_status()
         return response
@@ -241,6 +265,21 @@ class HTTPClient(_BaseHTTPClient):
         url: str | httpx.URL,
         **kwargs: Any,
     ) -> httpx.Response:
+        """Envia uma requisição síncrona aplicando retry quando habilitado.
+
+        Args:
+            method: Método HTTP.
+            url: URL absoluta ou relativa à ``base_url``.
+            **kwargs: Argumentos repassados ao ``httpx.Client.request``.
+
+        Returns:
+            Resposta HTTPX validada com ``raise_for_status()``.
+
+        Raises:
+            RuntimeError: Quando a política de retry termina sem resposta.
+            httpx.HTTPStatusError: Quando a resposta é 4xx ou 5xx.
+            httpx.RequestError: Quando ocorre falha de transporte.
+        """
         if (
             not self.settings.retry_enabled
             or self.settings.retry_attempts <= 1
@@ -258,6 +297,19 @@ class HTTPClient(_BaseHTTPClient):
         url: str | httpx.URL,
         call: Callable[[], httpx.Response],
     ) -> httpx.Response:
+        """Executa uma chamada síncrona com logs de sucesso ou falha.
+
+        Args:
+            method: Método HTTP.
+            url: URL solicitada.
+            call: Função que executa a chamada protegida.
+
+        Returns:
+            Resposta retornada pela chamada.
+
+        Raises:
+            Exception: Repassa a exceção original emitida por ``call``.
+        """
         started_at = perf_counter()
         try:
             response = call()
@@ -298,7 +350,11 @@ class AsyncHTTPClient(_BaseHTTPClient):
         self._client = build_async_client(self.settings, **prepared_kwargs)
 
     async def __aenter__(self) -> Self:
-        """Entra no contexto assíncrono do cliente HTTP."""
+        """Entra no contexto assíncrono do cliente HTTP.
+
+        Returns:
+            Instância atual do cliente.
+        """
         await self._client.__aenter__()
         return self
 
@@ -308,7 +364,13 @@ class AsyncHTTPClient(_BaseHTTPClient):
         exc_value: BaseException | None,
         traceback: TracebackType | None,
     ) -> None:
-        """Fecha o cliente HTTP ao sair do contexto assíncrono."""
+        """Fecha o cliente HTTP ao sair do contexto assíncrono.
+
+        Args:
+            exc_type: Tipo da exceção capturada pelo context manager.
+            exc_value: Instância da exceção capturada pelo context manager.
+            traceback: Traceback associado à exceção capturada.
+        """
         await self._client.__aexit__(exc_type, exc_value, traceback)
 
     async def aclose(self) -> None:
@@ -397,6 +459,21 @@ class AsyncHTTPClient(_BaseHTTPClient):
         url: str | httpx.URL,
         **kwargs: Any,
     ) -> httpx.Response:
+        """Envia uma requisição assíncrona aplicando retry quando habilitado.
+
+        Args:
+            method: Método HTTP.
+            url: URL absoluta ou relativa à ``base_url``.
+            **kwargs: Argumentos repassados ao ``httpx.AsyncClient.request``.
+
+        Returns:
+            Resposta HTTPX validada com ``raise_for_status()``.
+
+        Raises:
+            RuntimeError: Quando a política de retry termina sem resposta.
+            httpx.HTTPStatusError: Quando a resposta é 4xx ou 5xx.
+            httpx.RequestError: Quando ocorre falha de transporte.
+        """
         if (
             not self.settings.retry_enabled
             or self.settings.retry_attempts <= 1
@@ -414,6 +491,20 @@ class AsyncHTTPClient(_BaseHTTPClient):
         url: str | httpx.URL,
         **kwargs: Any,
     ) -> httpx.Response:
+        """Envia uma requisição assíncrona ao upstream.
+
+        Args:
+            method: Método HTTP.
+            url: URL absoluta ou relativa à ``base_url``.
+            **kwargs: Argumentos repassados ao ``httpx.AsyncClient.request``.
+
+        Returns:
+            Resposta HTTPX validada com ``raise_for_status()``.
+
+        Raises:
+            httpx.HTTPStatusError: Quando a resposta é 4xx ou 5xx.
+            httpx.RequestError: Quando ocorre falha de transporte.
+        """
         response = await self._client.request(method, url, **kwargs)
         response.raise_for_status()
         return response
@@ -424,6 +515,19 @@ class AsyncHTTPClient(_BaseHTTPClient):
         url: str | httpx.URL,
         call: Callable[[], Awaitable[httpx.Response]],
     ) -> httpx.Response:
+        """Executa uma chamada assíncrona com logs de sucesso ou falha.
+
+        Args:
+            method: Método HTTP.
+            url: URL solicitada.
+            call: Função assíncrona que executa a chamada protegida.
+
+        Returns:
+            Resposta retornada pela chamada.
+
+        Raises:
+            Exception: Repassa a exceção original emitida por ``call``.
+        """
         started_at = perf_counter()
         try:
             response = await call()
@@ -487,6 +591,14 @@ def build_async_http_client(
 
 
 def _duration_ms(started_at: float) -> float:
+    """Calcula a duração da chamada em milissegundos.
+
+    Args:
+        started_at: Instante de início medido por ``perf_counter``.
+
+    Returns:
+        Duração arredondada em milissegundos.
+    """
     return round((perf_counter() - started_at) * 1000, 2)
 
 
@@ -579,6 +691,14 @@ def _merge_event_hooks(
 
 
 def _build_sync_retrying(settings: Settings) -> Retrying:
+    """Cria a política de retry síncrona do cliente HTTP.
+
+    Args:
+        settings: Configuração da SDK usada para tentativas e backoff.
+
+    Returns:
+        Política ``tenacity.Retrying`` configurada.
+    """
     return Retrying(
         stop=stop_after_attempt(settings.retry_attempts),
         wait=wait_exponential(
@@ -592,6 +712,14 @@ def _build_sync_retrying(settings: Settings) -> Retrying:
 
 
 def _build_async_retrying(settings: Settings) -> AsyncRetrying:
+    """Cria a política de retry assíncrona do cliente HTTP.
+
+    Args:
+        settings: Configuração da SDK usada para tentativas e backoff.
+
+    Returns:
+        Política ``tenacity.AsyncRetrying`` configurada.
+    """
     return AsyncRetrying(
         stop=stop_after_attempt(settings.retry_attempts),
         wait=wait_exponential(
@@ -609,6 +737,20 @@ async def _call_async_with_breaker(
     settings: Settings,
     call: Callable[[], Awaitable[httpx.Response]],
 ) -> httpx.Response:
+    """Executa uma chamada assíncrona respeitando o circuit breaker.
+
+    Args:
+        breaker: Circuit breaker associado ao upstream.
+        settings: Configuração da SDK que habilita ou desabilita o breaker.
+        call: Função assíncrona protegida pelo breaker.
+
+    Returns:
+        Resposta HTTP retornada por ``call``.
+
+    Raises:
+        BaseException: Repassa a exceção original emitida por ``call``.
+        pybreaker.CircuitBreakerError: Quando o circuito está aberto.
+    """
     if not settings.circuit_breaker_enabled:
         return await call()
 

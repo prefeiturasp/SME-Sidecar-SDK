@@ -1,4 +1,10 @@
-"""Protocolos de tipagem para clientes HTTP da SDK."""
+"""Contratos de tipagem para clientes HTTP da SDK.
+
+As classes deste módulo são ``Protocol``: servem apenas para anotar tipos
+e validar a interface esperada por ferramentas como mypy. Elas não
+fornecem implementação em tempo de execução, por isso seus métodos usam
+``...`` como corpo.
+"""
 
 from __future__ import annotations
 
@@ -8,42 +14,54 @@ import httpx
 
 
 class SyncHTTPClient(Protocol):
-    """Contrato público de um cliente HTTP síncrono da SDK."""
+    """Interface mínima esperada de um cliente HTTP síncrono.
+
+    Destinado a anotações de tipo quando o código consumidor precisa
+    chamar métodos HTTP comuns sem depender da classe concreta retornada
+    por ``build_http_client``. Os métodos declaram apenas assinaturas
+    porque a implementação pertence ao cliente concreto.
+    """
 
     def get(self, url: str | httpx.URL, **kwargs: Any) -> httpx.Response:
-        """Executa uma requisição ``GET``."""
+        """Envia ``GET`` e retorna a resposta HTTP."""
         ...
 
     def post(self, url: str | httpx.URL, **kwargs: Any) -> httpx.Response:
-        """Executa uma requisição ``POST``."""
+        """Envia ``POST`` e retorna a resposta HTTP."""
         ...
 
     def put(self, url: str | httpx.URL, **kwargs: Any) -> httpx.Response:
-        """Executa uma requisição ``PUT``."""
+        """Envia ``PUT`` e retorna a resposta HTTP."""
         ...
 
     def patch(self, url: str | httpx.URL, **kwargs: Any) -> httpx.Response:
-        """Executa uma requisição ``PATCH``."""
+        """Envia ``PATCH`` e retorna a resposta HTTP."""
         ...
 
     def delete(self, url: str | httpx.URL, **kwargs: Any) -> httpx.Response:
-        """Executa uma requisição ``DELETE``."""
+        """Envia ``DELETE`` e retorna a resposta HTTP."""
         ...
 
     def close(self) -> None:
-        """Fecha conexões mantidas pelo cliente."""
+        """Libera recursos associados ao cliente."""
         ...
 
 
 class AsyncHTTPClientProtocol(Protocol):
-    """Contrato público de um cliente HTTP assíncrono da SDK."""
+    """Interface mínima esperada de um cliente HTTP assíncrono.
+
+    Destinado a anotações de tipo quando o código consumidor precisa
+    chamar métodos HTTP com ``await`` sem depender da classe concreta
+    retornada por ``build_async_http_client``. Os métodos declaram apenas
+    assinaturas porque a implementação pertence ao cliente concreto.
+    """
 
     async def get(
         self,
         url: str | httpx.URL,
         **kwargs: Any,
     ) -> httpx.Response:
-        """Executa uma requisição ``GET``."""
+        """Envia ``GET`` e retorna a resposta HTTP."""
         ...
 
     async def post(
@@ -51,7 +69,7 @@ class AsyncHTTPClientProtocol(Protocol):
         url: str | httpx.URL,
         **kwargs: Any,
     ) -> httpx.Response:
-        """Executa uma requisição ``POST``."""
+        """Envia ``POST`` e retorna a resposta HTTP."""
         ...
 
     async def put(
@@ -59,7 +77,7 @@ class AsyncHTTPClientProtocol(Protocol):
         url: str | httpx.URL,
         **kwargs: Any,
     ) -> httpx.Response:
-        """Executa uma requisição ``PUT``."""
+        """Envia ``PUT`` e retorna a resposta HTTP."""
         ...
 
     async def patch(
@@ -67,7 +85,7 @@ class AsyncHTTPClientProtocol(Protocol):
         url: str | httpx.URL,
         **kwargs: Any,
     ) -> httpx.Response:
-        """Executa uma requisição ``PATCH``."""
+        """Envia ``PATCH`` e retorna a resposta HTTP."""
         ...
 
     async def delete(
@@ -75,9 +93,9 @@ class AsyncHTTPClientProtocol(Protocol):
         url: str | httpx.URL,
         **kwargs: Any,
     ) -> httpx.Response:
-        """Executa uma requisição ``DELETE``."""
+        """Envia ``DELETE`` e retorna a resposta HTTP."""
         ...
 
     async def aclose(self) -> None:
-        """Fecha conexões mantidas pelo cliente assíncrono."""
+        """Libera recursos associados ao cliente."""
         ...
