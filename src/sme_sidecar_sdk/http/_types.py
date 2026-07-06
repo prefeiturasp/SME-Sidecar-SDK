@@ -1,10 +1,4 @@
-"""Contratos de tipagem para clientes HTTP da SDK.
-
-As classes deste módulo são ``Protocol``: servem apenas para anotar tipos
-e validar a interface esperada por ferramentas como mypy. Elas não
-fornecem implementação em tempo de execução, por isso seus métodos usam
-``...`` como corpo.
-"""
+"""Contratos públicos de tipagem para clientes HTTP da SDK."""
 
 from __future__ import annotations
 
@@ -14,46 +8,84 @@ import httpx
 
 
 class SyncHTTPClient(Protocol):
-    """Interface mínima esperada de um cliente HTTP síncrono.
+    """Contrato de tipo para clientes HTTP síncronos.
 
     Destinado a anotações de tipo quando o código consumidor precisa
     chamar métodos HTTP comuns sem depender da classe concreta retornada
-    por ``build_http_client``. Os métodos declaram apenas assinaturas
-    porque a implementação pertence ao cliente concreto.
+    por ``build_http_client``.
     """
 
     def get(self, url: str | httpx.URL, **kwargs: Any) -> httpx.Response:
-        """Envia ``GET`` e retorna a resposta HTTP."""
+        """Declara a assinatura para solicitar um recurso ao upstream.
+
+        Args:
+            url: URL absoluta ou relativa à ``base_url`` do cliente.
+            **kwargs: Argumentos repassados ao cliente HTTP.
+
+        Returns:
+            Resposta HTTP retornada pelo upstream.
+        """
         ...
 
     def post(self, url: str | httpx.URL, **kwargs: Any) -> httpx.Response:
-        """Envia ``POST`` e retorna a resposta HTTP."""
+        """Declara a assinatura para criar ou submeter dados ao upstream.
+
+        Args:
+            url: URL absoluta ou relativa à ``base_url`` do cliente.
+            **kwargs: Argumentos repassados ao cliente HTTP.
+
+        Returns:
+            Resposta HTTP retornada pelo upstream.
+        """
         ...
 
     def put(self, url: str | httpx.URL, **kwargs: Any) -> httpx.Response:
-        """Envia ``PUT`` e retorna a resposta HTTP."""
+        """Declara a assinatura para substituir um recurso no upstream.
+
+        Args:
+            url: URL absoluta ou relativa à ``base_url`` do cliente.
+            **kwargs: Argumentos repassados ao cliente HTTP.
+
+        Returns:
+            Resposta HTTP retornada pelo upstream.
+        """
         ...
 
     def patch(self, url: str | httpx.URL, **kwargs: Any) -> httpx.Response:
-        """Envia ``PATCH`` e retorna a resposta HTTP."""
+        """Declara a assinatura para atualizar parcialmente um recurso.
+
+        Args:
+            url: URL absoluta ou relativa à ``base_url`` do cliente.
+            **kwargs: Argumentos repassados ao cliente HTTP.
+
+        Returns:
+            Resposta HTTP retornada pelo upstream.
+        """
         ...
 
     def delete(self, url: str | httpx.URL, **kwargs: Any) -> httpx.Response:
-        """Envia ``DELETE`` e retorna a resposta HTTP."""
+        """Declara a assinatura para remover um recurso no upstream.
+
+        Args:
+            url: URL absoluta ou relativa à ``base_url`` do cliente.
+            **kwargs: Argumentos repassados ao cliente HTTP.
+
+        Returns:
+            Resposta HTTP retornada pelo upstream.
+        """
         ...
 
     def close(self) -> None:
-        """Libera recursos associados ao cliente."""
+        """Declara a assinatura para liberar recursos do cliente."""
         ...
 
 
 class AsyncHTTPClientProtocol(Protocol):
-    """Interface mínima esperada de um cliente HTTP assíncrono.
+    """Contrato de tipo para clientes HTTP assíncronos.
 
     Destinado a anotações de tipo quando o código consumidor precisa
     chamar métodos HTTP com ``await`` sem depender da classe concreta
-    retornada por ``build_async_http_client``. Os métodos declaram apenas
-    assinaturas porque a implementação pertence ao cliente concreto.
+    retornada por ``build_async_http_client``.
     """
 
     async def get(
@@ -61,7 +93,15 @@ class AsyncHTTPClientProtocol(Protocol):
         url: str | httpx.URL,
         **kwargs: Any,
     ) -> httpx.Response:
-        """Envia ``GET`` e retorna a resposta HTTP."""
+        """Declara a assinatura para solicitar um recurso ao upstream.
+
+        Args:
+            url: URL absoluta ou relativa à ``base_url`` do cliente.
+            **kwargs: Argumentos repassados ao cliente HTTP.
+
+        Returns:
+            Resposta HTTP retornada pelo upstream.
+        """
         ...
 
     async def post(
@@ -69,7 +109,15 @@ class AsyncHTTPClientProtocol(Protocol):
         url: str | httpx.URL,
         **kwargs: Any,
     ) -> httpx.Response:
-        """Envia ``POST`` e retorna a resposta HTTP."""
+        """Declara a assinatura para criar ou submeter dados ao upstream.
+
+        Args:
+            url: URL absoluta ou relativa à ``base_url`` do cliente.
+            **kwargs: Argumentos repassados ao cliente HTTP.
+
+        Returns:
+            Resposta HTTP retornada pelo upstream.
+        """
         ...
 
     async def put(
@@ -77,7 +125,15 @@ class AsyncHTTPClientProtocol(Protocol):
         url: str | httpx.URL,
         **kwargs: Any,
     ) -> httpx.Response:
-        """Envia ``PUT`` e retorna a resposta HTTP."""
+        """Declara a assinatura para substituir um recurso no upstream.
+
+        Args:
+            url: URL absoluta ou relativa à ``base_url`` do cliente.
+            **kwargs: Argumentos repassados ao cliente HTTP.
+
+        Returns:
+            Resposta HTTP retornada pelo upstream.
+        """
         ...
 
     async def patch(
@@ -85,7 +141,15 @@ class AsyncHTTPClientProtocol(Protocol):
         url: str | httpx.URL,
         **kwargs: Any,
     ) -> httpx.Response:
-        """Envia ``PATCH`` e retorna a resposta HTTP."""
+        """Declara a assinatura para atualizar parcialmente um recurso.
+
+        Args:
+            url: URL absoluta ou relativa à ``base_url`` do cliente.
+            **kwargs: Argumentos repassados ao cliente HTTP.
+
+        Returns:
+            Resposta HTTP retornada pelo upstream.
+        """
         ...
 
     async def delete(
@@ -93,9 +157,17 @@ class AsyncHTTPClientProtocol(Protocol):
         url: str | httpx.URL,
         **kwargs: Any,
     ) -> httpx.Response:
-        """Envia ``DELETE`` e retorna a resposta HTTP."""
+        """Declara a assinatura para remover um recurso no upstream.
+
+        Args:
+            url: URL absoluta ou relativa à ``base_url`` do cliente.
+            **kwargs: Argumentos repassados ao cliente HTTP.
+
+        Returns:
+            Resposta HTTP retornada pelo upstream.
+        """
         ...
 
     async def aclose(self) -> None:
-        """Libera recursos associados ao cliente."""
+        """Declara a assinatura para liberar recursos do cliente."""
         ...
