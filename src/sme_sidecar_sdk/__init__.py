@@ -46,5 +46,3 @@ __all__ = [
     "runtime",
     "set_correlation_id",
 ]
-
-__version__ = "0.1.0"
