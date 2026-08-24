@@ -12,7 +12,7 @@ Example:
     >>> from sme_sidecar_sdk.config import Settings
     >>> settings = Settings()  # lê variáveis SME_*
     >>> settings.timeout_seconds
-    10.0
+    120.0
 """
 
 from __future__ import annotations
@@ -113,7 +113,7 @@ class Settings(BaseSettings):
         validation_alias=_aliases("SME_TIMEOUT_ENABLED", "timeout_enabled"),
     )
     timeout_seconds: float = Field(
-        default=10.0,
+        default=120.0,
         ge=0.1,
         validation_alias=_aliases("SME_TIMEOUT_SECONDS", "timeout_seconds"),
     )

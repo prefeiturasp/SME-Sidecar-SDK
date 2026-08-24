@@ -9,7 +9,7 @@ Example:
     >>> from sme_sidecar_sdk import runtime
     >>> state = runtime.configure()
     >>> state.settings.timeout_seconds
-    10.0
+    120.0
 """
 
 from __future__ import annotations

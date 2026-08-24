@@ -17,7 +17,7 @@ apresenta o valor padrão aplicado quando a variável não é informada.
 | Variável | Padrão | Descrição |
 | --- | --- | --- |
 | `SME_TIMEOUT_ENABLED` | `true` | Habilita o timeout padronizado nos clientes HTTP da SDK. |
-| `SME_TIMEOUT_SECONDS` | `10` | Tempo máximo, em segundos, aguardado por uma chamada HTTP. |
+| `SME_TIMEOUT_SECONDS` | `120` | Tempo máximo, em segundos, aguardado por uma chamada HTTP. |
 | `SME_RETRY_ENABLED` | `true` | Habilita novas tentativas para as exceções definidas pelo consumidor. |
 | `SME_RETRY_ATTEMPTS` | `3` | Total máximo de tentativas, incluindo a chamada inicial. |
 | `SME_RETRY_BACKOFF_MIN` | `0.5` | Intervalo mínimo, em segundos, do backoff exponencial. |
