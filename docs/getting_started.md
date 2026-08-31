@@ -5,23 +5,54 @@ e começar a usar os recursos principais.
 
 ## Instalação
 
-Instale a SDK no serviço consumidor:
+Escolha uma versão publicada em
+[SME-Sidecar-SDK releases](https://github.com/prefeiturasp/SME-Sidecar-SDK/releases)
+e instale a SDK no serviço consumidor fixando a tag:
 
 ```bash
-pip install git+https://github.com/prefeiturasp/SME-Sidecar-SDK.git
+pip install git+https://github.com/prefeiturasp/SME-Sidecar-SDK.git@v1.0.0
 ```
 
-Configure a identidade do serviço por variáveis de ambiente:
+## Variáveis obrigatórias por feature
+
+Configure por variável de ambiente apenas os valores que dependem do ambiente,
+infraestrutura ou segredo.
+
+### Base
+
+Obrigatória para identificar o ambiente nos logs e traces:
 
 ```bash
-SME_SERVICE_NAME=pedagogico-ms
-SME_SERVICE_VERSION=1.0.0
 SME_ENVIRONMENT=local
 ```
 
-O runtime lê as variáveis `SME_*`, configura logging e inicializa tracing
-quando estiver habilitado. A referência completa fica em
-{doc}`configuration`.
+### Tracing OpenTelemetry
+
+Obrigatórias quando o envio de traces estiver habilitado:
+
+```bash
+SME_OTEL_ENABLED=true
+SME_OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:8200
+```
+
+Obrigatória quando o endpoint OTLP exigir autenticação:
+
+```bash
+SME_OTEL_EXPORTER_OTLP_HEADERS=Authorization=Bearer%20token
+```
+
+### Logs estruturados via RabbitMQ
+
+Obrigatórias quando o envio de logs para fila estiver habilitado:
+
+```bash
+SME_BROKER_URL=amqp://usuario:senha@localhost:5672/%2F
+SME_LOG_QUEUE=ms.pedagogico.logs
+```
+
+Configure a identidade do serviço no boot da aplicação. O nome lógico e a
+versão pertencem ao artefato publicado, por isso podem ser informados pelo
+código ao inicializar o runtime.
 
 (integracao-django)=
 ## Integração com Django
@@ -46,9 +77,19 @@ class CoreConfig(AppConfig):
     def ready(self) -> None:
         """Inicializa os recursos compartilhados da SDK."""
         from sme_sidecar_sdk import runtime
+        from sme_sidecar_sdk.config import Settings
 
-        runtime.configure()
+        runtime.configure(
+            Settings(
+                service_name="pedagogico-ms",
+                service_version="1.0.0",
+            )
+        )
 ```
+
+O runtime combina os valores informados por código com as variáveis
+`SME_*`, configura logging e inicializa tracing quando estiver habilitado. A
+referência completa fica em {doc}`configuration`.
 
 ### Registrar o middleware
 
@@ -116,16 +157,27 @@ quando houver span ativo, `trace_id` e `span_id`.
 
 ### Tracing OpenTelemetry
 
-O tracing é opt-in. Para habilitar exportação OTLP:
+Depois do `runtime.configure()` e do `ObservabilityMiddleware`, o tracing não
+exige chamadas manuais no código de negócio. A instrumentação cria spans para
+as requisições Django e para as chamadas feitas com o cliente HTTP da SDK.
 
-```bash
-SME_OTEL_ENABLED=true
-SME_OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+```python
+from sme_sidecar_sdk import build_http_client
+
+
+def listar_turmas() -> list[dict]:
+    with build_http_client(
+        "pedagogico-ms",
+        base_url="https://pedagogico.exemplo.gov.br",
+    ) as client:
+        response = client.get("/api/v1/turmas")
+        response.raise_for_status()
+        return response.json()
 ```
 
-Atualmente, `elastic` é o único backend de observabilidade homologado pela
-SDK. O endpoint pode apontar para um OpenTelemetry Collector ou para um
-destino OTLP compatível, conforme a infraestrutura.
+Ao atender uma requisição Django, a chamada acima fica correlacionada ao trace
+da requisição original. No APM, o endpoint Django aparece como transação e a
+chamada para `pedagogico-ms` aparece como span HTTP externo.
 
 ### Contexto fora de uma requisição Django
 
@@ -142,18 +194,6 @@ def processar(headers: dict[str, str]) -> None:
 
 Dentro desse escopo, logs e chamadas feitas pelo cliente HTTP da SDK usam
 o mesmo `X-Request-ID`.
-
-### Envio opcional de logs para fila
-
-Quando a infraestrutura usar fila para centralizar logs, configure a fila
-do serviço:
-
-```bash
-SME_LOG_QUEUE=ms.pedagogico.logs
-```
-
-RabbitMQ é a única implementação disponível atualmente. Outros brokers
-exigem uma nova implementação de provider.
 
 ### Primitivos de resiliência isolados
 

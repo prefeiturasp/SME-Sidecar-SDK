@@ -1,15 +1,39 @@
-# Configuração via variáveis de ambiente
+# Configuração
 
-Todas as variáveis da SDK usam o prefixo `SME_`. A tabela de cada grupo
-apresenta o valor padrão aplicado quando a variável não é informada.
+A SDK pode ser configurada por código, usando `runtime.configure(Settings(...))`,
+e por variáveis de ambiente com prefixo `SME_`. Use configuração por código
+para identidade estável do artefato e variáveis de ambiente para ambiente,
+infraestrutura, segredos e tuning operacional.
 
 ## Master switch e identidade
+
+`service_name` e `service_version` identificam o artefato nos logs e traces.
+Prefira configurá-los no boot da aplicação, especialmente quando a versão vem
+do pacote publicado:
+
+```python
+from importlib.metadata import version
+
+from sme_sidecar_sdk import runtime
+from sme_sidecar_sdk.config import Settings
+
+
+runtime.configure(
+    Settings(
+        service_name="pedagogico-ms",
+        service_version=version("pedagogico-ms"),
+    )
+)
+```
+
+As variáveis abaixo continuam disponíveis como fallback. A tabela de cada grupo
+apresenta o valor padrão aplicado quando o valor não é informado.
 
 | Variável | Padrão | Descrição |
 | --- | --- | --- |
 | `SME_SDK_ENABLED` | `true` | Liga ou desliga todos os recursos inicializados pelo runtime. |
-| `SME_SERVICE_NAME` | `unnamed-service` | Nome lógico usado para identificar o serviço em logs e traces. |
-| `SME_SERVICE_VERSION` | `unknown` | Versão publicada do serviço enviada como atributo dos traces. |
+| `SME_SERVICE_NAME` | `unnamed-service` | Nome lógico usado para identificar o serviço em logs e traces. Prefira informar por código no `runtime.configure()`. |
+| `SME_SERVICE_VERSION` | `unknown` | Versão publicada do serviço enviada como atributo dos traces. Prefira derivar do pacote/artefato e informar por código no `runtime.configure()`. |
 | `SME_ENVIRONMENT` | `dev` | Ambiente exibido em logs e traces, como `dev`, `qa` ou `production`. |
 
 ## Resiliência
@@ -91,9 +115,8 @@ ajustes de implementação.
 ### Envio direto via OpenTelemetry
 
 O envio direto utiliza OpenTelemetry e OTLP; ele apenas dispensa um Collector
-intermediário. As variáveis de identidade do serviço, como
-`SME_SERVICE_NAME`, `SME_SERVICE_VERSION` e `SME_ENVIRONMENT`, são globais
-da SDK e ficam descritas em
+intermediário. A identidade do serviço, como `service_name`,
+`service_version` e `environment`, é global da SDK e fica descrita em
 <a href="#master-switch-e-identidade">Master switch e identidade</a>.
 Para este cenário, configure somente o backend homologado e o exporter OTLP:
 
