@@ -1,0 +1,188 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="pt-BR" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SME Sidecar SDK &mdash; Documentação SME Sidecar SDK 0.1.0</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+    <link rel="canonical" href="https://prefeiturasp.github.io/SME-Sidecar-SDK/index.html" />
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=2346ddef"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="_static/translations.js?v=71a39b36"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="genindex.html" />
+    <link rel="search" title="Buscar" href="search.html" />
+    <link rel="next" title="Getting Started" href="getting_started.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            SME Sidecar SDK
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Pesquisar documentos" aria-label="Pesquisar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Menu de navegação">
+              <p class="caption" role="heading"><span class="caption-text">Conteúdo</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guia_resiliencia.html">Guia de resiliência</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guia_observabilidade.html">Guia de observabilidade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuração</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arquitetura.html">Arquitetura</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Menu de navegação móvel" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">SME Sidecar SDK</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Navegação da página">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">SME Sidecar SDK</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> Ver código-fonte da página</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="sme-sidecar-sdk">
+<h1>SME Sidecar SDK<a class="headerlink" href="#sme-sidecar-sdk" title="Link para este cabeçalho"></a></h1>
+<p>Runtime SDK in-process que entrega resiliência, logs estruturados e tracing
+distribuído sem sidecar container e sem hop de rede.</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Conteúdo</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#instalacao">Instalação</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#variaveis-obrigatorias-por-feature">Variáveis obrigatórias por feature</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#integracao-com-django">Integração com Django</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#como-utilizar-os-recursos">Como Utilizar Os Recursos</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guia_resiliencia.html">Guia de resiliência</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guia_resiliencia.html#conceitos">Conceitos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guia_resiliencia.html#cenario-1-timeout-padronizado">Cenário 1 — Timeout padronizado</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guia_resiliencia.html#cenario-2-retry-para-falhas-temporarias">Cenário 2 — Retry para falhas temporárias</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guia_resiliencia.html#cenario-3-circuit-breaker-para-evitar-cascata-de-falhas">Cenário 3 — Circuit breaker para evitar cascata de falhas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guia_resiliencia.html#sintese">Síntese</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guia_observabilidade.html">Guia de observabilidade</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guia_observabilidade.html#conceitos">Conceitos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guia_observabilidade.html#cenario-1-logs-estruturados">Cenário 1 — Logs estruturados</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guia_observabilidade.html#cenario-2-correlacao-e-propagacao-de-requisicoes">Cenário 2 — Correlação e propagação de requisições</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guia_observabilidade.html#cenario-3-tracing-distribuido-com-opentelemetry">Cenário 3 — Tracing distribuído com OpenTelemetry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guia_observabilidade.html#sintese">Síntese</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guia_observabilidade.html#estrategia-de-testes">Estratégia de testes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guia_observabilidade.html#referencias">Referências</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuração</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#master-switch-e-identidade">Master switch e identidade</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#resiliencia">Resiliência</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#logs-e-correlacao">Logs e correlação</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#provider-de-fila-para-logs">Provider de fila para logs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#opentelemetry-e-backend-de-observabilidade">OpenTelemetry e backend de observabilidade</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="arquitetura.html">Arquitetura</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="arquitetura.html#principio-feature-based-packaging">Princípio: feature-based packaging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arquitetura.html#como-contribuir-alinhado-a-arquitetura">Como contribuir alinhado à arquitetura</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/runtime.html">runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/config.html">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/http.html">http</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/observability.html">observability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/resilience.html">resilience</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/exceptions.html">exceptions</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="visao-geral">
+<h2>Visão geral<a class="headerlink" href="#visao-geral" title="Link para este cabeçalho"></a></h2>
+<p>Uma aplicação consumidora habilita o runtime com uma única chamada:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sme_sidecar_sdk</span><span class="w"> </span><span class="kn">import</span> <span class="n">runtime</span>
+
+<span class="n">runtime</span><span class="o">.</span><span class="n">configure</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Os pilares de resiliência (timeout, retry e circuit breaker) ficam
+expostos via os módulos em <a class="reference internal" href="api/resilience.html#module-sme_sidecar_sdk.resilience" title="sme_sidecar_sdk.resilience"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sme_sidecar_sdk.resilience</span></code></a> e reunidos
+no cliente HTTP compartilhado em <a class="reference internal" href="api/http.html#module-sme_sidecar_sdk.http" title="sme_sidecar_sdk.http"><code class="xref py py-mod docutils literal notranslate"><span class="pre">sme_sidecar_sdk.http</span></code></a>.</p>
+</section>
+<section id="indices-e-tabelas">
+<h2>Índices e tabelas<a class="headerlink" href="#indices-e-tabelas" title="Link para este cabeçalho"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Índice</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Índice do Módulo</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Página de Busca</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Rodapé">
+        <a href="getting_started.html" class="btn btn-neutral float-right" title="Getting Started" accesskey="n" rel="next">Próximo <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Direitos autorais 2026, SME São Paulo.</p>
+  </div>
+
+  Compilado com <a href="https://www.sphinx-doc.org/">Sphinx</a> usando um
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    fornecido por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

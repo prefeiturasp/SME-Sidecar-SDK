@@ -1,0 +1,762 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="pt-BR" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>observability &mdash; Documentação SME Sidecar SDK 0.1.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+    <link rel="canonical" href="https://prefeiturasp.github.io/SME-Sidecar-SDK/api/observability.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2346ddef"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/translations.js?v=71a39b36"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../genindex.html" />
+    <link rel="search" title="Buscar" href="../search.html" />
+    <link rel="next" title="resilience" href="resilience.html" />
+    <link rel="prev" title="http" href="http.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            SME Sidecar SDK
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Pesquisar documentos" aria-label="Pesquisar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Menu de navegação">
+              <p class="caption" role="heading"><span class="caption-text">Conteúdo</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guia_resiliencia.html">Guia de resiliência</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guia_observabilidade.html">Guia de observabilidade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuração</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../arquitetura.html">Arquitetura</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="runtime.html">runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config.html">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="http.html">http</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">observability</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sme_sidecar_sdk.observability.RequestContext"><code class="docutils literal notranslate"><span class="pre">RequestContext</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.observability.RequestContext.request_id"><code class="docutils literal notranslate"><span class="pre">RequestContext.request_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#sme_sidecar_sdk.observability.configure_logging"><code class="docutils literal notranslate"><span class="pre">configure_logging()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sme_sidecar_sdk.observability.configure_tracing"><code class="docutils literal notranslate"><span class="pre">configure_tracing()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sme_sidecar_sdk.observability.correlation_context"><code class="docutils literal notranslate"><span class="pre">correlation_context()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sme_sidecar_sdk.observability.correlation_id_from_headers"><code class="docutils literal notranslate"><span class="pre">correlation_id_from_headers()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sme_sidecar_sdk.observability.extract_trace_context"><code class="docutils literal notranslate"><span class="pre">extract_trace_context()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sme_sidecar_sdk.observability.get_correlation_id"><code class="docutils literal notranslate"><span class="pre">get_correlation_id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sme_sidecar_sdk.observability.get_logger"><code class="docutils literal notranslate"><span class="pre">get_logger()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sme_sidecar_sdk.observability.get_tracer"><code class="docutils literal notranslate"><span class="pre">get_tracer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sme_sidecar_sdk.observability.inject_trace_context"><code class="docutils literal notranslate"><span class="pre">inject_trace_context()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sme_sidecar_sdk.observability.new_correlation_id"><code class="docutils literal notranslate"><span class="pre">new_correlation_id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sme_sidecar_sdk.observability.request_context"><code class="docutils literal notranslate"><span class="pre">request_context()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sme_sidecar_sdk.observability.reset_correlation_id"><code class="docutils literal notranslate"><span class="pre">reset_correlation_id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sme_sidecar_sdk.observability.set_correlation_id"><code class="docutils literal notranslate"><span class="pre">set_correlation_id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sme_sidecar_sdk.observability.shutdown_logging"><code class="docutils literal notranslate"><span class="pre">shutdown_logging()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sme_sidecar_sdk.observability.shutdown_tracing"><code class="docutils literal notranslate"><span class="pre">shutdown_tracing()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sme_sidecar_sdk.observability.use_trace_context"><code class="docutils literal notranslate"><span class="pre">use_trace_context()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-sme_sidecar_sdk.observability.context">context</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.observability.context.get_correlation_id"><code class="docutils literal notranslate"><span class="pre">get_correlation_id()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.observability.context.set_correlation_id"><code class="docutils literal notranslate"><span class="pre">set_correlation_id()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.observability.context.reset_correlation_id"><code class="docutils literal notranslate"><span class="pre">reset_correlation_id()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.observability.context.new_correlation_id"><code class="docutils literal notranslate"><span class="pre">new_correlation_id()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.observability.context.correlation_id_from_headers"><code class="docutils literal notranslate"><span class="pre">correlation_id_from_headers()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.observability.context.correlation_context"><code class="docutils literal notranslate"><span class="pre">correlation_context()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.observability.context.RequestContext"><code class="docutils literal notranslate"><span class="pre">RequestContext</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.observability.context.request_context"><code class="docutils literal notranslate"><span class="pre">request_context()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-sme_sidecar_sdk.observability.tracing">tracing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.observability.tracing.configure_tracing"><code class="docutils literal notranslate"><span class="pre">configure_tracing()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.observability.tracing.get_tracer"><code class="docutils literal notranslate"><span class="pre">get_tracer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.observability.tracing.inject_trace_context"><code class="docutils literal notranslate"><span class="pre">inject_trace_context()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.observability.tracing.extract_trace_context"><code class="docutils literal notranslate"><span class="pre">extract_trace_context()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.observability.tracing.use_trace_context"><code class="docutils literal notranslate"><span class="pre">use_trace_context()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.observability.tracing.shutdown_tracing"><code class="docutils literal notranslate"><span class="pre">shutdown_tracing()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-sme_sidecar_sdk.observability.logging">logging</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.observability.logging.configure_logging"><code class="docutils literal notranslate"><span class="pre">configure_logging()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.observability.logging.get_logger"><code class="docutils literal notranslate"><span class="pre">get_logger()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.observability.logging.shutdown_logging"><code class="docutils literal notranslate"><span class="pre">shutdown_logging()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="resilience.html">resilience</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exceptions.html">exceptions</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Menu de navegação móvel" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SME Sidecar SDK</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Navegação da página">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
+      <li class="breadcrumb-item active">observability</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/observability.rst.txt" rel="nofollow"> Ver código-fonte da página</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-sme_sidecar_sdk.observability">
+<span id="observability"></span><h1>observability<a class="headerlink" href="#module-sme_sidecar_sdk.observability" title="Link para este cabeçalho"></a></h1>
+<p>Primitivos de observabilidade do SDK.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.RequestContext">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.</span></span><span class="sig-name descname"><span class="pre">RequestContext</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/context.html#RequestContext"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.RequestContext" title="Link para esta definição"></a></dt>
+<dd><p>Base: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Identificadores associados à requisição atual.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variáveis<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>request_id</strong> – Identificador de correlação da requisição.</p>
+</dd>
+<dt class="field-even">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>request_id</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.RequestContext.request_id">
+<span class="sig-name descname"><span class="pre">request_id</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#sme_sidecar_sdk.observability.RequestContext.request_id" title="Link para esta definição"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.configure_logging">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.</span></span><span class="sig-name descname"><span class="pre">configure_logging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/logging/configuration.html#configure_logging"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.configure_logging" title="Link para esta definição"></a></dt>
+<dd><p>Configura structlog e logging padrão com o mesmo formato.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>settings</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="config.html#sme_sidecar_sdk.config.Settings" title="sme_sidecar_sdk.config.Settings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Settings</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Configuração opcional. Quando omitida, utiliza a instância
+cacheada do SDK.</p>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.configure_tracing">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.</span></span><span class="sig-name descname"><span class="pre">configure_tracing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/tracing.html#configure_tracing"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.configure_tracing" title="Link para esta definição"></a></dt>
+<dd><p>Configura provider OTLP e instrumentações automáticas suportadas.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>settings</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="config.html#sme_sidecar_sdk.config.Settings" title="sme_sidecar_sdk.config.Settings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Settings</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Configuração opcional. Quando omitida, utiliza a instância
+cacheada do SDK.</p>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">TracerProvider</span></code> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Retorna<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Provider configurado ou <code class="docutils literal notranslate"><span class="pre">None</span></code> quando tracing está desabilitado.</p>
+</dd>
+<dt class="field-even">Levanta<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(em Python v3.14)"><strong>ValueError</strong></a> – Se os headers OTLP não usarem o formato <code class="docutils literal notranslate"><span class="pre">chave=valor</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.correlation_context">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.</span></span><span class="sig-name descname"><span class="pre">correlation_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Separador de parâmetros somente-nomeados (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">header_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'X-Request-ID'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correlation_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/context.html#correlation_context"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.correlation_context" title="Link para esta definição"></a></dt>
+<dd><p>Cria um escopo de correlação e restaura o contexto ao encerrá-lo.</p>
+<p>A precedência é: valor explícito, header recebido e novo UUID4.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>headers</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Headers usados para obter o identificador de correlação.</p></li>
+<li><p><strong>header_name</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Nome do header de correlação.</p></li>
+<li><p><strong>correlation_id</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Identificador explícito com maior precedência.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p>Identificador ativo durante o escopo.</p>
+</dd>
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterator" title="(em Python v3.14)"><em>Iterator</em></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.correlation_id_from_headers">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.</span></span><span class="sig-name descname"><span class="pre">correlation_id_from_headers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">headers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'X-Request-ID'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/context.html#correlation_id_from_headers"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.correlation_id_from_headers" title="Link para esta definição"></a></dt>
+<dd><p>Extrai o identificador de headers sem diferenciar maiúsculas.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>headers</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span>) – Headers nos quais o identificador será procurado.</p></li>
+<li><p><strong>header_name</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Nome do header de correlação.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Retorna<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Valor normalizado do header ou <code class="docutils literal notranslate"><span class="pre">None</span></code> quando ausente ou vazio.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.extract_trace_context">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.</span></span><span class="sig-name descname"><span class="pre">extract_trace_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">headers</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/tracing.html#extract_trace_context"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.extract_trace_context" title="Link para esta definição"></a></dt>
+<dd><p>Extrai contexto W3C de headers recebidos.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>headers</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span>) – Headers recebidos com a requisição.</p>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></span></p>
+</dd>
+<dt class="field-odd">Retorna<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Contexto OpenTelemetry extraído dos headers.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.get_correlation_id">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.</span></span><span class="sig-name descname"><span class="pre">get_correlation_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/context.html#get_correlation_id"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.get_correlation_id" title="Link para esta definição"></a></dt>
+<dd><p>Retorna o identificador associado ao contexto atual.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+<dt class="field-even">Retorna<span class="colon">:</span></dt>
+<dd class="field-even"><p>Identificador de correlação ativo ou <code class="docutils literal notranslate"><span class="pre">None</span></code> quando não há contexto.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.get_logger">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.</span></span><span class="sig-name descname"><span class="pre">get_logger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/logging/configuration.html#get_logger"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.get_logger" title="Link para esta definição"></a></dt>
+<dd><p>Retorna logger estruturado opcionalmente nomeado.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Nome associado ao logger.</p>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">BoundLogger</span></code></span></p>
+</dd>
+<dt class="field-odd">Retorna<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Logger estruturado vinculado ao nome informado.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.get_tracer">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.</span></span><span class="sig-name descname"><span class="pre">get_tracer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/tracing.html#get_tracer"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.get_tracer" title="Link para esta definição"></a></dt>
+<dd><p>Retorna tracer associado ao módulo informado.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Nome da biblioteca ou do módulo instrumentado.</p>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tracer</span></code></span></p>
+</dd>
+<dt class="field-odd">Retorna<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tracer associado ao provider ativo.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.inject_trace_context">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.</span></span><span class="sig-name descname"><span class="pre">inject_trace_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">headers</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/tracing.html#inject_trace_context"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.inject_trace_context" title="Link para esta definição"></a></dt>
+<dd><p>Injeta o contexto W3C ativo em headers de saída.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>headers</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">MutableMapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span>) – Headers mutáveis que receberão o contexto distribuído.</p>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.new_correlation_id">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.</span></span><span class="sig-name descname"><span class="pre">new_correlation_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/context.html#new_correlation_id"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.new_correlation_id" title="Link para esta definição"></a></dt>
+<dd><p>Gera um identificador UUID4 para uma nova cadeia de requisições.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span></p>
+</dd>
+<dt class="field-even">Retorna<span class="colon">:</span></dt>
+<dd class="field-even"><p>UUID4 no formato textual.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.request_context">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.</span></span><span class="sig-name descname"><span class="pre">request_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">headers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/context.html#request_context"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.request_context" title="Link para esta definição"></a></dt>
+<dd><p>Ativa correlação e contexto W3C durante uma requisição recebida.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>headers</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span>) – Headers recebidos com a requisição.</p></li>
+<li><p><strong>settings</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="config.html#sme_sidecar_sdk.config.Settings" title="sme_sidecar_sdk.config.Settings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Settings</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Configuração opcional. Quando omitida, utiliza a instância
+cacheada do SDK.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p>Contexto com os identificadores ativos durante o processamento.</p>
+</dd>
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterator" title="(em Python v3.14)"><em>Iterator</em></a>[<a class="reference internal" href="#sme_sidecar_sdk.observability.context.RequestContext" title="sme_sidecar_sdk.observability.context.RequestContext"><em>RequestContext</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.reset_correlation_id">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.</span></span><span class="sig-name descname"><span class="pre">reset_correlation_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/context.html#reset_correlation_id"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.reset_correlation_id" title="Link para esta definição"></a></dt>
+<dd><p>Restaura o contexto capturado pelo token informado.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>token</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/contextvars.html#contextvars.Token" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Token</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]</span>) – Token retornado por <a class="reference internal" href="#sme_sidecar_sdk.observability.set_correlation_id" title="sme_sidecar_sdk.observability.set_correlation_id"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_correlation_id()</span></code></a>.</p>
+</dd>
+<dt class="field-even">Levanta<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(em Python v3.14)"><strong>ValueError</strong></a> – Se o token pertencer a outro contexto.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#RuntimeError" title="(em Python v3.14)"><strong>RuntimeError</strong></a> – Se o token já tiver sido utilizado.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.set_correlation_id">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.</span></span><span class="sig-name descname"><span class="pre">set_correlation_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/context.html#set_correlation_id"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.set_correlation_id" title="Link para esta definição"></a></dt>
+<dd><p>Associa um identificador ao contexto atual.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Identificador de correlação que será ativado.</p>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/contextvars.html#contextvars.Token" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Token</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]</span></p>
+</dd>
+<dt class="field-odd">Retorna<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Token que permite restaurar o valor anterior do contexto.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.shutdown_logging">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.</span></span><span class="sig-name descname"><span class="pre">shutdown_logging</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/logging/configuration.html#shutdown_logging"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.shutdown_logging" title="Link para esta definição"></a></dt>
+<dd><p>Encerra providers externos configurados para logging.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.shutdown_tracing">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.</span></span><span class="sig-name descname"><span class="pre">shutdown_tracing</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/tracing.html#shutdown_tracing"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.shutdown_tracing" title="Link para esta definição"></a></dt>
+<dd><p>Força o envio dos spans pendentes e encerra o provider.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.use_trace_context">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.</span></span><span class="sig-name descname"><span class="pre">use_trace_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">headers</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/tracing.html#use_trace_context"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.use_trace_context" title="Link para esta definição"></a></dt>
+<dd><p>Ativa temporariamente o contexto distribuído recebido.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>headers</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span>) – Headers usados para extrair o contexto distribuído.</p>
+</dd>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p>Contexto OpenTelemetry ativo durante o escopo.</p>
+</dd>
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterator" title="(em Python v3.14)"><em>Iterator</em></a>[<em>Context</em>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<section id="module-sme_sidecar_sdk.observability.context">
+<span id="context"></span><h2>context<a class="headerlink" href="#module-sme_sidecar_sdk.observability.context" title="Link para este cabeçalho"></a></h2>
+<p>Contexto de correlação e observabilidade para requisições.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.context.get_correlation_id">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.context.</span></span><span class="sig-name descname"><span class="pre">get_correlation_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/context.html#get_correlation_id"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.context.get_correlation_id" title="Link para esta definição"></a></dt>
+<dd><p>Retorna o identificador associado ao contexto atual.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+<dt class="field-even">Retorna<span class="colon">:</span></dt>
+<dd class="field-even"><p>Identificador de correlação ativo ou <code class="docutils literal notranslate"><span class="pre">None</span></code> quando não há contexto.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.context.set_correlation_id">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.context.</span></span><span class="sig-name descname"><span class="pre">set_correlation_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/context.html#set_correlation_id"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.context.set_correlation_id" title="Link para esta definição"></a></dt>
+<dd><p>Associa um identificador ao contexto atual.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Identificador de correlação que será ativado.</p>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/contextvars.html#contextvars.Token" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Token</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]</span></p>
+</dd>
+<dt class="field-odd">Retorna<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Token que permite restaurar o valor anterior do contexto.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.context.reset_correlation_id">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.context.</span></span><span class="sig-name descname"><span class="pre">reset_correlation_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/context.html#reset_correlation_id"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.context.reset_correlation_id" title="Link para esta definição"></a></dt>
+<dd><p>Restaura o contexto capturado pelo token informado.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>token</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/contextvars.html#contextvars.Token" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Token</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]</span>) – Token retornado por <a class="reference internal" href="#sme_sidecar_sdk.observability.context.set_correlation_id" title="sme_sidecar_sdk.observability.context.set_correlation_id"><code class="xref py py-func docutils literal notranslate"><span class="pre">set_correlation_id()</span></code></a>.</p>
+</dd>
+<dt class="field-even">Levanta<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(em Python v3.14)"><strong>ValueError</strong></a> – Se o token pertencer a outro contexto.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#RuntimeError" title="(em Python v3.14)"><strong>RuntimeError</strong></a> – Se o token já tiver sido utilizado.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.context.new_correlation_id">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.context.</span></span><span class="sig-name descname"><span class="pre">new_correlation_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/context.html#new_correlation_id"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.context.new_correlation_id" title="Link para esta definição"></a></dt>
+<dd><p>Gera um identificador UUID4 para uma nova cadeia de requisições.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span></p>
+</dd>
+<dt class="field-even">Retorna<span class="colon">:</span></dt>
+<dd class="field-even"><p>UUID4 no formato textual.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.context.correlation_id_from_headers">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.context.</span></span><span class="sig-name descname"><span class="pre">correlation_id_from_headers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">headers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'X-Request-ID'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/context.html#correlation_id_from_headers"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.context.correlation_id_from_headers" title="Link para esta definição"></a></dt>
+<dd><p>Extrai o identificador de headers sem diferenciar maiúsculas.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>headers</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span>) – Headers nos quais o identificador será procurado.</p></li>
+<li><p><strong>header_name</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Nome do header de correlação.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Retorna<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Valor normalizado do header ou <code class="docutils literal notranslate"><span class="pre">None</span></code> quando ausente ou vazio.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.context.correlation_context">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.context.</span></span><span class="sig-name descname"><span class="pre">correlation_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Separador de parâmetros somente-nomeados (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">header_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'X-Request-ID'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correlation_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/context.html#correlation_context"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.context.correlation_context" title="Link para esta definição"></a></dt>
+<dd><p>Cria um escopo de correlação e restaura o contexto ao encerrá-lo.</p>
+<p>A precedência é: valor explícito, header recebido e novo UUID4.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>headers</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Headers usados para obter o identificador de correlação.</p></li>
+<li><p><strong>header_name</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Nome do header de correlação.</p></li>
+<li><p><strong>correlation_id</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Identificador explícito com maior precedência.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p>Identificador ativo durante o escopo.</p>
+</dd>
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterator" title="(em Python v3.14)"><em>Iterator</em></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.context.RequestContext">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.context.</span></span><span class="sig-name descname"><span class="pre">RequestContext</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/context.html#RequestContext"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.context.RequestContext" title="Link para esta definição"></a></dt>
+<dd><p>Base: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Identificadores associados à requisição atual.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variáveis<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>request_id</strong> – Identificador de correlação da requisição.</p>
+</dd>
+<dt class="field-even">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>request_id</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.context.RequestContext.request_id">
+<span class="sig-name descname"><span class="pre">request_id</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#sme_sidecar_sdk.observability.context.RequestContext.request_id" title="Link para esta definição"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.context.request_context">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.context.</span></span><span class="sig-name descname"><span class="pre">request_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">headers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/context.html#request_context"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.context.request_context" title="Link para esta definição"></a></dt>
+<dd><p>Ativa correlação e contexto W3C durante uma requisição recebida.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>headers</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span>) – Headers recebidos com a requisição.</p></li>
+<li><p><strong>settings</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="config.html#sme_sidecar_sdk.config.Settings" title="sme_sidecar_sdk.config.Settings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Settings</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Configuração opcional. Quando omitida, utiliza a instância
+cacheada do SDK.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p>Contexto com os identificadores ativos durante o processamento.</p>
+</dd>
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterator" title="(em Python v3.14)"><em>Iterator</em></a>[<a class="reference internal" href="#sme_sidecar_sdk.observability.context.RequestContext" title="sme_sidecar_sdk.observability.context.RequestContext"><em>RequestContext</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-sme_sidecar_sdk.observability.tracing">
+<span id="tracing"></span><h2>tracing<a class="headerlink" href="#module-sme_sidecar_sdk.observability.tracing" title="Link para este cabeçalho"></a></h2>
+<p>Tracing distribuído com OpenTelemetry e exportação OTLP.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.tracing.configure_tracing">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.tracing.</span></span><span class="sig-name descname"><span class="pre">configure_tracing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/tracing.html#configure_tracing"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.tracing.configure_tracing" title="Link para esta definição"></a></dt>
+<dd><p>Configura provider OTLP e instrumentações automáticas suportadas.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>settings</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="config.html#sme_sidecar_sdk.config.Settings" title="sme_sidecar_sdk.config.Settings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Settings</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Configuração opcional. Quando omitida, utiliza a instância
+cacheada do SDK.</p>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">TracerProvider</span></code> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Retorna<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Provider configurado ou <code class="docutils literal notranslate"><span class="pre">None</span></code> quando tracing está desabilitado.</p>
+</dd>
+<dt class="field-even">Levanta<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(em Python v3.14)"><strong>ValueError</strong></a> – Se os headers OTLP não usarem o formato <code class="docutils literal notranslate"><span class="pre">chave=valor</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.tracing.get_tracer">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.tracing.</span></span><span class="sig-name descname"><span class="pre">get_tracer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/tracing.html#get_tracer"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.tracing.get_tracer" title="Link para esta definição"></a></dt>
+<dd><p>Retorna tracer associado ao módulo informado.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Nome da biblioteca ou do módulo instrumentado.</p>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tracer</span></code></span></p>
+</dd>
+<dt class="field-odd">Retorna<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tracer associado ao provider ativo.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.tracing.inject_trace_context">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.tracing.</span></span><span class="sig-name descname"><span class="pre">inject_trace_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">headers</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/tracing.html#inject_trace_context"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.tracing.inject_trace_context" title="Link para esta definição"></a></dt>
+<dd><p>Injeta o contexto W3C ativo em headers de saída.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>headers</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">MutableMapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span>) – Headers mutáveis que receberão o contexto distribuído.</p>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.tracing.extract_trace_context">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.tracing.</span></span><span class="sig-name descname"><span class="pre">extract_trace_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">headers</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/tracing.html#extract_trace_context"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.tracing.extract_trace_context" title="Link para esta definição"></a></dt>
+<dd><p>Extrai contexto W3C de headers recebidos.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>headers</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span>) – Headers recebidos com a requisição.</p>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></span></p>
+</dd>
+<dt class="field-odd">Retorna<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Contexto OpenTelemetry extraído dos headers.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.tracing.use_trace_context">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.tracing.</span></span><span class="sig-name descname"><span class="pre">use_trace_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">headers</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/tracing.html#use_trace_context"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.tracing.use_trace_context" title="Link para esta definição"></a></dt>
+<dd><p>Ativa temporariamente o contexto distribuído recebido.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>headers</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span>) – Headers usados para extrair o contexto distribuído.</p>
+</dd>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p>Contexto OpenTelemetry ativo durante o escopo.</p>
+</dd>
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterator" title="(em Python v3.14)"><em>Iterator</em></a>[<em>Context</em>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.tracing.shutdown_tracing">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.tracing.</span></span><span class="sig-name descname"><span class="pre">shutdown_tracing</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/tracing.html#shutdown_tracing"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.tracing.shutdown_tracing" title="Link para esta definição"></a></dt>
+<dd><p>Força o envio dos spans pendentes e encerra o provider.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-sme_sidecar_sdk.observability.logging">
+<span id="logging"></span><h2>logging<a class="headerlink" href="#module-sme_sidecar_sdk.observability.logging" title="Link para este cabeçalho"></a></h2>
+<p>Feature de logs estruturados do domínio de observabilidade.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.logging.configure_logging">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.logging.</span></span><span class="sig-name descname"><span class="pre">configure_logging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/logging/configuration.html#configure_logging"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.logging.configure_logging" title="Link para esta definição"></a></dt>
+<dd><p>Configura structlog e logging padrão com o mesmo formato.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>settings</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="config.html#sme_sidecar_sdk.config.Settings" title="sme_sidecar_sdk.config.Settings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Settings</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Configuração opcional. Quando omitida, utiliza a instância
+cacheada do SDK.</p>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.logging.get_logger">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.logging.</span></span><span class="sig-name descname"><span class="pre">get_logger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/logging/configuration.html#get_logger"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.logging.get_logger" title="Link para esta definição"></a></dt>
+<dd><p>Retorna logger estruturado opcionalmente nomeado.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Nome associado ao logger.</p>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">BoundLogger</span></code></span></p>
+</dd>
+<dt class="field-odd">Retorna<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Logger estruturado vinculado ao nome informado.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.observability.logging.shutdown_logging">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.observability.logging.</span></span><span class="sig-name descname"><span class="pre">shutdown_logging</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/observability/logging/configuration.html#shutdown_logging"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.observability.logging.shutdown_logging" title="Link para esta definição"></a></dt>
+<dd><p>Encerra providers externos configurados para logging.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Rodapé">
+        <a href="http.html" class="btn btn-neutral float-left" title="http" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="resilience.html" class="btn btn-neutral float-right" title="resilience" accesskey="n" rel="next">Próximo <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Direitos autorais 2026, SME São Paulo.</p>
+  </div>
+
+  Compilado com <a href="https://www.sphinx-doc.org/">Sphinx</a> usando um
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    fornecido por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

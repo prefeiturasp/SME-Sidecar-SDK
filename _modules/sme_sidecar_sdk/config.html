@@ -1,0 +1,408 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="pt-BR" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>sme_sidecar_sdk.config &mdash; Documentação SME Sidecar SDK 0.1.0</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+    <link rel="canonical" href="https://prefeiturasp.github.io/SME-Sidecar-SDK/_modules/sme_sidecar_sdk/config.html" />
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2346ddef"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/translations.js?v=71a39b36"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../../genindex.html" />
+    <link rel="search" title="Buscar" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            SME Sidecar SDK
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Pesquisar documentos" aria-label="Pesquisar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Menu de navegação">
+              <p class="caption" role="heading"><span class="caption-text">Conteúdo</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guia_resiliencia.html">Guia de resiliência</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guia_observabilidade.html">Guia de observabilidade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../configuration.html">Configuração</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../arquitetura.html">Arquitetura</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Menu de navegação móvel" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">SME Sidecar SDK</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Navegação da página">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Código do módulo</a></li>
+      <li class="breadcrumb-item active">sme_sidecar_sdk.config</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Código-fonte para sme_sidecar_sdk.config</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Carregador de configuração do SME Sidecar SDK.</span>
+
+<span class="sd">Este módulo expõe :class:`Settings`, um modelo ``pydantic-settings`` que</span>
+<span class="sd">carrega a configuração do SDK a partir de variáveis de ambiente</span>
+<span class="sd">prefixadas com ``SME_``.</span>
+
+<span class="sd">Cobre os recursos de resiliência e observabilidade, incluindo timeout,</span>
+<span class="sd">retry, circuit breaker, logging estruturado, correlação e tracing</span>
+<span class="sd">distribuído.</span>
+
+<span class="sd">Example:</span>
+<span class="sd">    &gt;&gt;&gt; from sme_sidecar_sdk.config import Settings</span>
+<span class="sd">    &gt;&gt;&gt; settings = Settings()  # lê variáveis SME_*</span>
+<span class="sd">    &gt;&gt;&gt; settings.timeout_seconds</span>
+<span class="sd">    10.0</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">lru_cache</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">AliasChoices</span><span class="p">,</span> <span class="n">Field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic_settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseSettings</span><span class="p">,</span> <span class="n">SettingsConfigDict</span>
+
+<span class="n">LogLevel</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"DEBUG"</span><span class="p">,</span> <span class="s2">"INFO"</span><span class="p">,</span> <span class="s2">"WARNING"</span><span class="p">,</span> <span class="s2">"ERROR"</span><span class="p">,</span> <span class="s2">"CRITICAL"</span><span class="p">]</span>
+<span class="n">LogFormat</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"json"</span><span class="p">,</span> <span class="s2">"console"</span><span class="p">]</span>
+<span class="n">Broker</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"rabbitmq"</span><span class="p">]</span>
+<span class="n">ObservabilityBackend</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"elastic"</span><span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_aliases</span><span class="p">(</span><span class="n">env_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">field_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AliasChoices</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Retorna ``AliasChoices`` aceitando env var ou atributo Python."""</span>
+    <span class="k">return</span> <span class="n">AliasChoices</span><span class="p">(</span><span class="n">env_name</span><span class="p">,</span> <span class="n">field_name</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Settings">
+<a class="viewcode-back" href="../../api/config.html#sme_sidecar_sdk.config.Settings">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Settings</span><span class="p">(</span><span class="n">BaseSettings</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Configuração do runtime carregada a partir das variáveis ``SME_*``.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        enabled: Chave geral que liga/desliga o runtime do SDK.</span>
+<span class="sd">        service_name: Nome lógico do serviço consumidor.</span>
+<span class="sd">        service_version: Versão do serviço consumidor.</span>
+<span class="sd">        environment: Ambiente de deploy (``dev``, ``qa``, ``prod``).</span>
+<span class="sd">        timeout_enabled: Habilita o wrapper de timeout padronizado</span>
+<span class="sd">            para HTTP.</span>
+<span class="sd">        timeout_seconds: Timeout total aplicado a chamadas HTTP de</span>
+<span class="sd">            saída.</span>
+<span class="sd">        retry_enabled: Habilita o decorador de retry baseado em</span>
+<span class="sd">            Tenacity.</span>
+<span class="sd">        retry_attempts: Número máximo de tentativas (incluindo a</span>
+<span class="sd">            primeira chamada).</span>
+<span class="sd">        retry_backoff_min: Limite inferior (em segundos) do backoff</span>
+<span class="sd">            exponencial.</span>
+<span class="sd">        retry_backoff_max: Limite superior (em segundos) do backoff</span>
+<span class="sd">            exponencial.</span>
+<span class="sd">        circuit_breaker_enabled: Habilita o circuit breaker baseado em</span>
+<span class="sd">            PyBreaker.</span>
+<span class="sd">        circuit_breaker_fail_max: Quantidade de falhas tolerada antes</span>
+<span class="sd">            da abertura do circuito.</span>
+<span class="sd">        circuit_breaker_reset_timeout: Tempo (em segundos) que o</span>
+<span class="sd">            circuito permanece aberto antes de transitar para o estado</span>
+<span class="sd">            meio-aberto.</span>
+<span class="sd">        logging_enabled: Habilita a padronização de logs.</span>
+<span class="sd">        log_level: Nível mínimo emitido pelos loggers.</span>
+<span class="sd">        log_format: Formato de saída, JSON ou console.</span>
+<span class="sd">        broker: Broker usado pelo provider de fila de logs.</span>
+<span class="sd">        broker_url: URL de conexão compartilhada com o broker.</span>
+<span class="sd">        log_queue: Fila que ativa o provider de fila de logs.</span>
+<span class="sd">        log_queue_buffer_size: Limite do buffer local não bloqueante.</span>
+<span class="sd">        log_queue_socket_timeout: Timeout de conexão com o broker.</span>
+<span class="sd">        log_queue_poll_interval: Intervalo de consulta ao buffer de logs.</span>
+<span class="sd">        log_queue_shutdown_timeout: Tempo máximo de espera no encerramento.</span>
+<span class="sd">        correlation_id_header: Header usado para propagar o request ID.</span>
+<span class="sd">        observability_backend: Backend de observabilidade homologado.</span>
+<span class="sd">        otel_enabled: Habilita tracing distribuído.</span>
+<span class="sd">        otel_exporter_otlp_endpoint: Endpoint OTLP gRPC do collector ou</span>
+<span class="sd">            backend compatível.</span>
+<span class="sd">        otel_exporter_otlp_headers: Headers de autenticação do exporter.</span>
+<span class="sd">        otel_exporter_otlp_insecure: Desabilita TLS no transporte OTLP.</span>
+<span class="sd">    """</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">SettingsConfigDict</span><span class="p">(</span>
+        <span class="n">env_file</span><span class="o">=</span><span class="s2">".env"</span><span class="p">,</span>
+        <span class="n">env_file_encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">,</span>
+        <span class="n">case_sensitive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">extra</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">,</span>
+        <span class="n">populate_by_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">validation_alias</span><span class="o">=</span><span class="n">_aliases</span><span class="p">(</span><span class="s2">"SME_SDK_ENABLED"</span><span class="p">,</span> <span class="s2">"enabled"</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">service_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"unnamed-service"</span><span class="p">,</span>
+        <span class="n">validation_alias</span><span class="o">=</span><span class="n">_aliases</span><span class="p">(</span><span class="s2">"SME_SERVICE_NAME"</span><span class="p">,</span> <span class="s2">"service_name"</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">environment</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"dev"</span><span class="p">,</span>
+        <span class="n">validation_alias</span><span class="o">=</span><span class="n">_aliases</span><span class="p">(</span><span class="s2">"SME_ENVIRONMENT"</span><span class="p">,</span> <span class="s2">"environment"</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">service_version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"unknown"</span><span class="p">,</span>
+        <span class="n">validation_alias</span><span class="o">=</span><span class="n">_aliases</span><span class="p">(</span>
+            <span class="s2">"SME_SERVICE_VERSION"</span><span class="p">,</span>
+            <span class="s2">"service_version"</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">timeout_enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">validation_alias</span><span class="o">=</span><span class="n">_aliases</span><span class="p">(</span><span class="s2">"SME_TIMEOUT_ENABLED"</span><span class="p">,</span> <span class="s2">"timeout_enabled"</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">timeout_seconds</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+        <span class="n">ge</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">validation_alias</span><span class="o">=</span><span class="n">_aliases</span><span class="p">(</span><span class="s2">"SME_TIMEOUT_SECONDS"</span><span class="p">,</span> <span class="s2">"timeout_seconds"</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">retry_enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">validation_alias</span><span class="o">=</span><span class="n">_aliases</span><span class="p">(</span><span class="s2">"SME_RETRY_ENABLED"</span><span class="p">,</span> <span class="s2">"retry_enabled"</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">retry_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">validation_alias</span><span class="o">=</span><span class="n">_aliases</span><span class="p">(</span><span class="s2">"SME_RETRY_ATTEMPTS"</span><span class="p">,</span> <span class="s2">"retry_attempts"</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">retry_backoff_min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+        <span class="n">ge</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">validation_alias</span><span class="o">=</span><span class="n">_aliases</span><span class="p">(</span>
+            <span class="s2">"SME_RETRY_BACKOFF_MIN"</span><span class="p">,</span> <span class="s2">"retry_backoff_min"</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">retry_backoff_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span>
+        <span class="n">ge</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">validation_alias</span><span class="o">=</span><span class="n">_aliases</span><span class="p">(</span>
+            <span class="s2">"SME_RETRY_BACKOFF_MAX"</span><span class="p">,</span> <span class="s2">"retry_backoff_max"</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">circuit_breaker_enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">validation_alias</span><span class="o">=</span><span class="n">_aliases</span><span class="p">(</span>
+            <span class="s2">"SME_CIRCUIT_BREAKER_ENABLED"</span><span class="p">,</span>
+            <span class="s2">"circuit_breaker_enabled"</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">circuit_breaker_fail_max</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">validation_alias</span><span class="o">=</span><span class="n">_aliases</span><span class="p">(</span>
+            <span class="s2">"SME_CIRCUIT_BREAKER_FAIL_MAX"</span><span class="p">,</span>
+            <span class="s2">"circuit_breaker_fail_max"</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">circuit_breaker_reset_timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span>
+        <span class="n">ge</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">validation_alias</span><span class="o">=</span><span class="n">_aliases</span><span class="p">(</span>
+            <span class="s2">"SME_CIRCUIT_BREAKER_RESET_TIMEOUT"</span><span class="p">,</span>
+            <span class="s2">"circuit_breaker_reset_timeout"</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">logging_enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">validation_alias</span><span class="o">=</span><span class="n">_aliases</span><span class="p">(</span>
+            <span class="s2">"SME_LOGGING_ENABLED"</span><span class="p">,</span>
+            <span class="s2">"logging_enabled"</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">log_level</span><span class="p">:</span> <span class="n">LogLevel</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"ERROR"</span><span class="p">,</span>
+        <span class="n">validation_alias</span><span class="o">=</span><span class="n">_aliases</span><span class="p">(</span><span class="s2">"SME_LOG_LEVEL"</span><span class="p">,</span> <span class="s2">"log_level"</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">log_format</span><span class="p">:</span> <span class="n">LogFormat</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"json"</span><span class="p">,</span>
+        <span class="n">validation_alias</span><span class="o">=</span><span class="n">_aliases</span><span class="p">(</span><span class="s2">"SME_LOG_FORMAT"</span><span class="p">,</span> <span class="s2">"log_format"</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">broker</span><span class="p">:</span> <span class="n">Broker</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"rabbitmq"</span><span class="p">,</span>
+        <span class="n">validation_alias</span><span class="o">=</span><span class="n">_aliases</span><span class="p">(</span><span class="s2">"SME_BROKER"</span><span class="p">,</span> <span class="s2">"broker"</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">broker_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"amqp://guest:guest@localhost:5672/</span><span class="si">%2F</span><span class="s2">"</span><span class="p">,</span>
+        <span class="n">min_length</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">validation_alias</span><span class="o">=</span><span class="n">_aliases</span><span class="p">(</span><span class="s2">"SME_BROKER_URL"</span><span class="p">,</span> <span class="s2">"broker_url"</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">log_queue</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span>
+        <span class="n">validation_alias</span><span class="o">=</span><span class="n">_aliases</span><span class="p">(</span><span class="s2">"SME_LOG_QUEUE"</span><span class="p">,</span> <span class="s2">"log_queue"</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">log_queue_buffer_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">10_000</span><span class="p">,</span>
+        <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">validation_alias</span><span class="o">=</span><span class="n">_aliases</span><span class="p">(</span>
+            <span class="s2">"SME_LOG_QUEUE_BUFFER_SIZE"</span><span class="p">,</span>
+            <span class="s2">"log_queue_buffer_size"</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">log_queue_socket_timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+        <span class="n">ge</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">validation_alias</span><span class="o">=</span><span class="n">_aliases</span><span class="p">(</span>
+            <span class="s2">"SME_LOG_QUEUE_SOCKET_TIMEOUT"</span><span class="p">,</span>
+            <span class="s2">"log_queue_socket_timeout"</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">log_queue_poll_interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span>
+        <span class="n">ge</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+        <span class="n">validation_alias</span><span class="o">=</span><span class="n">_aliases</span><span class="p">(</span>
+            <span class="s2">"SME_LOG_QUEUE_POLL_INTERVAL"</span><span class="p">,</span>
+            <span class="s2">"log_queue_poll_interval"</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">log_queue_shutdown_timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+        <span class="n">ge</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">validation_alias</span><span class="o">=</span><span class="n">_aliases</span><span class="p">(</span>
+            <span class="s2">"SME_LOG_QUEUE_SHUTDOWN_TIMEOUT"</span><span class="p">,</span>
+            <span class="s2">"log_queue_shutdown_timeout"</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">correlation_id_header</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"X-Request-ID"</span><span class="p">,</span>
+        <span class="n">min_length</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">validation_alias</span><span class="o">=</span><span class="n">_aliases</span><span class="p">(</span>
+            <span class="s2">"SME_CORRELATION_ID_HEADER"</span><span class="p">,</span>
+            <span class="s2">"correlation_id_header"</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">observability_backend</span><span class="p">:</span> <span class="n">ObservabilityBackend</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"elastic"</span><span class="p">,</span>
+        <span class="n">validation_alias</span><span class="o">=</span><span class="n">_aliases</span><span class="p">(</span>
+            <span class="s2">"SME_OBSERVABILITY_BACKEND"</span><span class="p">,</span>
+            <span class="s2">"observability_backend"</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">otel_enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">validation_alias</span><span class="o">=</span><span class="n">_aliases</span><span class="p">(</span><span class="s2">"SME_OTEL_ENABLED"</span><span class="p">,</span> <span class="s2">"otel_enabled"</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">otel_exporter_otlp_endpoint</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"http://localhost:4317"</span><span class="p">,</span>
+        <span class="n">min_length</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">validation_alias</span><span class="o">=</span><span class="n">_aliases</span><span class="p">(</span>
+            <span class="s2">"SME_OTEL_EXPORTER_OTLP_ENDPOINT"</span><span class="p">,</span>
+            <span class="s2">"otel_exporter_otlp_endpoint"</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">otel_exporter_otlp_headers</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span>
+        <span class="n">validation_alias</span><span class="o">=</span><span class="n">_aliases</span><span class="p">(</span>
+            <span class="s2">"SME_OTEL_EXPORTER_OTLP_HEADERS"</span><span class="p">,</span>
+            <span class="s2">"otel_exporter_otlp_headers"</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">otel_exporter_otlp_insecure</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">validation_alias</span><span class="o">=</span><span class="n">_aliases</span><span class="p">(</span>
+            <span class="s2">"SME_OTEL_EXPORTER_OTLP_INSECURE"</span><span class="p">,</span>
+            <span class="s2">"otel_exporter_otlp_insecure"</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_settings">
+<a class="viewcode-back" href="../../api/config.html#sme_sidecar_sdk.config.get_settings">[documentos]</a>
+<span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_settings</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Settings</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Retorna uma instância de :class:`Settings` cacheada por processo.</span>
+
+<span class="sd">    A primeira chamada instancia :class:`Settings`, que lê o ambiente.</span>
+<span class="sd">    Chamadas subsequentes devolvem o mesmo objeto, evitando releitura.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Settings: Instância de configuração cacheada.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">Settings</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="reset_settings_cache">
+<a class="viewcode-back" href="../../api/config.html#sme_sidecar_sdk.config.reset_settings_cache">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">reset_settings_cache</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Limpa o cache da instância de :class:`Settings`.</span>
+
+<span class="sd">    Útil em testes quando as variáveis de ambiente mudam entre casos.</span>
+<span class="sd">    """</span>
+    <span class="n">get_settings</span><span class="o">.</span><span class="n">cache_clear</span><span class="p">()</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Direitos autorais 2026, SME São Paulo.</p>
+  </div>
+
+  Compilado com <a href="https://www.sphinx-doc.org/">Sphinx</a> usando um
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    fornecido por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

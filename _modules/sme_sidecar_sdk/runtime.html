@@ -1,0 +1,237 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="pt-BR" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>sme_sidecar_sdk.runtime &mdash; Documentação SME Sidecar SDK 0.1.0</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+    <link rel="canonical" href="https://prefeiturasp.github.io/SME-Sidecar-SDK/_modules/sme_sidecar_sdk/runtime.html" />
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2346ddef"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/translations.js?v=71a39b36"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../../genindex.html" />
+    <link rel="search" title="Buscar" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            SME Sidecar SDK
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Pesquisar documentos" aria-label="Pesquisar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Menu de navegação">
+              <p class="caption" role="heading"><span class="caption-text">Conteúdo</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guia_resiliencia.html">Guia de resiliência</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guia_observabilidade.html">Guia de observabilidade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../configuration.html">Configuração</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../arquitetura.html">Arquitetura</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Menu de navegação móvel" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">SME Sidecar SDK</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Navegação da página">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Código do módulo</a></li>
+      <li class="breadcrumb-item active">sme_sidecar_sdk.runtime</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Código-fonte para sme_sidecar_sdk.runtime</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Fachada de alto nível que expõe o ponto de entrada ``configure()``.</span>
+
+<span class="sd">Este módulo é a superfície de importação estável para os consumidores</span>
+<span class="sd">(``from sme_sidecar_sdk import runtime; runtime.configure()``). Carrega</span>
+<span class="sd">as ``Settings`` uma vez e expõe os toggles ativos por meio de</span>
+<span class="sd">:class:`RuntimeState`.</span>
+
+<span class="sd">Example:</span>
+<span class="sd">    &gt;&gt;&gt; from sme_sidecar_sdk import runtime</span>
+<span class="sd">    &gt;&gt;&gt; state = runtime.configure()</span>
+<span class="sd">    &gt;&gt;&gt; state.settings.timeout_seconds</span>
+<span class="sd">    10.0</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">Settings</span><span class="p">,</span> <span class="n">get_settings</span><span class="p">,</span> <span class="n">reset_settings_cache</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.observability.logging</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">configure_logging</span><span class="p">,</span>
+    <span class="n">get_logger</span><span class="p">,</span>
+    <span class="n">shutdown_logging</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.observability.tracing</span><span class="w"> </span><span class="kn">import</span> <span class="n">configure_tracing</span><span class="p">,</span> <span class="n">shutdown_tracing</span>
+
+
+<div class="viewcode-block" id="RuntimeState">
+<a class="viewcode-back" href="../../api/runtime.html#sme_sidecar_sdk.runtime.RuntimeState">[documentos]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RuntimeState</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Snapshot dos recursos de resiliência e observabilidade ativos.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        settings: Configuração efetiva utilizada durante o ``configure``.</span>
+<span class="sd">        timeout_enabled: ``True`` quando o wrapper de timeout padronizado</span>
+<span class="sd">            está habilitado.</span>
+<span class="sd">        retry_enabled: ``True`` quando o decorador de retry está habilitado.</span>
+<span class="sd">        circuit_breaker_enabled: ``True`` quando o circuit breaker está</span>
+<span class="sd">            habilitado.</span>
+<span class="sd">        logging_enabled: ``True`` quando os logs estruturados estão ativos.</span>
+<span class="sd">        tracing_enabled: ``True`` quando o provider OpenTelemetry está ativo.</span>
+<span class="sd">    """</span>
+
+    <span class="n">settings</span><span class="p">:</span> <span class="n">Settings</span>
+    <span class="n">timeout_enabled</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">retry_enabled</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">circuit_breaker_enabled</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">logging_enabled</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">tracing_enabled</span><span class="p">:</span> <span class="nb">bool</span></div>
+
+
+
+<span class="n">_STATE</span><span class="p">:</span> <span class="n">RuntimeState</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="configure">
+<a class="viewcode-back" href="../../api/runtime.html#sme_sidecar_sdk.runtime.configure">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="n">settings</span><span class="p">:</span> <span class="n">Settings</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RuntimeState</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Inicializa o runtime do SDK no processo atual.</span>
+
+<span class="sd">    Idempotente: chamadas subsequentes reavaliam as configurações</span>
+<span class="sd">    ativas. Quando ``SME_SDK_ENABLED`` é ``False``, o estado devolvido</span>
+<span class="sd">    reporta todos os subsistemas como desabilitados.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        settings: Configuração opcional. Quando omitida, utiliza a</span>
+<span class="sd">            instância cacheada por :func:`sme_sidecar_sdk.config.get_settings`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        RuntimeState: Snapshot dos recursos de resiliência e</span>
+<span class="sd">        observabilidade ativos.</span>
+<span class="sd">    """</span>
+    <span class="k">global</span> <span class="n">_STATE</span>
+    <span class="n">settings</span> <span class="o">=</span> <span class="n">settings</span> <span class="ow">or</span> <span class="n">get_settings</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">settings</span><span class="o">.</span><span class="n">enabled</span><span class="p">:</span>
+        <span class="n">shutdown_logging</span><span class="p">()</span>
+        <span class="n">_STATE</span> <span class="o">=</span> <span class="n">RuntimeState</span><span class="p">(</span>
+            <span class="n">settings</span><span class="o">=</span><span class="n">settings</span><span class="p">,</span>
+            <span class="n">timeout_enabled</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">retry_enabled</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">circuit_breaker_enabled</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">logging_enabled</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">tracing_enabled</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">_STATE</span>
+
+    <span class="n">configure_logging</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+    <span class="n">tracer_provider</span> <span class="o">=</span> <span class="n">configure_tracing</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+    <span class="n">_STATE</span> <span class="o">=</span> <span class="n">RuntimeState</span><span class="p">(</span>
+        <span class="n">settings</span><span class="o">=</span><span class="n">settings</span><span class="p">,</span>
+        <span class="n">timeout_enabled</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">timeout_enabled</span><span class="p">,</span>
+        <span class="n">retry_enabled</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">retry_enabled</span><span class="p">,</span>
+        <span class="n">circuit_breaker_enabled</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">circuit_breaker_enabled</span><span class="p">,</span>
+        <span class="n">logging_enabled</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">logging_enabled</span><span class="p">,</span>
+        <span class="n">tracing_enabled</span><span class="o">=</span><span class="n">tracer_provider</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">logging_enabled</span><span class="p">:</span>
+        <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">"sdk_configured"</span><span class="p">,</span>
+            <span class="n">tracing_enabled</span><span class="o">=</span><span class="n">_STATE</span><span class="o">.</span><span class="n">tracing_enabled</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">_STATE</span></div>
+
+
+
+<div class="viewcode-block" id="state">
+<a class="viewcode-back" href="../../api/runtime.html#sme_sidecar_sdk.runtime.state">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">state</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">RuntimeState</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Retorna o estado capturado pela última chamada a :func:`configure`."""</span>
+    <span class="k">return</span> <span class="n">_STATE</span></div>
+
+
+
+<div class="viewcode-block" id="shutdown">
+<a class="viewcode-back" href="../../api/runtime.html#sme_sidecar_sdk.runtime.shutdown">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">shutdown</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Libera o estado do runtime do SDK.</span>
+
+<span class="sd">    Limpa o snapshot capturado por :func:`configure` e o cache das</span>
+<span class="sd">    configurações, devolvendo o processo ao estado anterior ao boot.</span>
+<span class="sd">    """</span>
+    <span class="k">global</span> <span class="n">_STATE</span>
+    <span class="n">shutdown_logging</span><span class="p">()</span>
+    <span class="n">shutdown_tracing</span><span class="p">()</span>
+    <span class="n">_STATE</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">reset_settings_cache</span><span class="p">()</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Direitos autorais 2026, SME São Paulo.</p>
+  </div>
+
+  Compilado com <a href="https://www.sphinx-doc.org/">Sphinx</a> usando um
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    fornecido por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,334 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="pt-BR" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Getting Started &mdash; Documentação SME Sidecar SDK 0.1.0</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+    <link rel="canonical" href="https://prefeiturasp.github.io/SME-Sidecar-SDK/getting_started.html" />
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=2346ddef"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="_static/translations.js?v=71a39b36"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="genindex.html" />
+    <link rel="search" title="Buscar" href="search.html" />
+    <link rel="next" title="Guia de resiliência" href="guia_resiliencia.html" />
+    <link rel="prev" title="SME Sidecar SDK" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            SME Sidecar SDK
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Pesquisar documentos" aria-label="Pesquisar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Menu de navegação">
+              <p class="caption" role="heading"><span class="caption-text">Conteúdo</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#instalacao">Instalação</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#variaveis-obrigatorias-por-feature">Variáveis obrigatórias por feature</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#base">Base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tracing-opentelemetry">Tracing OpenTelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#logs-estruturados-via-rabbitmq">Logs estruturados via RabbitMQ</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#integracao-com-django">Integração com Django</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#inicializar-o-runtime">Inicializar o runtime</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#registrar-o-middleware">Registrar o middleware</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#como-utilizar-os-recursos">Como Utilizar Os Recursos</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cliente-http-compartilhado">Cliente HTTP compartilhado</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#logs-estruturados">Logs estruturados</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Tracing OpenTelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#contexto-fora-de-uma-requisicao-django">Contexto fora de uma requisição Django</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#primitivos-de-resiliencia-isolados">Primitivos de resiliência isolados</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guia_resiliencia.html">Guia de resiliência</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guia_observabilidade.html">Guia de observabilidade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuração</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arquitetura.html">Arquitetura</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Menu de navegação móvel" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SME Sidecar SDK</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Navegação da página">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Getting Started</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/getting_started.md.txt" rel="nofollow"> Ver código-fonte da página</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="getting-started">
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Link para este cabeçalho"></a></h1>
+<p>Este guia mostra o caminho mínimo para instalar a SDK, integrar com Django
+e começar a usar os recursos principais.</p>
+<section id="instalacao">
+<h2>Instalação<a class="headerlink" href="#instalacao" title="Link para este cabeçalho"></a></h2>
+<p>Escolha uma versão publicada em
+<a class="reference external" href="https://github.com/prefeiturasp/SME-Sidecar-SDK/releases">SME-Sidecar-SDK releases</a>
+e instale a SDK no serviço consumidor fixando a tag:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/prefeiturasp/SME-Sidecar-SDK.git@v1.0.0
+</pre></div>
+</div>
+</section>
+<section id="variaveis-obrigatorias-por-feature">
+<h2>Variáveis obrigatórias por feature<a class="headerlink" href="#variaveis-obrigatorias-por-feature" title="Link para este cabeçalho"></a></h2>
+<p>Configure por variável de ambiente apenas os valores que dependem do ambiente,
+infraestrutura ou segredo.</p>
+<section id="base">
+<h3>Base<a class="headerlink" href="#base" title="Link para este cabeçalho"></a></h3>
+<p>Obrigatória para identificar o ambiente nos logs e traces:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">SME_ENVIRONMENT</span><span class="o">=</span><span class="nb">local</span>
+</pre></div>
+</div>
+</section>
+<section id="tracing-opentelemetry">
+<h3>Tracing OpenTelemetry<a class="headerlink" href="#tracing-opentelemetry" title="Link para este cabeçalho"></a></h3>
+<p>Obrigatórias quando o envio de traces estiver habilitado:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">SME_OTEL_ENABLED</span><span class="o">=</span><span class="nb">true</span>
+<span class="nv">SME_OTEL_EXPORTER_OTLP_ENDPOINT</span><span class="o">=</span>http://localhost:8200
+</pre></div>
+</div>
+<p>Obrigatória quando o endpoint OTLP exigir autenticação:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">SME_OTEL_EXPORTER_OTLP_HEADERS</span><span class="o">=</span><span class="nv">Authorization</span><span class="o">=</span>Bearer%20token
+</pre></div>
+</div>
+</section>
+<section id="logs-estruturados-via-rabbitmq">
+<h3>Logs estruturados via RabbitMQ<a class="headerlink" href="#logs-estruturados-via-rabbitmq" title="Link para este cabeçalho"></a></h3>
+<p>Obrigatórias quando o envio de logs para fila estiver habilitado:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">SME_BROKER_URL</span><span class="o">=</span>amqp://usuario:senha@localhost:5672/%2F
+<span class="nv">SME_LOG_QUEUE</span><span class="o">=</span>ms.pedagogico.logs
+</pre></div>
+</div>
+<p>Configure a identidade do serviço no boot da aplicação. O nome lógico e a
+versão pertencem ao artefato publicado, por isso podem ser informados pelo
+código ao inicializar o runtime.</p>
+</section>
+</section>
+<section id="integracao-com-django">
+<span id="integracao-django"></span><h2>Integração com Django<a class="headerlink" href="#integracao-com-django" title="Link para este cabeçalho"></a></h2>
+<section id="inicializar-o-runtime">
+<h3>Inicializar o runtime<a class="headerlink" href="#inicializar-o-runtime" title="Link para este cabeçalho"></a></h3>
+<p>Inicialize a SDK uma vez no boot do processo Django, preferencialmente no
+<code class="docutils literal notranslate"><span class="pre">AppConfig</span></code> do app <code class="docutils literal notranslate"><span class="pre">core</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">apps/core/apps.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">django.apps</span><span class="w"> </span><span class="kn">import</span> <span class="n">AppConfig</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CoreConfig</span><span class="p">(</span><span class="n">AppConfig</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Configuração do app core."""</span>
+
+    <span class="n">default_auto_field</span> <span class="o">=</span> <span class="s2">"django.db.models.BigAutoField"</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"apps.core"</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">ready</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Inicializa os recursos compartilhados da SDK."""</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sme_sidecar_sdk</span><span class="w"> </span><span class="kn">import</span> <span class="n">runtime</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sme_sidecar_sdk.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">Settings</span>
+
+        <span class="n">runtime</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span>
+            <span class="n">Settings</span><span class="p">(</span>
+                <span class="n">service_name</span><span class="o">=</span><span class="s2">"pedagogico-ms"</span><span class="p">,</span>
+                <span class="n">service_version</span><span class="o">=</span><span class="s2">"1.0.0"</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+<p>O runtime combina os valores informados por código com as variáveis
+<code class="docutils literal notranslate"><span class="pre">SME_*</span></code>, configura logging e inicializa tracing quando estiver habilitado. A
+referência completa fica em <a class="reference internal" href="configuration.html"><span class="doc">Configuração</span></a>.</p>
+</section>
+<section id="registrar-o-middleware">
+<h3>Registrar o middleware<a class="headerlink" href="#registrar-o-middleware" title="Link para este cabeçalho"></a></h3>
+<p>Adicione o middleware da SDK antes das camadas que emitem logs:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">MIDDLEWARE</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"sme_sidecar_sdk.integrations.django.ObservabilityMiddleware"</span><span class="p">,</span>
+    <span class="s2">"django.middleware.security.SecurityMiddleware"</span><span class="p">,</span>
+    <span class="s2">"django.middleware.common.CommonMiddleware"</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>O middleware reutiliza ou gera o <code class="docutils literal notranslate"><span class="pre">X-Request-ID</span></code>, devolve esse valor na
+resposta e registra o log HTTP da requisição. Quando tracing está ativo,
+a instrumentação oficial do OpenTelemetry para Django cria os spans HTTP.</p>
+</section>
+</section>
+<section id="como-utilizar-os-recursos">
+<h2>Como Utilizar Os Recursos<a class="headerlink" href="#como-utilizar-os-recursos" title="Link para este cabeçalho"></a></h2>
+<section id="cliente-http-compartilhado">
+<h3>Cliente HTTP compartilhado<a class="headerlink" href="#cliente-http-compartilhado" title="Link para este cabeçalho"></a></h3>
+<p>Use o cliente HTTP da SDK para chamadas entre serviços. Ele já embute
+timeout, retry, circuit breaker, logging, tracing e propagação de headers.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sme_sidecar_sdk</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_http_client</span>
+
+<span class="k">with</span> <span class="n">build_http_client</span><span class="p">(</span>
+    <span class="s2">"pedagogico-ms"</span><span class="p">,</span>
+    <span class="n">base_url</span><span class="o">=</span><span class="s2">"https://pedagogico.exemplo.gov.br"</span><span class="p">,</span>
+<span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/api/v1/turmas"</span><span class="p">)</span>
+    <span class="n">turmas</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>O primeiro argumento (<code class="docutils literal notranslate"><span class="pre">&quot;pedagogico-ms&quot;</span></code>) identifica o upstream nos logs e
+no circuit breaker.</p>
+<p>Para código assíncrono, use o equivalente async:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sme_sidecar_sdk</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_async_http_client</span>
+
+<span class="k">async</span> <span class="k">with</span> <span class="n">build_async_http_client</span><span class="p">(</span>
+    <span class="s2">"pedagogico-ms"</span><span class="p">,</span>
+    <span class="n">base_url</span><span class="o">=</span><span class="s2">"https://pedagogico.exemplo.gov.br"</span><span class="p">,</span>
+<span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/api/v1/turmas"</span><span class="p">)</span>
+    <span class="n">turmas</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="logs-estruturados">
+<h3>Logs estruturados<a class="headerlink" href="#logs-estruturados" title="Link para este cabeçalho"></a></h3>
+<p>Use <code class="docutils literal notranslate"><span class="pre">get_logger()</span></code> para emitir logs no padrão da SDK:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sme_sidecar_sdk</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"turmas_consultadas"</span><span class="p">,</span> <span class="n">quantidade</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Os logs recebem automaticamente <code class="docutils literal notranslate"><span class="pre">service</span></code>, <code class="docutils literal notranslate"><span class="pre">environment</span></code>, <code class="docutils literal notranslate"><span class="pre">request_id</span></code> e,
+quando houver span ativo, <code class="docutils literal notranslate"><span class="pre">trace_id</span></code> e <code class="docutils literal notranslate"><span class="pre">span_id</span></code>.</p>
+</section>
+<section id="id1">
+<h3>Tracing OpenTelemetry<a class="headerlink" href="#id1" title="Link para este cabeçalho"></a></h3>
+<p>Depois do <code class="docutils literal notranslate"><span class="pre">runtime.configure()</span></code> e do <code class="docutils literal notranslate"><span class="pre">ObservabilityMiddleware</span></code>, o tracing não
+exige chamadas manuais no código de negócio. A instrumentação cria spans para
+as requisições Django e para as chamadas feitas com o cliente HTTP da SDK.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sme_sidecar_sdk</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_http_client</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">listar_turmas</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+    <span class="k">with</span> <span class="n">build_http_client</span><span class="p">(</span>
+        <span class="s2">"pedagogico-ms"</span><span class="p">,</span>
+        <span class="n">base_url</span><span class="o">=</span><span class="s2">"https://pedagogico.exemplo.gov.br"</span><span class="p">,</span>
+    <span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"/api/v1/turmas"</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Ao atender uma requisição Django, a chamada acima fica correlacionada ao trace
+da requisição original. No APM, o endpoint Django aparece como transação e a
+chamada para <code class="docutils literal notranslate"><span class="pre">pedagogico-ms</span></code> aparece como span HTTP externo.</p>
+</section>
+<section id="contexto-fora-de-uma-requisicao-django">
+<h3>Contexto fora de uma requisição Django<a class="headerlink" href="#contexto-fora-de-uma-requisicao-django" title="Link para este cabeçalho"></a></h3>
+<p>Em workers, scripts ou integrações sem middleware HTTP, use
+<code class="docutils literal notranslate"><span class="pre">request_context()</span></code> para criar ou reaproveitar o contexto de correlação:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sme_sidecar_sdk.observability</span><span class="w"> </span><span class="kn">import</span> <span class="n">request_context</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">processar</span><span class="p">(</span><span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">request_context</span><span class="p">(</span><span class="n">headers</span><span class="p">):</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p>Dentro desse escopo, logs e chamadas feitas pelo cliente HTTP da SDK usam
+o mesmo <code class="docutils literal notranslate"><span class="pre">X-Request-ID</span></code>.</p>
+</section>
+<section id="primitivos-de-resiliencia-isolados">
+<h3>Primitivos de resiliência isolados<a class="headerlink" href="#primitivos-de-resiliencia-isolados" title="Link para este cabeçalho"></a></h3>
+<p>O uso recomendado para chamadas HTTP é o cliente compartilhado. Quando
+precisar dos primitivos isolados, eles continuam disponíveis:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sme_sidecar_sdk.resilience.retry</span><span class="w"> </span><span class="kn">import</span> <span class="n">retry_policy</span>
+
+
+<span class="nd">@retry_policy</span><span class="p">(</span><span class="n">exceptions</span><span class="o">=</span><span class="p">(</span><span class="ne">ConnectionError</span><span class="p">,</span> <span class="ne">TimeoutError</span><span class="p">))</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">carregar_dados</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sme_sidecar_sdk.resilience.circuit_breaker</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_circuit_breaker</span>
+
+<span class="n">breaker</span> <span class="o">=</span> <span class="n">get_circuit_breaker</span><span class="p">(</span><span class="s2">"turmas-api"</span><span class="p">)</span>
+
+
+<span class="nd">@breaker</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">chamar_turmas</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Rodapé">
+        <a href="index.html" class="btn btn-neutral float-left" title="SME Sidecar SDK" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="guia_resiliencia.html" class="btn btn-neutral float-right" title="Guia de resiliência" accesskey="n" rel="next">Próximo <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Direitos autorais 2026, SME São Paulo.</p>
+  </div>
+
+  Compilado com <a href="https://www.sphinx-doc.org/">Sphinx</a> usando um
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    fornecido por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,280 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="pt-BR" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>sme_sidecar_sdk.observability.context &mdash; Documentação SME Sidecar SDK 0.1.0</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+    <link rel="canonical" href="https://prefeiturasp.github.io/SME-Sidecar-SDK/_modules/sme_sidecar_sdk/observability/context.html" />
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=2346ddef"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../../_static/translations.js?v=71a39b36"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../../../genindex.html" />
+    <link rel="search" title="Buscar" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            SME Sidecar SDK
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Pesquisar documentos" aria-label="Pesquisar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Menu de navegação">
+              <p class="caption" role="heading"><span class="caption-text">Conteúdo</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guia_resiliencia.html">Guia de resiliência</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guia_observabilidade.html">Guia de observabilidade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuração</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../arquitetura.html">Arquitetura</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Menu de navegação móvel" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">SME Sidecar SDK</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Navegação da página">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Código do módulo</a></li>
+      <li class="breadcrumb-item active">sme_sidecar_sdk.observability.context</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Código-fonte para sme_sidecar_sdk.observability.context</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Contexto de correlação e observabilidade para requisições."""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Mapping</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextvars</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContextVar</span><span class="p">,</span> <span class="n">Token</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..config</span><span class="w"> </span><span class="kn">import</span> <span class="n">Settings</span><span class="p">,</span> <span class="n">get_settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.tracing</span><span class="w"> </span><span class="kn">import</span> <span class="n">use_trace_context</span>
+
+<span class="n">_CORRELATION_ID</span><span class="p">:</span> <span class="n">ContextVar</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="n">ContextVar</span><span class="p">(</span>
+    <span class="s2">"sme_correlation_id"</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="get_correlation_id">
+<a class="viewcode-back" href="../../../api/observability.html#sme_sidecar_sdk.observability.get_correlation_id">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_correlation_id</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Retorna o identificador associado ao contexto atual.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Identificador de correlação ativo ou ``None`` quando não há contexto.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">_CORRELATION_ID</span><span class="o">.</span><span class="n">get</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="set_correlation_id">
+<a class="viewcode-back" href="../../../api/observability.html#sme_sidecar_sdk.observability.set_correlation_id">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_correlation_id</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Token</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Associa um identificador ao contexto atual.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        value: Identificador de correlação que será ativado.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Token que permite restaurar o valor anterior do contexto.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">_CORRELATION_ID</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="reset_correlation_id">
+<a class="viewcode-back" href="../../../api/observability.html#sme_sidecar_sdk.observability.reset_correlation_id">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">reset_correlation_id</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">Token</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Restaura o contexto capturado pelo token informado.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        token: Token retornado por :func:`set_correlation_id`.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: Se o token pertencer a outro contexto.</span>
+<span class="sd">        RuntimeError: Se o token já tiver sido utilizado.</span>
+<span class="sd">    """</span>
+    <span class="n">_CORRELATION_ID</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="n">token</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="new_correlation_id">
+<a class="viewcode-back" href="../../../api/observability.html#sme_sidecar_sdk.observability.new_correlation_id">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">new_correlation_id</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Gera um identificador UUID4 para uma nova cadeia de requisições.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        UUID4 no formato textual.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span></div>
+
+
+
+<div class="viewcode-block" id="correlation_id_from_headers">
+<a class="viewcode-back" href="../../../api/observability.html#sme_sidecar_sdk.observability.correlation_id_from_headers">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">correlation_id_from_headers</span><span class="p">(</span>
+    <span class="n">headers</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+    <span class="n">header_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"X-Request-ID"</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Extrai o identificador de headers sem diferenciar maiúsculas.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        headers: Headers nos quais o identificador será procurado.</span>
+<span class="sd">        header_name: Nome do header de correlação.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Valor normalizado do header ou ``None`` quando ausente ou vazio.</span>
+<span class="sd">    """</span>
+    <span class="n">expected</span> <span class="o">=</span> <span class="n">header_name</span><span class="o">.</span><span class="n">casefold</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">headers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">casefold</span><span class="p">()</span> <span class="o">==</span> <span class="n">expected</span> <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="correlation_context">
+<a class="viewcode-back" href="../../../api/observability.html#sme_sidecar_sdk.observability.correlation_context">[documentos]</a>
+<span class="nd">@contextmanager</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">correlation_context</span><span class="p">(</span>
+    <span class="n">headers</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">header_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"X-Request-ID"</span><span class="p">,</span>
+    <span class="n">correlation_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Cria um escopo de correlação e restaura o contexto ao encerrá-lo.</span>
+
+<span class="sd">    A precedência é: valor explícito, header recebido e novo UUID4.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        headers: Headers usados para obter o identificador de correlação.</span>
+<span class="sd">        header_name: Nome do header de correlação.</span>
+<span class="sd">        correlation_id: Identificador explícito com maior precedência.</span>
+
+<span class="sd">    Yields:</span>
+<span class="sd">        Identificador ativo durante o escopo.</span>
+<span class="sd">    """</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">correlation_id</span>
+        <span class="ow">or</span> <span class="n">correlation_id_from_headers</span><span class="p">(</span><span class="n">headers</span> <span class="ow">or</span> <span class="p">{},</span> <span class="n">header_name</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="n">new_correlation_id</span><span class="p">()</span>
+    <span class="p">)</span>
+    <span class="n">token</span> <span class="o">=</span> <span class="n">set_correlation_id</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">value</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">reset_correlation_id</span><span class="p">(</span><span class="n">token</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="RequestContext">
+<a class="viewcode-back" href="../../../api/observability.html#sme_sidecar_sdk.observability.RequestContext">[documentos]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RequestContext</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Identificadores associados à requisição atual.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        request_id: Identificador de correlação da requisição.</span>
+<span class="sd">    """</span>
+
+    <span class="n">request_id</span><span class="p">:</span> <span class="nb">str</span></div>
+
+
+
+<div class="viewcode-block" id="request_context">
+<a class="viewcode-back" href="../../../api/observability.html#sme_sidecar_sdk.observability.request_context">[documentos]</a>
+<span class="nd">@contextmanager</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">request_context</span><span class="p">(</span>
+    <span class="n">headers</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+    <span class="n">settings</span><span class="p">:</span> <span class="n">Settings</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">RequestContext</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Ativa correlação e contexto W3C durante uma requisição recebida.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        headers: Headers recebidos com a requisição.</span>
+<span class="sd">        settings: Configuração opcional. Quando omitida, utiliza a instância</span>
+<span class="sd">            cacheada do SDK.</span>
+
+<span class="sd">    Yields:</span>
+<span class="sd">        Contexto com os identificadores ativos durante o processamento.</span>
+<span class="sd">    """</span>
+    <span class="n">settings</span> <span class="o">=</span> <span class="n">settings</span> <span class="ow">or</span> <span class="n">get_settings</span><span class="p">()</span>
+    <span class="k">with</span> <span class="p">(</span>
+        <span class="n">correlation_context</span><span class="p">(</span>
+            <span class="n">headers</span><span class="p">,</span>
+            <span class="n">header_name</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">correlation_id_header</span><span class="p">,</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">request_id</span><span class="p">,</span>
+        <span class="n">use_trace_context</span><span class="p">(</span><span class="n">headers</span><span class="p">),</span>
+    <span class="p">):</span>
+        <span class="k">yield</span> <span class="n">RequestContext</span><span class="p">(</span><span class="n">request_id</span><span class="o">=</span><span class="n">request_id</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Direitos autorais 2026, SME São Paulo.</p>
+  </div>
+
+  Compilado com <a href="https://www.sphinx-doc.org/">Sphinx</a> usando um
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    fornecido por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

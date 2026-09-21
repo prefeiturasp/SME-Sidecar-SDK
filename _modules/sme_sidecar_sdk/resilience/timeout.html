@@ -1,0 +1,219 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="pt-BR" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>sme_sidecar_sdk.resilience.timeout &mdash; Documentação SME Sidecar SDK 0.1.0</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+    <link rel="canonical" href="https://prefeiturasp.github.io/SME-Sidecar-SDK/_modules/sme_sidecar_sdk/resilience/timeout.html" />
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=2346ddef"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../../_static/translations.js?v=71a39b36"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../../../genindex.html" />
+    <link rel="search" title="Buscar" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            SME Sidecar SDK
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Pesquisar documentos" aria-label="Pesquisar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Menu de navegação">
+              <p class="caption" role="heading"><span class="caption-text">Conteúdo</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guia_resiliencia.html">Guia de resiliência</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guia_observabilidade.html">Guia de observabilidade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuração</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../arquitetura.html">Arquitetura</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Menu de navegação móvel" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">SME Sidecar SDK</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Navegação da página">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Código do módulo</a></li>
+      <li class="breadcrumb-item active">sme_sidecar_sdk.resilience.timeout</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Código-fonte para sme_sidecar_sdk.resilience.timeout</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Timeouts HTTP padronizados sobre :mod:`httpx`.</span>
+
+<span class="sd">O SDK fornece clientes ``httpx`` prontos para uso (sync e async)</span>
+<span class="sd">pré-configurados com o timeout definido por</span>
+<span class="sd">:class:`sme_sidecar_sdk.config.Settings`.</span>
+
+<span class="sd">Example:</span>
+<span class="sd">    &gt;&gt;&gt; from sme_sidecar_sdk.resilience.timeout import build_sync_client</span>
+<span class="sd">    &gt;&gt;&gt; with build_sync_client() as client:</span>
+<span class="sd">    ...     response = client.get("https://example.org")</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">httpx</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..config</span><span class="w"> </span><span class="kn">import</span> <span class="n">Settings</span><span class="p">,</span> <span class="n">get_settings</span>
+
+
+<div class="viewcode-block" id="build_timeout">
+<a class="viewcode-back" href="../../../api/resilience.html#sme_sidecar_sdk.resilience.build_timeout">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_timeout</span><span class="p">(</span><span class="n">settings</span><span class="p">:</span> <span class="n">Settings</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Timeout</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Constrói um :class:`httpx.Timeout` a partir das configurações do SDK.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        settings: Override opcional. Quando omitido, utiliza a instância</span>
+<span class="sd">            cacheada do SDK.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        httpx.Timeout: Configuração de timeout aplicada às requisições</span>
+<span class="sd">        de saída.</span>
+<span class="sd">    """</span>
+    <span class="n">settings</span> <span class="o">=</span> <span class="n">settings</span> <span class="ow">or</span> <span class="n">get_settings</span><span class="p">()</span>
+    <span class="n">seconds</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">timeout_seconds</span> <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">timeout_enabled</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Timeout</span><span class="p">(</span><span class="n">seconds</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="build_sync_client">
+<a class="viewcode-back" href="../../../api/resilience.html#sme_sidecar_sdk.resilience.build_sync_client">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_sync_client</span><span class="p">(</span>
+    <span class="n">settings</span><span class="p">:</span> <span class="n">Settings</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">client_kwargs</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Client</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Cria um :class:`httpx.Client` síncrono com os padrões do SDK.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        settings: Override opcional para as configurações do SDK.</span>
+<span class="sd">        **client_kwargs: Argumentos adicionais repassados ao</span>
+<span class="sd">            ``httpx.Client``. A chave ``timeout`` é gerenciada pelo SDK</span>
+<span class="sd">            e não deve ser informada.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        httpx.Client: Cliente HTTP síncrono configurado.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: Quando argumentos reservados são informados.</span>
+<span class="sd">    """</span>
+    <span class="n">settings</span> <span class="o">=</span> <span class="n">settings</span> <span class="ow">or</span> <span class="n">get_settings</span><span class="p">()</span>
+    <span class="n">_reject_reserved_kwargs</span><span class="p">(</span><span class="n">client_kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span>
+        <span class="n">timeout</span><span class="o">=</span><span class="n">build_timeout</span><span class="p">(</span><span class="n">settings</span><span class="p">),</span>
+        <span class="o">**</span><span class="n">client_kwargs</span><span class="p">,</span>  <span class="c1"># type: ignore[arg-type, unused-ignore]</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="build_async_client">
+<a class="viewcode-back" href="../../../api/resilience.html#sme_sidecar_sdk.resilience.build_async_client">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_async_client</span><span class="p">(</span>
+    <span class="n">settings</span><span class="p">:</span> <span class="n">Settings</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">client_kwargs</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Cria um :class:`httpx.AsyncClient` assíncrono com os padrões do SDK.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        settings: Override opcional para as configurações do SDK.</span>
+<span class="sd">        **client_kwargs: Argumentos adicionais repassados ao</span>
+<span class="sd">            ``httpx.AsyncClient``. A chave ``timeout`` é gerenciada pelo</span>
+<span class="sd">            SDK e não deve ser informada.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        httpx.AsyncClient: Cliente HTTP assíncrono configurado.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: Quando argumentos reservados são informados.</span>
+<span class="sd">    """</span>
+    <span class="n">settings</span> <span class="o">=</span> <span class="n">settings</span> <span class="ow">or</span> <span class="n">get_settings</span><span class="p">()</span>
+    <span class="n">_reject_reserved_kwargs</span><span class="p">(</span><span class="n">client_kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">(</span>
+        <span class="n">timeout</span><span class="o">=</span><span class="n">build_timeout</span><span class="p">(</span><span class="n">settings</span><span class="p">),</span>
+        <span class="o">**</span><span class="n">client_kwargs</span><span class="p">,</span>  <span class="c1"># type: ignore[arg-type, unused-ignore]</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_reject_reserved_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Rejeita argumentos cuja configuração pertence ao SDK.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        kwargs: Argumentos destinados ao construtor do cliente HTTPX.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: Se ``timeout`` for informado explicitamente.</span>
+<span class="sd">    """</span>
+    <span class="n">reserved</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"timeout"</span><span class="p">}</span> <span class="o">&amp;</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">reserved</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">"Os argumentos a seguir são gerenciados pelo SDK e não "</span>
+            <span class="sa">f</span><span class="s2">"podem ser sobrescritos: </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">reserved</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
+        <span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Direitos autorais 2026, SME São Paulo.</p>
+  </div>
+
+  Compilado com <a href="https://www.sphinx-doc.org/">Sphinx</a> usando um
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    fornecido por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

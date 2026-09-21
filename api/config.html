@@ -1,0 +1,470 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="pt-BR" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>config &mdash; Documentação SME Sidecar SDK 0.1.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+    <link rel="canonical" href="https://prefeiturasp.github.io/SME-Sidecar-SDK/api/config.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2346ddef"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/translations.js?v=71a39b36"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../genindex.html" />
+    <link rel="search" title="Buscar" href="../search.html" />
+    <link rel="next" title="http" href="http.html" />
+    <link rel="prev" title="runtime" href="runtime.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            SME Sidecar SDK
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Pesquisar documentos" aria-label="Pesquisar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Menu de navegação">
+              <p class="caption" role="heading"><span class="caption-text">Conteúdo</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guia_resiliencia.html">Guia de resiliência</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guia_observabilidade.html">Guia de observabilidade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuração</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../arquitetura.html">Arquitetura</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="runtime.html">runtime</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">config</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings"><code class="docutils literal notranslate"><span class="pre">Settings</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings.model_config"><code class="docutils literal notranslate"><span class="pre">Settings.model_config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings.enabled"><code class="docutils literal notranslate"><span class="pre">Settings.enabled</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings.service_name"><code class="docutils literal notranslate"><span class="pre">Settings.service_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings.environment"><code class="docutils literal notranslate"><span class="pre">Settings.environment</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings.service_version"><code class="docutils literal notranslate"><span class="pre">Settings.service_version</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings.timeout_enabled"><code class="docutils literal notranslate"><span class="pre">Settings.timeout_enabled</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings.timeout_seconds"><code class="docutils literal notranslate"><span class="pre">Settings.timeout_seconds</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings.retry_enabled"><code class="docutils literal notranslate"><span class="pre">Settings.retry_enabled</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings.retry_attempts"><code class="docutils literal notranslate"><span class="pre">Settings.retry_attempts</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings.retry_backoff_min"><code class="docutils literal notranslate"><span class="pre">Settings.retry_backoff_min</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings.retry_backoff_max"><code class="docutils literal notranslate"><span class="pre">Settings.retry_backoff_max</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings.circuit_breaker_enabled"><code class="docutils literal notranslate"><span class="pre">Settings.circuit_breaker_enabled</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings.circuit_breaker_fail_max"><code class="docutils literal notranslate"><span class="pre">Settings.circuit_breaker_fail_max</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings.circuit_breaker_reset_timeout"><code class="docutils literal notranslate"><span class="pre">Settings.circuit_breaker_reset_timeout</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings.logging_enabled"><code class="docutils literal notranslate"><span class="pre">Settings.logging_enabled</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings.log_level"><code class="docutils literal notranslate"><span class="pre">Settings.log_level</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings.log_format"><code class="docutils literal notranslate"><span class="pre">Settings.log_format</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings.broker"><code class="docutils literal notranslate"><span class="pre">Settings.broker</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings.broker_url"><code class="docutils literal notranslate"><span class="pre">Settings.broker_url</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings.log_queue"><code class="docutils literal notranslate"><span class="pre">Settings.log_queue</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings.log_queue_buffer_size"><code class="docutils literal notranslate"><span class="pre">Settings.log_queue_buffer_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings.log_queue_socket_timeout"><code class="docutils literal notranslate"><span class="pre">Settings.log_queue_socket_timeout</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings.log_queue_poll_interval"><code class="docutils literal notranslate"><span class="pre">Settings.log_queue_poll_interval</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings.log_queue_shutdown_timeout"><code class="docutils literal notranslate"><span class="pre">Settings.log_queue_shutdown_timeout</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings.correlation_id_header"><code class="docutils literal notranslate"><span class="pre">Settings.correlation_id_header</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings.observability_backend"><code class="docutils literal notranslate"><span class="pre">Settings.observability_backend</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings.otel_enabled"><code class="docutils literal notranslate"><span class="pre">Settings.otel_enabled</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings.otel_exporter_otlp_endpoint"><code class="docutils literal notranslate"><span class="pre">Settings.otel_exporter_otlp_endpoint</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings.otel_exporter_otlp_headers"><code class="docutils literal notranslate"><span class="pre">Settings.otel_exporter_otlp_headers</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings.otel_exporter_otlp_insecure"><code class="docutils literal notranslate"><span class="pre">Settings.otel_exporter_otlp_insecure</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#sme_sidecar_sdk.config.get_settings"><code class="docutils literal notranslate"><span class="pre">get_settings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sme_sidecar_sdk.config.reset_settings_cache"><code class="docutils literal notranslate"><span class="pre">reset_settings_cache()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="http.html">http</a></li>
+<li class="toctree-l2"><a class="reference internal" href="observability.html">observability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="resilience.html">resilience</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exceptions.html">exceptions</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Menu de navegação móvel" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SME Sidecar SDK</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Navegação da página">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
+      <li class="breadcrumb-item active">config</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/config.rst.txt" rel="nofollow"> Ver código-fonte da página</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-sme_sidecar_sdk.config">
+<span id="config"></span><h1>config<a class="headerlink" href="#module-sme_sidecar_sdk.config" title="Link para este cabeçalho"></a></h1>
+<p>Carregador de configuração do SME Sidecar SDK.</p>
+<p>Este módulo expõe <a class="reference internal" href="#sme_sidecar_sdk.config.Settings" title="sme_sidecar_sdk.config.Settings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Settings</span></code></a>, um modelo <code class="docutils literal notranslate"><span class="pre">pydantic-settings</span></code> que
+carrega a configuração do SDK a partir de variáveis de ambiente
+prefixadas com <code class="docutils literal notranslate"><span class="pre">SME_</span></code>.</p>
+<p>Cobre os recursos de resiliência e observabilidade, incluindo timeout,
+retry, circuit breaker, logging estruturado, correlação e tracing
+distribuído.</p>
+<p class="rubric">Exemplo</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">sme_sidecar_sdk.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">Settings</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">settings</span> <span class="o">=</span> <span class="n">Settings</span><span class="p">()</span>  <span class="c1"># lê variáveis SME_*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">settings</span><span class="o">.</span><span class="n">timeout_seconds</span>
+<span class="go">10.0</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.Settings">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.config.</span></span><span class="sig-name descname"><span class="pre">Settings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_case_sensitive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_nested_model_default_partial_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_env_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_env_prefix_target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_env_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">PosixPath('.')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_env_file_encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_env_ignore_empty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_env_nested_delimiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_env_nested_max_split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_env_parse_none_str</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_env_parse_enums</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cli_prog_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cli_parse_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cli_settings_source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cli_parse_none_str</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cli_hide_none_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cli_avoid_json</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cli_enforce_required</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cli_use_class_docs_for_groups</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cli_show_env_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cli_exit_on_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cli_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cli_flag_prefix_char</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cli_implicit_flags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cli_ignore_unknown_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cli_kebab_case</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_cli_shortcuts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_secrets_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_build_sources</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/config.html#Settings"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.config.Settings" title="Link para esta definição"></a></dt>
+<dd><p>Base: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseSettings</span></code></p>
+<p>Configuração do runtime carregada a partir das variáveis <code class="docutils literal notranslate"><span class="pre">SME_*</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variáveis<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>enabled</strong> – Chave geral que liga/desliga o runtime do SDK.</p></li>
+<li><p><strong>service_name</strong> – Nome lógico do serviço consumidor.</p></li>
+<li><p><strong>service_version</strong> – Versão do serviço consumidor.</p></li>
+<li><p><strong>environment</strong> – Ambiente de deploy (<code class="docutils literal notranslate"><span class="pre">dev</span></code>, <code class="docutils literal notranslate"><span class="pre">qa</span></code>, <code class="docutils literal notranslate"><span class="pre">prod</span></code>).</p></li>
+<li><p><strong>timeout_enabled</strong> – Habilita o wrapper de timeout padronizado
+para HTTP.</p></li>
+<li><p><strong>timeout_seconds</strong> – Timeout total aplicado a chamadas HTTP de
+saída.</p></li>
+<li><p><strong>retry_enabled</strong> – Habilita o decorador de retry baseado em
+Tenacity.</p></li>
+<li><p><strong>retry_attempts</strong> – Número máximo de tentativas (incluindo a
+primeira chamada).</p></li>
+<li><p><strong>retry_backoff_min</strong> – Limite inferior (em segundos) do backoff
+exponencial.</p></li>
+<li><p><strong>retry_backoff_max</strong> – Limite superior (em segundos) do backoff
+exponencial.</p></li>
+<li><p><strong>circuit_breaker_enabled</strong> – Habilita o circuit breaker baseado em
+PyBreaker.</p></li>
+<li><p><strong>circuit_breaker_fail_max</strong> – Quantidade de falhas tolerada antes
+da abertura do circuito.</p></li>
+<li><p><strong>circuit_breaker_reset_timeout</strong> – Tempo (em segundos) que o
+circuito permanece aberto antes de transitar para o estado
+meio-aberto.</p></li>
+<li><p><strong>logging_enabled</strong> – Habilita a padronização de logs.</p></li>
+<li><p><strong>log_level</strong> – Nível mínimo emitido pelos loggers.</p></li>
+<li><p><strong>log_format</strong> – Formato de saída, JSON ou console.</p></li>
+<li><p><strong>broker</strong> – Broker usado pelo provider de fila de logs.</p></li>
+<li><p><strong>broker_url</strong> – URL de conexão compartilhada com o broker.</p></li>
+<li><p><strong>log_queue</strong> – Fila que ativa o provider de fila de logs.</p></li>
+<li><p><strong>log_queue_buffer_size</strong> – Limite do buffer local não bloqueante.</p></li>
+<li><p><strong>log_queue_socket_timeout</strong> – Timeout de conexão com o broker.</p></li>
+<li><p><strong>log_queue_poll_interval</strong> – Intervalo de consulta ao buffer de logs.</p></li>
+<li><p><strong>log_queue_shutdown_timeout</strong> – Tempo máximo de espera no encerramento.</p></li>
+<li><p><strong>correlation_id_header</strong> – Header usado para propagar o request ID.</p></li>
+<li><p><strong>observability_backend</strong> – Backend de observabilidade homologado.</p></li>
+<li><p><strong>otel_enabled</strong> – Habilita tracing distribuído.</p></li>
+<li><p><strong>otel_exporter_otlp_endpoint</strong> – Endpoint OTLP gRPC do collector ou
+backend compatível.</p></li>
+<li><p><strong>otel_exporter_otlp_headers</strong> – Headers de autenticação do exporter.</p></li>
+<li><p><strong>otel_exporter_otlp_insecure</strong> – Desabilita TLS no transporte OTLP.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>_case_sensitive</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(em Python v3.14)"><em>bool</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>_nested_model_default_partial_update</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(em Python v3.14)"><em>bool</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>_env_prefix</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>_env_prefix_target</strong> (<em>EnvPrefixTarget</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>_env_file</strong> (<em>DotenvType</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>_env_file_encoding</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>_env_ignore_empty</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(em Python v3.14)"><em>bool</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>_env_nested_delimiter</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>_env_nested_max_split</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(em Python v3.14)"><em>int</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>_env_parse_none_str</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>_env_parse_enums</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(em Python v3.14)"><em>bool</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>_cli_prog_name</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>_cli_parse_args</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(em Python v3.14)"><em>bool</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(em Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em>] </em><em>| </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(em Python v3.14)"><em>tuple</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em>, </em><em>...</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>_cli_settings_source</strong> (<em>CliSettingsSource</em><em>[</em><em>Any</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>_cli_parse_none_str</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>_cli_hide_none_type</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(em Python v3.14)"><em>bool</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>_cli_avoid_json</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(em Python v3.14)"><em>bool</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>_cli_enforce_required</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(em Python v3.14)"><em>bool</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>_cli_use_class_docs_for_groups</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(em Python v3.14)"><em>bool</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>_cli_show_env_vars</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(em Python v3.14)"><em>bool</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>_cli_exit_on_error</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(em Python v3.14)"><em>bool</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>_cli_prefix</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>_cli_flag_prefix_char</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>_cli_implicit_flags</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(em Python v3.14)"><em>bool</em></a><em> | </em><em>Literal</em><em>[</em><em>'dual'</em><em>, </em><em>'toggle'</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>_cli_ignore_unknown_args</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(em Python v3.14)"><em>bool</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>_cli_kebab_case</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(em Python v3.14)"><em>bool</em></a><em> | </em><em>Literal</em><em>[</em><em>'all'</em><em>, </em><em>'no_enums'</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>_cli_shortcuts</strong> (<em>Mapping</em><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(em Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em>]</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>_secrets_dir</strong> (<em>PathType</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>_build_sources</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(em Python v3.14)"><em>tuple</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(em Python v3.14)"><em>tuple</em></a><em>[</em><em>PydanticBaseSettingsSource</em><em>, </em><em>...</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(em Python v3.14)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em>, </em><em>Any</em><em>]</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>enabled</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(em Python v3.14)"><em>bool</em></a>)</p></li>
+<li><p><strong>service_name</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>environment</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>service_version</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>timeout_enabled</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(em Python v3.14)"><em>bool</em></a>)</p></li>
+<li><p><strong>timeout_seconds</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(em Python v3.14)"><em>float</em></a>)</p></li>
+<li><p><strong>retry_enabled</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(em Python v3.14)"><em>bool</em></a>)</p></li>
+<li><p><strong>retry_attempts</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(em Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>retry_backoff_min</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(em Python v3.14)"><em>float</em></a>)</p></li>
+<li><p><strong>retry_backoff_max</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(em Python v3.14)"><em>float</em></a>)</p></li>
+<li><p><strong>circuit_breaker_enabled</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(em Python v3.14)"><em>bool</em></a>)</p></li>
+<li><p><strong>circuit_breaker_fail_max</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(em Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>circuit_breaker_reset_timeout</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(em Python v3.14)"><em>float</em></a>)</p></li>
+<li><p><strong>logging_enabled</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(em Python v3.14)"><em>bool</em></a>)</p></li>
+<li><p><strong>log_level</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(em Python v3.14)"><em>Literal</em></a><em>[</em><em>'DEBUG'</em><em>, </em><em>'INFO'</em><em>, </em><em>'WARNING'</em><em>, </em><em>'ERROR'</em><em>, </em><em>'CRITICAL'</em><em>]</em>)</p></li>
+<li><p><strong>log_format</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(em Python v3.14)"><em>Literal</em></a><em>[</em><em>'json'</em><em>, </em><em>'console'</em><em>]</em>)</p></li>
+<li><p><strong>broker</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(em Python v3.14)"><em>Literal</em></a><em>[</em><em>'rabbitmq'</em><em>]</em>)</p></li>
+<li><p><strong>broker_url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>log_queue</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>log_queue_buffer_size</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(em Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>log_queue_socket_timeout</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(em Python v3.14)"><em>float</em></a>)</p></li>
+<li><p><strong>log_queue_poll_interval</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(em Python v3.14)"><em>float</em></a>)</p></li>
+<li><p><strong>log_queue_shutdown_timeout</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(em Python v3.14)"><em>float</em></a>)</p></li>
+<li><p><strong>correlation_id_header</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>observability_backend</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(em Python v3.14)"><em>Literal</em></a><em>[</em><em>'elastic'</em><em>]</em>)</p></li>
+<li><p><strong>otel_enabled</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(em Python v3.14)"><em>bool</em></a>)</p></li>
+<li><p><strong>otel_exporter_otlp_endpoint</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>otel_exporter_otlp_headers</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>otel_exporter_otlp_insecure</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(em Python v3.14)"><em>bool</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.Settings.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'arbitrary_types_allowed':</span> <span class="pre">True,</span> <span class="pre">'case_sensitive':</span> <span class="pre">False,</span> <span class="pre">'cli_avoid_json':</span> <span class="pre">False,</span> <span class="pre">'cli_enforce_required':</span> <span class="pre">False,</span> <span class="pre">'cli_exit_on_error':</span> <span class="pre">True,</span> <span class="pre">'cli_flag_prefix_char':</span> <span class="pre">'-',</span> <span class="pre">'cli_hide_none_type':</span> <span class="pre">False,</span> <span class="pre">'cli_ignore_unknown_args':</span> <span class="pre">False,</span> <span class="pre">'cli_implicit_flags':</span> <span class="pre">False,</span> <span class="pre">'cli_kebab_case':</span> <span class="pre">False,</span> <span class="pre">'cli_parse_args':</span> <span class="pre">None,</span> <span class="pre">'cli_parse_none_str':</span> <span class="pre">None,</span> <span class="pre">'cli_prefix':</span> <span class="pre">'',</span> <span class="pre">'cli_prog_name':</span> <span class="pre">None,</span> <span class="pre">'cli_shortcuts':</span> <span class="pre">None,</span> <span class="pre">'cli_show_env_vars':</span> <span class="pre">False,</span> <span class="pre">'cli_use_class_docs_for_groups':</span> <span class="pre">False,</span> <span class="pre">'enable_decoding':</span> <span class="pre">True,</span> <span class="pre">'env_file':</span> <span class="pre">'.env',</span> <span class="pre">'env_file_encoding':</span> <span class="pre">'utf-8',</span> <span class="pre">'env_ignore_empty':</span> <span class="pre">False,</span> <span class="pre">'env_nested_delimiter':</span> <span class="pre">None,</span> <span class="pre">'env_nested_max_split':</span> <span class="pre">None,</span> <span class="pre">'env_parse_enums':</span> <span class="pre">None,</span> <span class="pre">'env_parse_none_str':</span> <span class="pre">None,</span> <span class="pre">'env_prefix':</span> <span class="pre">'',</span> <span class="pre">'env_prefix_target':</span> <span class="pre">'variable',</span> <span class="pre">'extra':</span> <span class="pre">'ignore',</span> <span class="pre">'json_file':</span> <span class="pre">None,</span> <span class="pre">'json_file_encoding':</span> <span class="pre">None,</span> <span class="pre">'nested_model_default_partial_update':</span> <span class="pre">False,</span> <span class="pre">'populate_by_name':</span> <span class="pre">True,</span> <span class="pre">'protected_namespaces':</span> <span class="pre">('model_validate',</span> <span class="pre">'model_dump',</span> <span class="pre">'settings_customise_sources'),</span> <span class="pre">'secrets_dir':</span> <span class="pre">None,</span> <span class="pre">'toml_file':</span> <span class="pre">None,</span> <span class="pre">'validate_by_alias':</span> <span class="pre">True,</span> <span class="pre">'validate_by_name':</span> <span class="pre">True,</span> <span class="pre">'validate_default':</span> <span class="pre">True,</span> <span class="pre">'yaml_config_section':</span> <span class="pre">None,</span> <span class="pre">'yaml_file':</span> <span class="pre">None,</span> <span class="pre">'yaml_file_encoding':</span> <span class="pre">None}</span></span><a class="headerlink" href="#sme_sidecar_sdk.config.Settings.model_config" title="Link para esta definição"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.Settings.enabled">
+<span class="sig-name descname"><span class="pre">enabled</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(em Python v3.14)"><span class="pre">bool</span></a></span><a class="headerlink" href="#sme_sidecar_sdk.config.Settings.enabled" title="Link para esta definição"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.Settings.service_name">
+<span class="sig-name descname"><span class="pre">service_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#sme_sidecar_sdk.config.Settings.service_name" title="Link para esta definição"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.Settings.environment">
+<span class="sig-name descname"><span class="pre">environment</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#sme_sidecar_sdk.config.Settings.environment" title="Link para esta definição"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.Settings.service_version">
+<span class="sig-name descname"><span class="pre">service_version</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#sme_sidecar_sdk.config.Settings.service_version" title="Link para esta definição"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.Settings.timeout_enabled">
+<span class="sig-name descname"><span class="pre">timeout_enabled</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(em Python v3.14)"><span class="pre">bool</span></a></span><a class="headerlink" href="#sme_sidecar_sdk.config.Settings.timeout_enabled" title="Link para esta definição"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.Settings.timeout_seconds">
+<span class="sig-name descname"><span class="pre">timeout_seconds</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(em Python v3.14)"><span class="pre">float</span></a></span><a class="headerlink" href="#sme_sidecar_sdk.config.Settings.timeout_seconds" title="Link para esta definição"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.Settings.retry_enabled">
+<span class="sig-name descname"><span class="pre">retry_enabled</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(em Python v3.14)"><span class="pre">bool</span></a></span><a class="headerlink" href="#sme_sidecar_sdk.config.Settings.retry_enabled" title="Link para esta definição"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.Settings.retry_attempts">
+<span class="sig-name descname"><span class="pre">retry_attempts</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(em Python v3.14)"><span class="pre">int</span></a></span><a class="headerlink" href="#sme_sidecar_sdk.config.Settings.retry_attempts" title="Link para esta definição"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.Settings.retry_backoff_min">
+<span class="sig-name descname"><span class="pre">retry_backoff_min</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(em Python v3.14)"><span class="pre">float</span></a></span><a class="headerlink" href="#sme_sidecar_sdk.config.Settings.retry_backoff_min" title="Link para esta definição"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.Settings.retry_backoff_max">
+<span class="sig-name descname"><span class="pre">retry_backoff_max</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(em Python v3.14)"><span class="pre">float</span></a></span><a class="headerlink" href="#sme_sidecar_sdk.config.Settings.retry_backoff_max" title="Link para esta definição"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.Settings.circuit_breaker_enabled">
+<span class="sig-name descname"><span class="pre">circuit_breaker_enabled</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(em Python v3.14)"><span class="pre">bool</span></a></span><a class="headerlink" href="#sme_sidecar_sdk.config.Settings.circuit_breaker_enabled" title="Link para esta definição"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.Settings.circuit_breaker_fail_max">
+<span class="sig-name descname"><span class="pre">circuit_breaker_fail_max</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(em Python v3.14)"><span class="pre">int</span></a></span><a class="headerlink" href="#sme_sidecar_sdk.config.Settings.circuit_breaker_fail_max" title="Link para esta definição"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.Settings.circuit_breaker_reset_timeout">
+<span class="sig-name descname"><span class="pre">circuit_breaker_reset_timeout</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(em Python v3.14)"><span class="pre">float</span></a></span><a class="headerlink" href="#sme_sidecar_sdk.config.Settings.circuit_breaker_reset_timeout" title="Link para esta definição"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.Settings.logging_enabled">
+<span class="sig-name descname"><span class="pre">logging_enabled</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(em Python v3.14)"><span class="pre">bool</span></a></span><a class="headerlink" href="#sme_sidecar_sdk.config.Settings.logging_enabled" title="Link para esta definição"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.Settings.log_level">
+<span class="sig-name descname"><span class="pre">log_level</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">LogLevel</span></span><a class="headerlink" href="#sme_sidecar_sdk.config.Settings.log_level" title="Link para esta definição"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.Settings.log_format">
+<span class="sig-name descname"><span class="pre">log_format</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">LogFormat</span></span><a class="headerlink" href="#sme_sidecar_sdk.config.Settings.log_format" title="Link para esta definição"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.Settings.broker">
+<span class="sig-name descname"><span class="pre">broker</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Broker</span></span><a class="headerlink" href="#sme_sidecar_sdk.config.Settings.broker" title="Link para esta definição"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.Settings.broker_url">
+<span class="sig-name descname"><span class="pre">broker_url</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#sme_sidecar_sdk.config.Settings.broker_url" title="Link para esta definição"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.Settings.log_queue">
+<span class="sig-name descname"><span class="pre">log_queue</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#sme_sidecar_sdk.config.Settings.log_queue" title="Link para esta definição"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.Settings.log_queue_buffer_size">
+<span class="sig-name descname"><span class="pre">log_queue_buffer_size</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(em Python v3.14)"><span class="pre">int</span></a></span><a class="headerlink" href="#sme_sidecar_sdk.config.Settings.log_queue_buffer_size" title="Link para esta definição"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.Settings.log_queue_socket_timeout">
+<span class="sig-name descname"><span class="pre">log_queue_socket_timeout</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(em Python v3.14)"><span class="pre">float</span></a></span><a class="headerlink" href="#sme_sidecar_sdk.config.Settings.log_queue_socket_timeout" title="Link para esta definição"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.Settings.log_queue_poll_interval">
+<span class="sig-name descname"><span class="pre">log_queue_poll_interval</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(em Python v3.14)"><span class="pre">float</span></a></span><a class="headerlink" href="#sme_sidecar_sdk.config.Settings.log_queue_poll_interval" title="Link para esta definição"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.Settings.log_queue_shutdown_timeout">
+<span class="sig-name descname"><span class="pre">log_queue_shutdown_timeout</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(em Python v3.14)"><span class="pre">float</span></a></span><a class="headerlink" href="#sme_sidecar_sdk.config.Settings.log_queue_shutdown_timeout" title="Link para esta definição"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.Settings.correlation_id_header">
+<span class="sig-name descname"><span class="pre">correlation_id_header</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#sme_sidecar_sdk.config.Settings.correlation_id_header" title="Link para esta definição"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.Settings.observability_backend">
+<span class="sig-name descname"><span class="pre">observability_backend</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ObservabilityBackend</span></span><a class="headerlink" href="#sme_sidecar_sdk.config.Settings.observability_backend" title="Link para esta definição"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.Settings.otel_enabled">
+<span class="sig-name descname"><span class="pre">otel_enabled</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(em Python v3.14)"><span class="pre">bool</span></a></span><a class="headerlink" href="#sme_sidecar_sdk.config.Settings.otel_enabled" title="Link para esta definição"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.Settings.otel_exporter_otlp_endpoint">
+<span class="sig-name descname"><span class="pre">otel_exporter_otlp_endpoint</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#sme_sidecar_sdk.config.Settings.otel_exporter_otlp_endpoint" title="Link para esta definição"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.Settings.otel_exporter_otlp_headers">
+<span class="sig-name descname"><span class="pre">otel_exporter_otlp_headers</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#sme_sidecar_sdk.config.Settings.otel_exporter_otlp_headers" title="Link para esta definição"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.Settings.otel_exporter_otlp_insecure">
+<span class="sig-name descname"><span class="pre">otel_exporter_otlp_insecure</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(em Python v3.14)"><span class="pre">bool</span></a></span><a class="headerlink" href="#sme_sidecar_sdk.config.Settings.otel_exporter_otlp_insecure" title="Link para esta definição"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.get_settings">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.config.</span></span><span class="sig-name descname"><span class="pre">get_settings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/config.html#get_settings"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.config.get_settings" title="Link para esta definição"></a></dt>
+<dd><p>Retorna uma instância de <a class="reference internal" href="#sme_sidecar_sdk.config.Settings" title="sme_sidecar_sdk.config.Settings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Settings</span></code></a> cacheada por processo.</p>
+<p>A primeira chamada instancia <a class="reference internal" href="#sme_sidecar_sdk.config.Settings" title="sme_sidecar_sdk.config.Settings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Settings</span></code></a>, que lê o ambiente.
+Chamadas subsequentes devolvem o mesmo objeto, evitando releitura.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Retorna<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Instância de configuração cacheada.</p>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#sme_sidecar_sdk.config.Settings" title="sme_sidecar_sdk.config.Settings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Settings</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.config.reset_settings_cache">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.config.</span></span><span class="sig-name descname"><span class="pre">reset_settings_cache</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/config.html#reset_settings_cache"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.config.reset_settings_cache" title="Link para esta definição"></a></dt>
+<dd><p>Limpa o cache da instância de <a class="reference internal" href="#sme_sidecar_sdk.config.Settings" title="sme_sidecar_sdk.config.Settings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Settings</span></code></a>.</p>
+<p>Útil em testes quando as variáveis de ambiente mudam entre casos.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Rodapé">
+        <a href="runtime.html" class="btn btn-neutral float-left" title="runtime" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="http.html" class="btn btn-neutral float-right" title="http" accesskey="n" rel="next">Próximo <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Direitos autorais 2026, SME São Paulo.</p>
+  </div>
+
+  Compilado com <a href="https://www.sphinx-doc.org/">Sphinx</a> usando um
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    fornecido por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,274 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="pt-BR" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arquitetura &mdash; Documentação SME Sidecar SDK 0.1.0</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+    <link rel="canonical" href="https://prefeiturasp.github.io/SME-Sidecar-SDK/arquitetura.html" />
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=2346ddef"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="_static/translations.js?v=71a39b36"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="genindex.html" />
+    <link rel="search" title="Buscar" href="search.html" />
+    <link rel="next" title="API Reference" href="api/index.html" />
+    <link rel="prev" title="Configuração" href="configuration.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            SME Sidecar SDK
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Pesquisar documentos" aria-label="Pesquisar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Menu de navegação">
+              <p class="caption" role="heading"><span class="caption-text">Conteúdo</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guia_resiliencia.html">Guia de resiliência</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guia_observabilidade.html">Guia de observabilidade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuração</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Arquitetura</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#principio-feature-based-packaging">Princípio: feature-based packaging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#comparacao-com-layer-based-packaging">Comparação com layer-based packaging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#regras-de-dependencia">Regras de dependência</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#como-contribuir-alinhado-a-arquitetura">Como contribuir alinhado à arquitetura</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Menu de navegação móvel" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SME Sidecar SDK</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Navegação da página">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Arquitetura</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/arquitetura.md.txt" rel="nofollow"> Ver código-fonte da página</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="arquitetura">
+<h1>Arquitetura<a class="headerlink" href="#arquitetura" title="Link para este cabeçalho"></a></h1>
+<p>Este documento descreve a organização interna do código da SDK e o
+princípio de empacotamento adotado. Destina-se a contribuidores e
+revisores que precisam alterar ou estender o projeto.</p>
+<nav class="contents local" id="sumario">
+<ul class="simple">
+<li><p><a class="reference internal" href="#principio-feature-based-packaging" id="id1">Princípio: feature-based packaging</a></p>
+<ul>
+<li><p><a class="reference internal" href="#comparacao-com-layer-based-packaging" id="id2">Comparação com layer-based packaging</a></p></li>
+<li><p><a class="reference internal" href="#regras-de-dependencia" id="id3">Regras de dependência</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#como-contribuir-alinhado-a-arquitetura" id="id4">Como contribuir alinhado à arquitetura</a></p></li>
+</ul>
+</nav>
+<section id="principio-feature-based-packaging">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Princípio: feature-based packaging</a><a class="headerlink" href="#principio-feature-based-packaging" title="Link para este cabeçalho"></a></h2>
+<p>O código da SDK é organizado por <strong>capacidade</strong>, e não por camada
+técnica (controllers, services, repositories). Cada feature mantém
+próximos seus contratos, implementações, fábricas e exposição pública.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>src/sme_sidecar_sdk/
+├── __init__.py
+├── runtime.py            # fachada pública
+├── config.py             # configuração base
+├── http/                 # cliente HTTP compartilhado
+│   ├── __init__.py
+│   ├── _types.py         # contratos públicos de tipagem
+│   └── client.py
+├── resilience/           # capacidade
+│   ├── __init__.py
+│   ├── timeout.py        # tudo sobre timeout
+│   ├── retry.py          # tudo sobre retry
+│   └── circuit_breaker.py# tudo sobre circuit breaker
+├── observability/        # domínio de observabilidade
+│   ├── __init__.py       # fachada do domínio
+│   ├── context.py        # correlação e contexto de requisição
+│   ├── tracing.py        # tracing distribuído
+│   └── logging/          # feature de logs estruturados
+│       ├── __init__.py
+│       ├── configuration.py
+│       └── providers/
+│           ├── base.py
+│           ├── factory.py
+│           └── rabbitmq.py
+└── integrations/         # adaptadores de frameworks
+    └── django.py
+</pre></div>
+</div>
+<section id="comparacao-com-layer-based-packaging">
+<h3><a class="toc-backref" href="#id2" role="doc-backlink">Comparação com layer-based packaging</a><a class="headerlink" href="#comparacao-com-layer-based-packaging" title="Link para este cabeçalho"></a></h3>
+<p>Em uma organização por camada técnica, o mesmo código ficaria
+distribuído entre múltiplos arquivos especializados por tipo:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>sme_sidecar_sdk/
+├── factories/
+│   ├── retry_factory.py
+│   ├── breaker_factory.py
+│   └── client_factory.py
+├── configs/
+│   ├── retry_config.py
+│   ├── breaker_config.py
+│   └── timeout_config.py
+├── registries/
+│   └── breaker_registry.py
+└── decorators/
+    └── retry_decorator.py
+</pre></div>
+</div>
+<p>A diferença prática é resumida abaixo:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Aspecto</p></th>
+<th class="head"><p>Feature-based (adotado)</p></th>
+<th class="head"><p>Layer-based</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Compreender um primitivo</p></td>
+<td><p>Abrir <strong>um</strong> arquivo</p></td>
+<td><p>Abrir 3 a 4 arquivos espalhados</p></td>
+</tr>
+<tr class="row-odd"><td><p>Remover uma capacidade</p></td>
+<td><p>Apagar 1 módulo + 1 teste + 1 linha no <code class="docutils literal notranslate"><span class="pre">__init__</span></code></p></td>
+<td><p>Tocar múltiplas pastas</p></td>
+</tr>
+<tr class="row-even"><td><p>Localidade de mudança</p></td>
+<td><p>Alterações ficam em arquivos próximos</p></td>
+<td><p>Alterações se espalham por toda a árvore</p></td>
+</tr>
+<tr class="row-odd"><td><p>Risco em refactor</p></td>
+<td><p>Baixo</p></td>
+<td><p>Alto</p></td>
+</tr>
+<tr class="row-even"><td><p>Adequação</p></td>
+<td><p>Bibliotecas com capacidades autocontidas</p></td>
+<td><p>Aplicações com lógica de negócio compartilhada</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="regras-de-dependencia">
+<h3><a class="toc-backref" href="#id3" role="doc-backlink">Regras de dependência</a><a class="headerlink" href="#regras-de-dependencia" title="Link para este cabeçalho"></a></h3>
+<p>A organização por capacidade só permanece limpa se as dependências
+fluírem em <strong>uma direção</strong>, da infraestrutura compartilhada para as
+features e das features para as fachadas e integrações. Dependências
+entre features devem representar composição explícita, não apenas
+reutilização conveniente.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>config.py                 ← infraestrutura compartilhada
+   │
+   ├── resilience/        ← capacidades de resiliência
+   ├── observability/     ← contexto, tracing e logging
+   ├── http/              ← cliente que compõe resiliência e observabilidade
+   ├── integrations/      ← adaptadores que compõem features
+   └── runtime.py         ← fachada que orquestra o boot
+</pre></div>
+</div>
+<p>Regras concretas verificáveis em revisão de código:</p>
+<ul class="simple">
+<li><p>Nada em <code class="docutils literal notranslate"><span class="pre">config.py</span></code> importa de subpacotes.</p></li>
+<li><p>Nenhum módulo dentro de <code class="docutils literal notranslate"><span class="pre">resilience/</span></code> importa outro irmão direto.</p></li>
+<li><p>Implementações específicas pertencem à feature que as utiliza. Por
+exemplo, providers RabbitMQ vivem em
+<code class="docutils literal notranslate"><span class="pre">observability/logging/providers/</span></code>, não em um pacote técnico na raiz.</p></li>
+<li><p>Correlação pertence ao contexto de observabilidade; logging e tracing
+consomem esse contexto para enriquecer e propagar telemetria.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">http/</span></code>, <code class="docutils literal notranslate"><span class="pre">runtime.py</span></code>, <code class="docutils literal notranslate"><span class="pre">integrations/</span></code> e os <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> públicos podem
+compor múltiplas features porque exercem papel de orquestração.</p></li>
+<li><p>Dependências compartilhadas de contexto podem ser usadas pelas
+features que enriquecem ou propagam esse contexto.</p></li>
+</ul>
+<p>Quando uma nova capacidade for adicionada, ela deve viver em seu
+próprio subpacote irmão de <code class="docutils literal notranslate"><span class="pre">resilience/</span></code>. Caso dependa de outra feature,
+essa composição deve ser pequena, explícita e orientada ao fluxo da
+aplicação.</p>
+</section>
+</section>
+<section id="como-contribuir-alinhado-a-arquitetura">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Como contribuir alinhado à arquitetura</a><a class="headerlink" href="#como-contribuir-alinhado-a-arquitetura" title="Link para este cabeçalho"></a></h2>
+<p>Ao adicionar funcionalidade, alguns critérios mantêm a coerência:</p>
+<ol class="arabic simple">
+<li><p><strong>Crie um pacote para uma capacidade coesa.</strong> Se a funcionalidade
+pertencer a uma nova categoria (ex: cache, serialização,
+autenticação), considere criar um subpacote irmão.</p></li>
+<li><p><strong>Evite dependências acidentais entre features.</strong> Se dois módulos
+precisarem compartilhar uma abstração neutra, ela pertence à
+infraestrutura compartilhada. Composições próprias do fluxo, como
+logging enriquecido por correlação, podem permanecer explícitas.</p></li>
+<li><p><strong>Adicione testes espelhando as capacidades.</strong> Os nomes dos testes
+devem deixar evidente qual feature e implementação estão sendo
+verificadas.</p></li>
+</ol>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Rodapé">
+        <a href="configuration.html" class="btn btn-neutral float-left" title="Configuração" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="api/index.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Próximo <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Direitos autorais 2026, SME São Paulo.</p>
+  </div>
+
+  Compilado com <a href="https://www.sphinx-doc.org/">Sphinx</a> usando um
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    fornecido por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

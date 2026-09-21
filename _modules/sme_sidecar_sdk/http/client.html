@@ -1,0 +1,947 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="pt-BR" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>sme_sidecar_sdk.http.client &mdash; Documentação SME Sidecar SDK 0.1.0</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+    <link rel="canonical" href="https://prefeiturasp.github.io/SME-Sidecar-SDK/_modules/sme_sidecar_sdk/http/client.html" />
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=2346ddef"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../../_static/translations.js?v=71a39b36"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../../../genindex.html" />
+    <link rel="search" title="Buscar" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            SME Sidecar SDK
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Pesquisar documentos" aria-label="Pesquisar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Menu de navegação">
+              <p class="caption" role="heading"><span class="caption-text">Conteúdo</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guia_resiliencia.html">Guia de resiliência</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guia_observabilidade.html">Guia de observabilidade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuração</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../arquitetura.html">Arquitetura</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Menu de navegação móvel" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">SME Sidecar SDK</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Navegação da página">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Código do módulo</a></li>
+      <li class="breadcrumb-item active">sme_sidecar_sdk.http.client</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Código-fonte para sme_sidecar_sdk.http.client</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Wrapper HTTP compartilhado para comunicação entre serviços."""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">asyncio</span><span class="w"> </span><span class="kn">import</span> <span class="n">sleep</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Awaitable</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Mapping</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">time</span><span class="w"> </span><span class="kn">import</span> <span class="n">perf_counter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">TracebackType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Self</span><span class="p">,</span> <span class="n">cast</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">httpx</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tenacity</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AsyncRetrying</span><span class="p">,</span>
+    <span class="n">Retrying</span><span class="p">,</span>
+    <span class="n">retry_if_exception_type</span><span class="p">,</span>
+    <span class="n">stop_after_attempt</span><span class="p">,</span>
+    <span class="n">wait_exponential</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..config</span><span class="w"> </span><span class="kn">import</span> <span class="n">Settings</span><span class="p">,</span> <span class="n">get_settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..observability.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_correlation_id</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..observability.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..observability.tracing</span><span class="w"> </span><span class="kn">import</span> <span class="n">inject_trace_context</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..resilience.circuit_breaker</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_circuit_breaker</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..resilience.timeout</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_async_client</span><span class="p">,</span> <span class="n">build_sync_client</span>
+
+<span class="n">_RETRYABLE_HTTP_EXCEPTIONS</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">],</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">httpx</span><span class="o">.</span><span class="n">TransportError</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">EventHook</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_BaseHTTPClient</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Base interna com estado e logging compartilhados."""</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">Settings</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Inicializa dependências comuns aos clientes HTTP.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: Nome lógico do upstream.</span>
+<span class="sd">            settings: Configuração opcional da SDK.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">settings</span> <span class="ow">or</span> <span class="n">get_settings</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_breaker</span> <span class="o">=</span> <span class="n">get_circuit_breaker</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_client_kwargs</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">base_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">httpx</span><span class="o">.</span><span class="n">URL</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">client_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">],</span>
+        <span class="n">request_hook</span><span class="p">:</span> <span class="n">EventHook</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Prepara argumentos repassados ao cliente HTTPX.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            base_url: URL base opcional do upstream.</span>
+<span class="sd">            client_kwargs: Argumentos recebidos pela factory pública.</span>
+<span class="sd">            request_hook: Hook de propagação do contexto ativo.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Cópia dos argumentos com ``base_url`` e ``event_hooks`` ajustados.</span>
+<span class="sd">        """</span>
+        <span class="n">prepared</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">client_kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">base_url</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">prepared</span><span class="p">[</span><span class="s2">"base_url"</span><span class="p">]</span> <span class="o">=</span> <span class="n">base_url</span>
+        <span class="n">prepared</span><span class="p">[</span><span class="s2">"event_hooks"</span><span class="p">]</span> <span class="o">=</span> <span class="n">_merge_event_hooks</span><span class="p">(</span>
+            <span class="n">prepared</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"event_hooks"</span><span class="p">),</span>
+            <span class="n">request_hook</span><span class="o">=</span><span class="n">request_hook</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">prepared</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_log_success</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">response</span><span class="p">:</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">,</span>
+        <span class="n">started_at</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Registra sucesso de uma chamada HTTP de saída.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            method: Método HTTP executado.</span>
+<span class="sd">            response: Resposta recebida do upstream.</span>
+<span class="sd">            started_at: Instante de início medido por ``perf_counter``.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">"http_client_request_completed"</span><span class="p">,</span>
+            <span class="n">upstream</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">http_method</span><span class="o">=</span><span class="n">method</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span>
+            <span class="n">http_url</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">),</span>
+            <span class="n">http_path</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
+            <span class="n">http_status_code</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span>
+            <span class="n">http_duration_ms</span><span class="o">=</span><span class="n">_duration_ms</span><span class="p">(</span><span class="n">started_at</span><span class="p">),</span>
+            <span class="n">retry_enabled</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">retry_enabled</span><span class="p">,</span>
+            <span class="n">circuit_breaker_enabled</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">circuit_breaker_enabled</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_log_failure</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">httpx</span><span class="o">.</span><span class="n">URL</span><span class="p">,</span>
+        <span class="n">started_at</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">exc</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Registra falha de uma chamada HTTP de saída.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            method: Método HTTP executado.</span>
+<span class="sd">            url: URL solicitada.</span>
+<span class="sd">            started_at: Instante de início medido por ``perf_counter``.</span>
+<span class="sd">            exc: Exceção capturada durante a chamada.</span>
+<span class="sd">        """</span>
+        <span class="n">event</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"upstream"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s2">"http_method"</span><span class="p">:</span> <span class="n">method</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span>
+            <span class="s2">"http_url"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">url</span><span class="p">),</span>
+            <span class="s2">"http_duration_ms"</span><span class="p">:</span> <span class="n">_duration_ms</span><span class="p">(</span><span class="n">started_at</span><span class="p">),</span>
+            <span class="s2">"retry_enabled"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">retry_enabled</span><span class="p">,</span>
+            <span class="s2">"circuit_breaker_enabled"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">circuit_breaker_enabled</span><span class="p">,</span>
+            <span class="s2">"error_type"</span><span class="p">:</span> <span class="nb">type</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exc</span><span class="p">,</span> <span class="n">httpx</span><span class="o">.</span><span class="n">HTTPStatusError</span><span class="p">):</span>
+            <span class="n">event</span><span class="p">[</span><span class="s2">"http_status_code"</span><span class="p">]</span> <span class="o">=</span> <span class="n">exc</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span>
+            <span class="n">event</span><span class="p">[</span><span class="s2">"http_path"</span><span class="p">]</span> <span class="o">=</span> <span class="n">exc</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span>
+            <span class="n">event</span><span class="p">[</span><span class="s2">"http_url"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"http_client_request_failed"</span><span class="p">,</span> <span class="o">**</span><span class="n">event</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="HTTPClient">
+<a class="viewcode-back" href="../../../api/http.html#sme_sidecar_sdk.http.HTTPClient">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">HTTPClient</span><span class="p">(</span><span class="n">_BaseHTTPClient</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Cliente HTTP síncrono com capacidades técnicas da SDK.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name: Nome lógico do upstream usado em logs e circuit breaker.</span>
+<span class="sd">        base_url: URL base opcional repassada ao ``httpx.Client``.</span>
+<span class="sd">        settings: Configuração opcional. Quando omitida, utiliza a</span>
+<span class="sd">            configuração cacheada da SDK.</span>
+<span class="sd">        **client_kwargs: Argumentos adicionais repassados ao cliente HTTPX</span>
+<span class="sd">            construído pela SDK.</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="HTTPClient.__init__">
+<a class="viewcode-back" href="../../../api/http.html#sme_sidecar_sdk.http.HTTPClient.__init__">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">base_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">httpx</span><span class="o">.</span><span class="n">URL</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">settings</span><span class="p">:</span> <span class="n">Settings</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">client_kwargs</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Inicializa o cliente síncrono compartilhado."""</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">settings</span><span class="p">)</span>
+        <span class="n">prepared_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_client_kwargs</span><span class="p">(</span>
+            <span class="n">base_url</span><span class="p">,</span>
+            <span class="n">client_kwargs</span><span class="p">,</span>
+            <span class="n">_sync_propagation_hook</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="n">build_sync_client</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">,</span> <span class="o">**</span><span class="n">prepared_kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="HTTPClient.__enter__">
+<a class="viewcode-back" href="../../../api/http.html#sme_sidecar_sdk.http.HTTPClient.__enter__">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Entra no contexto do cliente HTTP.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Instância atual do cliente.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="fm">__enter__</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="HTTPClient.__exit__">
+<a class="viewcode-back" href="../../../api/http.html#sme_sidecar_sdk.http.HTTPClient.__exit__">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">exc_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">exc_value</span><span class="p">:</span> <span class="ne">BaseException</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">traceback</span><span class="p">:</span> <span class="n">TracebackType</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Fecha o cliente HTTP ao sair do contexto.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            exc_type: Tipo da exceção capturada pelo context manager.</span>
+<span class="sd">            exc_value: Instância da exceção capturada pelo context manager.</span>
+<span class="sd">            traceback: Traceback associado à exceção capturada.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="HTTPClient.close">
+<a class="viewcode-back" href="../../../api/http.html#sme_sidecar_sdk.http.HTTPClient.close">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Fecha conexões mantidas pelo cliente HTTP."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="HTTPClient.request">
+<a class="viewcode-back" href="../../../api/http.html#sme_sidecar_sdk.http.HTTPClient.request">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">request</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">httpx</span><span class="o">.</span><span class="n">URL</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Executa uma requisição HTTP com retry, breaker e logging.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            method: Método HTTP.</span>
+<span class="sd">            url: URL absoluta ou relativa à ``base_url``.</span>
+<span class="sd">            **kwargs: Argumentos repassados ao ``httpx.Client.request``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Resposta HTTPX validada com ``raise_for_status()``.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            httpx.TimeoutException: Quando a chamada expira.</span>
+<span class="sd">            httpx.RequestError: Quando ocorre falha de transporte.</span>
+<span class="sd">            httpx.HTTPStatusError: Quando a resposta é 4xx ou 5xx.</span>
+<span class="sd">            pybreaker.CircuitBreakerError: Quando o circuito está aberto.</span>
+<span class="sd">        """</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_with_retry</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">protected_call</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+            <span class="n">response</span><span class="p">:</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_breaker</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">call</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">response</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">protected_call</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="HTTPClient.get">
+<a class="viewcode-back" href="../../../api/http.html#sme_sidecar_sdk.http.HTTPClient.get">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">httpx</span><span class="o">.</span><span class="n">URL</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Executa uma requisição ``GET``."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">"GET"</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="HTTPClient.post">
+<a class="viewcode-back" href="../../../api/http.html#sme_sidecar_sdk.http.HTTPClient.post">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">httpx</span><span class="o">.</span><span class="n">URL</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Executa uma requisição ``POST``."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">"POST"</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="HTTPClient.put">
+<a class="viewcode-back" href="../../../api/http.html#sme_sidecar_sdk.http.HTTPClient.put">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">httpx</span><span class="o">.</span><span class="n">URL</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Executa uma requisição ``PUT``."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">"PUT"</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="HTTPClient.patch">
+<a class="viewcode-back" href="../../../api/http.html#sme_sidecar_sdk.http.HTTPClient.patch">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">patch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">httpx</span><span class="o">.</span><span class="n">URL</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Executa uma requisição ``PATCH``."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">"PATCH"</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="HTTPClient.delete">
+<a class="viewcode-back" href="../../../api/http.html#sme_sidecar_sdk.http.HTTPClient.delete">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">httpx</span><span class="o">.</span><span class="n">URL</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Executa uma requisição ``DELETE``."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">"DELETE"</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_send</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">httpx</span><span class="o">.</span><span class="n">URL</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Envia uma requisição síncrona ao upstream.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            method: Método HTTP.</span>
+<span class="sd">            url: URL absoluta ou relativa à ``base_url``.</span>
+<span class="sd">            **kwargs: Argumentos repassados ao ``httpx.Client.request``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Resposta HTTPX validada com ``raise_for_status()``.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            httpx.HTTPStatusError: Quando a resposta é 4xx ou 5xx.</span>
+<span class="sd">            httpx.RequestError: Quando ocorre falha de transporte.</span>
+<span class="sd">        """</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">response</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_send_with_retry</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">httpx</span><span class="o">.</span><span class="n">URL</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Envia uma requisição síncrona aplicando retry quando habilitado.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            method: Método HTTP.</span>
+<span class="sd">            url: URL absoluta ou relativa à ``base_url``.</span>
+<span class="sd">            **kwargs: Argumentos repassados ao ``httpx.Client.request``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Resposta HTTPX validada com ``raise_for_status()``.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            RuntimeError: Quando a política de retry termina sem resposta.</span>
+<span class="sd">            httpx.HTTPStatusError: Quando a resposta é 4xx ou 5xx.</span>
+<span class="sd">            httpx.RequestError: Quando ocorre falha de transporte.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">retry_enabled</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">retry_attempts</span> <span class="o">&lt;=</span> <span class="mi">1</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">retrying</span> <span class="o">=</span> <span class="n">_build_sync_retrying</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="n">retrying</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">attempt</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"retry finalizado sem resposta HTTP"</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_execute</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">httpx</span><span class="o">.</span><span class="n">URL</span><span class="p">,</span>
+        <span class="n">call</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Executa uma chamada síncrona com logs de sucesso ou falha.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            method: Método HTTP.</span>
+<span class="sd">            url: URL solicitada.</span>
+<span class="sd">            call: Função que executa a chamada protegida.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Resposta retornada pela chamada.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            Exception: Repassa a exceção original emitida por ``call``.</span>
+<span class="sd">        """</span>
+        <span class="n">started_at</span> <span class="o">=</span> <span class="n">perf_counter</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">call</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log_failure</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">started_at</span><span class="p">,</span> <span class="n">exc</span><span class="p">)</span>
+            <span class="k">raise</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_success</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">started_at</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span></div>
+
+
+
+<div class="viewcode-block" id="AsyncHTTPClient">
+<a class="viewcode-back" href="../../../api/http.html#sme_sidecar_sdk.http.AsyncHTTPClient">[documentos]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AsyncHTTPClient</span><span class="p">(</span><span class="n">_BaseHTTPClient</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Cliente HTTP assíncrono com capacidades técnicas da SDK.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name: Nome lógico do upstream usado em logs e circuit breaker.</span>
+<span class="sd">        base_url: URL base opcional repassada ao ``httpx.AsyncClient``.</span>
+<span class="sd">        settings: Configuração opcional. Quando omitida, utiliza a</span>
+<span class="sd">            configuração cacheada da SDK.</span>
+<span class="sd">        **client_kwargs: Argumentos adicionais repassados ao cliente HTTPX</span>
+<span class="sd">            construído pela SDK.</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="AsyncHTTPClient.__init__">
+<a class="viewcode-back" href="../../../api/http.html#sme_sidecar_sdk.http.AsyncHTTPClient.__init__">[documentos]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">base_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">httpx</span><span class="o">.</span><span class="n">URL</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">settings</span><span class="p">:</span> <span class="n">Settings</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">client_kwargs</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Inicializa o cliente assíncrono compartilhado."""</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">settings</span><span class="p">)</span>
+        <span class="n">prepared_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_client_kwargs</span><span class="p">(</span>
+            <span class="n">base_url</span><span class="p">,</span>
+            <span class="n">client_kwargs</span><span class="p">,</span>
+            <span class="n">_async_propagation_hook</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="n">build_async_client</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">,</span> <span class="o">**</span><span class="n">prepared_kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AsyncHTTPClient.__aenter__">
+<a class="viewcode-back" href="../../../api/http.html#sme_sidecar_sdk.http.AsyncHTTPClient.__aenter__">[documentos]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__aenter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Entra no contexto assíncrono do cliente HTTP.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Instância atual do cliente.</span>
+<span class="sd">        """</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="fm">__aenter__</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="AsyncHTTPClient.__aexit__">
+<a class="viewcode-back" href="../../../api/http.html#sme_sidecar_sdk.http.AsyncHTTPClient.__aexit__">[documentos]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__aexit__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">exc_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">exc_value</span><span class="p">:</span> <span class="ne">BaseException</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">traceback</span><span class="p">:</span> <span class="n">TracebackType</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Fecha o cliente HTTP ao sair do contexto assíncrono.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            exc_type: Tipo da exceção capturada pelo context manager.</span>
+<span class="sd">            exc_value: Instância da exceção capturada pelo context manager.</span>
+<span class="sd">            traceback: Traceback associado à exceção capturada.</span>
+<span class="sd">        """</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="fm">__aexit__</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AsyncHTTPClient.aclose">
+<a class="viewcode-back" href="../../../api/http.html#sme_sidecar_sdk.http.AsyncHTTPClient.aclose">[documentos]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">aclose</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Fecha conexões mantidas pelo cliente HTTP assíncrono."""</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">aclose</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="AsyncHTTPClient.request">
+<a class="viewcode-back" href="../../../api/http.html#sme_sidecar_sdk.http.AsyncHTTPClient.request">[documentos]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">request</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">httpx</span><span class="o">.</span><span class="n">URL</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Executa uma requisição HTTP assíncrona com retry e breaker.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            method: Método HTTP.</span>
+<span class="sd">            url: URL absoluta ou relativa à ``base_url``.</span>
+<span class="sd">            **kwargs: Argumentos repassados ao ``httpx.AsyncClient.request``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Resposta HTTPX validada com ``raise_for_status()``.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            httpx.TimeoutException: Quando a chamada expira.</span>
+<span class="sd">            httpx.RequestError: Quando ocorre falha de transporte.</span>
+<span class="sd">            httpx.HTTPStatusError: Quando a resposta é 4xx ou 5xx.</span>
+<span class="sd">            pybreaker.CircuitBreakerError: Quando o circuito está aberto.</span>
+<span class="sd">        """</span>
+
+        <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_with_retry</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute</span><span class="p">(</span>
+            <span class="n">method</span><span class="p">,</span>
+            <span class="n">url</span><span class="p">,</span>
+            <span class="k">lambda</span><span class="p">:</span> <span class="n">_call_async_with_breaker</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_breaker</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">,</span>
+                <span class="n">call</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AsyncHTTPClient.get">
+<a class="viewcode-back" href="../../../api/http.html#sme_sidecar_sdk.http.AsyncHTTPClient.get">[documentos]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">httpx</span><span class="o">.</span><span class="n">URL</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Executa uma requisição ``GET``."""</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">"GET"</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AsyncHTTPClient.post">
+<a class="viewcode-back" href="../../../api/http.html#sme_sidecar_sdk.http.AsyncHTTPClient.post">[documentos]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">post</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">httpx</span><span class="o">.</span><span class="n">URL</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Executa uma requisição ``POST``."""</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">"POST"</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AsyncHTTPClient.put">
+<a class="viewcode-back" href="../../../api/http.html#sme_sidecar_sdk.http.AsyncHTTPClient.put">[documentos]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">put</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">httpx</span><span class="o">.</span><span class="n">URL</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Executa uma requisição ``PUT``."""</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">"PUT"</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AsyncHTTPClient.patch">
+<a class="viewcode-back" href="../../../api/http.html#sme_sidecar_sdk.http.AsyncHTTPClient.patch">[documentos]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">patch</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">httpx</span><span class="o">.</span><span class="n">URL</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Executa uma requisição ``PATCH``."""</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">"PATCH"</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AsyncHTTPClient.delete">
+<a class="viewcode-back" href="../../../api/http.html#sme_sidecar_sdk.http.AsyncHTTPClient.delete">[documentos]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">httpx</span><span class="o">.</span><span class="n">URL</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Executa uma requisição ``DELETE``."""</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">"DELETE"</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_send_with_retry</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">httpx</span><span class="o">.</span><span class="n">URL</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Envia uma requisição assíncrona aplicando retry quando habilitado.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            method: Método HTTP.</span>
+<span class="sd">            url: URL absoluta ou relativa à ``base_url``.</span>
+<span class="sd">            **kwargs: Argumentos repassados ao ``httpx.AsyncClient.request``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Resposta HTTPX validada com ``raise_for_status()``.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            RuntimeError: Quando a política de retry termina sem resposta.</span>
+<span class="sd">            httpx.HTTPStatusError: Quando a resposta é 4xx ou 5xx.</span>
+<span class="sd">            httpx.RequestError: Quando ocorre falha de transporte.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">retry_enabled</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">retry_attempts</span> <span class="o">&lt;=</span> <span class="mi">1</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">retrying</span> <span class="o">=</span> <span class="n">_build_async_retrying</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span>
+        <span class="k">async</span> <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="n">retrying</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">attempt</span><span class="p">:</span>
+                <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"retry finalizado sem resposta HTTP"</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_send</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">httpx</span><span class="o">.</span><span class="n">URL</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Envia uma requisição assíncrona ao upstream.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            method: Método HTTP.</span>
+<span class="sd">            url: URL absoluta ou relativa à ``base_url``.</span>
+<span class="sd">            **kwargs: Argumentos repassados ao ``httpx.AsyncClient.request``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Resposta HTTPX validada com ``raise_for_status()``.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            httpx.HTTPStatusError: Quando a resposta é 4xx ou 5xx.</span>
+<span class="sd">            httpx.RequestError: Quando ocorre falha de transporte.</span>
+<span class="sd">        """</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">response</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_execute</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">httpx</span><span class="o">.</span><span class="n">URL</span><span class="p">,</span>
+        <span class="n">call</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">]],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Executa uma chamada assíncrona com logs de sucesso ou falha.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            method: Método HTTP.</span>
+<span class="sd">            url: URL solicitada.</span>
+<span class="sd">            call: Função assíncrona que executa a chamada protegida.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Resposta retornada pela chamada.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            Exception: Repassa a exceção original emitida por ``call``.</span>
+<span class="sd">        """</span>
+        <span class="n">started_at</span> <span class="o">=</span> <span class="n">perf_counter</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">call</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log_failure</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">started_at</span><span class="p">,</span> <span class="n">exc</span><span class="p">)</span>
+            <span class="k">raise</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_success</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">started_at</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span></div>
+
+
+
+<div class="viewcode-block" id="build_http_client">
+<a class="viewcode-back" href="../../../api/http.html#sme_sidecar_sdk.http.build_http_client">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_http_client</span><span class="p">(</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">base_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">httpx</span><span class="o">.</span><span class="n">URL</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">settings</span><span class="p">:</span> <span class="n">Settings</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">client_kwargs</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HTTPClient</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Cria um cliente HTTP síncrono compartilhado.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name: Nome lógico do upstream.</span>
+<span class="sd">        base_url: URL base opcional.</span>
+<span class="sd">        settings: Configuração opcional da SDK.</span>
+<span class="sd">        **client_kwargs: Argumentos adicionais repassados ao HTTPX.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Cliente HTTP síncrono configurado.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">HTTPClient</span><span class="p">(</span>
+        <span class="n">name</span><span class="p">,</span>
+        <span class="n">base_url</span><span class="o">=</span><span class="n">base_url</span><span class="p">,</span>
+        <span class="n">settings</span><span class="o">=</span><span class="n">settings</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">client_kwargs</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="build_async_http_client">
+<a class="viewcode-back" href="../../../api/http.html#sme_sidecar_sdk.http.build_async_http_client">[documentos]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_async_http_client</span><span class="p">(</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">base_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">httpx</span><span class="o">.</span><span class="n">URL</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">settings</span><span class="p">:</span> <span class="n">Settings</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">client_kwargs</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncHTTPClient</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Cria um cliente HTTP assíncrono compartilhado.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name: Nome lógico do upstream.</span>
+<span class="sd">        base_url: URL base opcional.</span>
+<span class="sd">        settings: Configuração opcional da SDK.</span>
+<span class="sd">        **client_kwargs: Argumentos adicionais repassados ao HTTPX.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Cliente HTTP assíncrono configurado.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">AsyncHTTPClient</span><span class="p">(</span>
+        <span class="n">name</span><span class="p">,</span>
+        <span class="n">base_url</span><span class="o">=</span><span class="n">base_url</span><span class="p">,</span>
+        <span class="n">settings</span><span class="o">=</span><span class="n">settings</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">client_kwargs</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_duration_ms</span><span class="p">(</span><span class="n">started_at</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Calcula a duração da chamada em milissegundos.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        started_at: Instante de início medido por ``perf_counter``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Duração arredondada em milissegundos.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="nb">round</span><span class="p">((</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">started_at</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_sync_propagation_hook</span><span class="p">(</span><span class="n">settings</span><span class="p">:</span> <span class="n">Settings</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EventHook</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Cria um hook síncrono para propagar contexto da requisição.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        settings: Configuração que define o nome do header.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Hook de requisição compatível com o cliente HTTPX síncrono.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">hook</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Adiciona contexto ativo aos headers da requisição.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            request: Requisição HTTPX que será enviada.</span>
+<span class="sd">        """</span>
+        <span class="n">_propagate_request_context</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">settings</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">hook</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_async_propagation_hook</span><span class="p">(</span><span class="n">settings</span><span class="p">:</span> <span class="n">Settings</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EventHook</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Cria um hook assíncrono para propagar contexto da requisição.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        settings: Configuração que define o nome do header.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Hook de requisição compatível com o cliente HTTPX assíncrono.</span>
+<span class="sd">    """</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">hook</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Adiciona contexto ativo aos headers da requisição.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            request: Requisição HTTPX que será enviada.</span>
+<span class="sd">        """</span>
+        <span class="n">_propagate_request_context</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">settings</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">hook</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_propagate_request_context</span><span class="p">(</span>
+    <span class="n">request</span><span class="p">:</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Request</span><span class="p">,</span>
+    <span class="n">settings</span><span class="p">:</span> <span class="n">Settings</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Propaga headers de correlação e tracing para uma requisição HTTPX.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        request: Requisição HTTPX que receberá os headers.</span>
+<span class="sd">        settings: Configuração que define o nome do header de correlação.</span>
+<span class="sd">    """</span>
+    <span class="n">correlation_id</span> <span class="o">=</span> <span class="n">get_correlation_id</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">correlation_id</span><span class="p">:</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span>
+            <span class="n">settings</span><span class="o">.</span><span class="n">correlation_id_header</span><span class="p">,</span>
+            <span class="n">correlation_id</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="n">inject_trace_context</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_merge_event_hooks</span><span class="p">(</span>
+    <span class="n">existing</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">request_hook</span><span class="p">:</span> <span class="n">EventHook</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">EventHook</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">"""Combina hooks existentes com o hook de propagação do SDK.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        existing: Mapeamento de hooks recebido pela aplicação.</span>
+<span class="sd">        request_hook: Hook de propagação que deve executar primeiro.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Cópia dos hooks com o hook do SDK no início da lista de requisição.</span>
+<span class="sd">    """</span>
+    <span class="n">hooks</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">EventHook</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">existing</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+        <span class="n">hooks</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">):</span> <span class="nb">list</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">list</span><span class="p">[</span><span class="n">EventHook</span><span class="p">],</span> <span class="n">callbacks</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">callbacks</span> <span class="ow">in</span> <span class="n">existing</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
+    <span class="n">request_hooks</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">hooks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"request"</span><span class="p">,</span> <span class="p">[]))</span>
+    <span class="n">request_hooks</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">request_hook</span><span class="p">)</span>
+    <span class="n">hooks</span><span class="p">[</span><span class="s2">"request"</span><span class="p">]</span> <span class="o">=</span> <span class="n">request_hooks</span>
+    <span class="k">return</span> <span class="n">hooks</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_build_sync_retrying</span><span class="p">(</span><span class="n">settings</span><span class="p">:</span> <span class="n">Settings</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Retrying</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Cria a política de retry síncrona do cliente HTTP.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        settings: Configuração da SDK usada para tentativas e backoff.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Política ``tenacity.Retrying`` configurada.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">Retrying</span><span class="p">(</span>
+        <span class="n">stop</span><span class="o">=</span><span class="n">stop_after_attempt</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">retry_attempts</span><span class="p">),</span>
+        <span class="n">wait</span><span class="o">=</span><span class="n">wait_exponential</span><span class="p">(</span>
+            <span class="n">multiplier</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="nb">min</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">retry_backoff_min</span><span class="p">,</span>
+            <span class="nb">max</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">retry_backoff_max</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">retry</span><span class="o">=</span><span class="n">retry_if_exception_type</span><span class="p">(</span><span class="n">_RETRYABLE_HTTP_EXCEPTIONS</span><span class="p">),</span>
+        <span class="n">reraise</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_build_async_retrying</span><span class="p">(</span><span class="n">settings</span><span class="p">:</span> <span class="n">Settings</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncRetrying</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Cria a política de retry assíncrona do cliente HTTP.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        settings: Configuração da SDK usada para tentativas e backoff.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Política ``tenacity.AsyncRetrying`` configurada.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">AsyncRetrying</span><span class="p">(</span>
+        <span class="n">stop</span><span class="o">=</span><span class="n">stop_after_attempt</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">retry_attempts</span><span class="p">),</span>
+        <span class="n">wait</span><span class="o">=</span><span class="n">wait_exponential</span><span class="p">(</span>
+            <span class="n">multiplier</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="nb">min</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">retry_backoff_min</span><span class="p">,</span>
+            <span class="nb">max</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">retry_backoff_max</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">retry</span><span class="o">=</span><span class="n">retry_if_exception_type</span><span class="p">(</span><span class="n">_RETRYABLE_HTTP_EXCEPTIONS</span><span class="p">),</span>
+        <span class="n">reraise</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_call_async_with_breaker</span><span class="p">(</span>
+    <span class="n">breaker</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="n">settings</span><span class="p">:</span> <span class="n">Settings</span><span class="p">,</span>
+    <span class="n">call</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">]],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Executa uma chamada assíncrona respeitando o circuit breaker.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        breaker: Circuit breaker associado ao upstream.</span>
+<span class="sd">        settings: Configuração da SDK que habilita ou desabilita o breaker.</span>
+<span class="sd">        call: Função assíncrona protegida pelo breaker.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Resposta HTTP retornada por ``call``.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        BaseException: Repassa a exceção original emitida por ``call``.</span>
+<span class="sd">        pybreaker.CircuitBreakerError: Quando o circuito está aberto.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">settings</span><span class="o">.</span><span class="n">circuit_breaker_enabled</span><span class="p">:</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">call</span><span class="p">()</span>
+
+    <span class="n">state</span> <span class="o">=</span> <span class="n">breaker</span><span class="o">.</span><span class="n">state</span>
+    <span class="n">state</span><span class="o">.</span><span class="n">before_call</span><span class="p">(</span><span class="n">call</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">listener</span> <span class="ow">in</span> <span class="n">breaker</span><span class="o">.</span><span class="n">listeners</span><span class="p">:</span>
+        <span class="n">listener</span><span class="o">.</span><span class="n">before_call</span><span class="p">(</span><span class="n">breaker</span><span class="p">,</span> <span class="n">call</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">call</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">BaseException</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="n">state</span><span class="o">.</span><span class="n">_handle_error</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+        <span class="k">raise</span>
+    <span class="n">state</span><span class="o">.</span><span class="n">_handle_success</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">response</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Direitos autorais 2026, SME São Paulo.</p>
+  </div>
+
+  Compilado com <a href="https://www.sphinx-doc.org/">Sphinx</a> usando um
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    fornecido por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

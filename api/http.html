@@ -1,0 +1,1295 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="pt-BR" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>http &mdash; Documentação SME Sidecar SDK 0.1.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+    <link rel="canonical" href="https://prefeiturasp.github.io/SME-Sidecar-SDK/api/http.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2346ddef"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/translations.js?v=71a39b36"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="../genindex.html" />
+    <link rel="search" title="Buscar" href="../search.html" />
+    <link rel="next" title="observability" href="observability.html" />
+    <link rel="prev" title="config" href="config.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            SME Sidecar SDK
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Pesquisar documentos" aria-label="Pesquisar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Menu de navegação">
+              <p class="caption" role="heading"><span class="caption-text">Conteúdo</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guia_resiliencia.html">Guia de resiliência</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guia_observabilidade.html">Guia de observabilidade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuração</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../arquitetura.html">Arquitetura</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="runtime.html">runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config.html">config</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">http</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sme_sidecar_sdk.http.AsyncHTTPClient"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClient</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.AsyncHTTPClient.__init__"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClient.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.AsyncHTTPClient.__aenter__"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClient.__aenter__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.AsyncHTTPClient.__aexit__"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClient.__aexit__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.AsyncHTTPClient.aclose"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClient.aclose()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.AsyncHTTPClient.request"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClient.request()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.AsyncHTTPClient.get"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClient.get()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.AsyncHTTPClient.post"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClient.post()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.AsyncHTTPClient.put"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClient.put()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.AsyncHTTPClient.patch"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClient.patch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.AsyncHTTPClient.delete"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClient.delete()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#sme_sidecar_sdk.http.AsyncHTTPClientProtocol"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClientProtocol</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.AsyncHTTPClientProtocol.get"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClientProtocol.get()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.AsyncHTTPClientProtocol.post"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClientProtocol.post()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.AsyncHTTPClientProtocol.put"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClientProtocol.put()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.AsyncHTTPClientProtocol.patch"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClientProtocol.patch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.AsyncHTTPClientProtocol.delete"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClientProtocol.delete()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.AsyncHTTPClientProtocol.aclose"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClientProtocol.aclose()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#sme_sidecar_sdk.http.HTTPClient"><code class="docutils literal notranslate"><span class="pre">HTTPClient</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.HTTPClient.__init__"><code class="docutils literal notranslate"><span class="pre">HTTPClient.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.HTTPClient.__enter__"><code class="docutils literal notranslate"><span class="pre">HTTPClient.__enter__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.HTTPClient.__exit__"><code class="docutils literal notranslate"><span class="pre">HTTPClient.__exit__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.HTTPClient.close"><code class="docutils literal notranslate"><span class="pre">HTTPClient.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.HTTPClient.request"><code class="docutils literal notranslate"><span class="pre">HTTPClient.request()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.HTTPClient.get"><code class="docutils literal notranslate"><span class="pre">HTTPClient.get()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.HTTPClient.post"><code class="docutils literal notranslate"><span class="pre">HTTPClient.post()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.HTTPClient.put"><code class="docutils literal notranslate"><span class="pre">HTTPClient.put()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.HTTPClient.patch"><code class="docutils literal notranslate"><span class="pre">HTTPClient.patch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.HTTPClient.delete"><code class="docutils literal notranslate"><span class="pre">HTTPClient.delete()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#sme_sidecar_sdk.http.SyncHTTPClient"><code class="docutils literal notranslate"><span class="pre">SyncHTTPClient</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.SyncHTTPClient.get"><code class="docutils literal notranslate"><span class="pre">SyncHTTPClient.get()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.SyncHTTPClient.post"><code class="docutils literal notranslate"><span class="pre">SyncHTTPClient.post()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.SyncHTTPClient.put"><code class="docutils literal notranslate"><span class="pre">SyncHTTPClient.put()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.SyncHTTPClient.patch"><code class="docutils literal notranslate"><span class="pre">SyncHTTPClient.patch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.SyncHTTPClient.delete"><code class="docutils literal notranslate"><span class="pre">SyncHTTPClient.delete()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.SyncHTTPClient.close"><code class="docutils literal notranslate"><span class="pre">SyncHTTPClient.close()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#sme_sidecar_sdk.http.build_async_http_client"><code class="docutils literal notranslate"><span class="pre">build_async_http_client()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sme_sidecar_sdk.http.build_http_client"><code class="docutils literal notranslate"><span class="pre">build_http_client()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-sme_sidecar_sdk.http.client">client</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.client.HTTPClient"><code class="docutils literal notranslate"><span class="pre">HTTPClient</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.client.AsyncHTTPClient"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClient</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.client.build_http_client"><code class="docutils literal notranslate"><span class="pre">build_http_client()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sme_sidecar_sdk.http.client.build_async_http_client"><code class="docutils literal notranslate"><span class="pre">build_async_http_client()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="observability.html">observability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="resilience.html">resilience</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exceptions.html">exceptions</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Menu de navegação móvel" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SME Sidecar SDK</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Navegação da página">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
+      <li class="breadcrumb-item active">http</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/http.rst.txt" rel="nofollow"> Ver código-fonte da página</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-sme_sidecar_sdk.http">
+<span id="http"></span><h1>http<a class="headerlink" href="#module-sme_sidecar_sdk.http" title="Link para este cabeçalho"></a></h1>
+<p>Cliente HTTP compartilhado com resiliência e observabilidade.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.AsyncHTTPClient">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.http.</span></span><span class="sig-name descname"><span class="pre">AsyncHTTPClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Separador de parâmetros somente-nomeados (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">client_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#AsyncHTTPClient"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.AsyncHTTPClient" title="Link para esta definição"></a></dt>
+<dd><p>Base: <code class="xref py py-class docutils literal notranslate"><span class="pre">_BaseHTTPClient</span></code></p>
+<p>Cliente HTTP assíncrono com capacidades técnicas da SDK.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Nome lógico do upstream usado em logs e circuit breaker.</p></li>
+<li><p><strong>base_url</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <code class="xref py py-class docutils literal notranslate"><span class="pre">URL</span></code> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – URL base opcional repassada ao <code class="docutils literal notranslate"><span class="pre">httpx.AsyncClient</span></code>.</p></li>
+<li><p><strong>settings</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="config.html#sme_sidecar_sdk.config.Settings" title="sme_sidecar_sdk.config.Settings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Settings</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Configuração opcional. Quando omitida, utiliza a
+configuração cacheada da SDK.</p></li>
+<li><p><strong>**client_kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></span>) – Argumentos adicionais repassados ao cliente HTTPX
+construído pela SDK.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.AsyncHTTPClient.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Separador de parâmetros somente-nomeados (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">client_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#AsyncHTTPClient.__init__"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.AsyncHTTPClient.__init__" title="Link para esta definição"></a></dt>
+<dd><p>Inicializa o cliente assíncrono compartilhado.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>base_url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>URL</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>settings</strong> (<a class="reference internal" href="config.html#sme_sidecar_sdk.config.Settings" title="sme_sidecar_sdk.config.Settings"><em>Settings</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>client_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(em Python v3.14)"><em>object</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.AsyncHTTPClient.__aenter__">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">__aenter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#AsyncHTTPClient.__aenter__"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.AsyncHTTPClient.__aenter__" title="Link para esta definição"></a></dt>
+<dd><p>Entra no contexto assíncrono do cliente HTTP.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
+</dd>
+<dt class="field-even">Retorna<span class="colon">:</span></dt>
+<dd class="field-even"><p>Instância atual do cliente.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.AsyncHTTPClient.__aexit__">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">__aexit__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exc_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traceback</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#AsyncHTTPClient.__aexit__"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.AsyncHTTPClient.__aexit__" title="Link para esta definição"></a></dt>
+<dd><p>Fecha o cliente HTTP ao sair do contexto assíncrono.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>exc_type</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#type" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#BaseException" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseException</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Tipo da exceção capturada pelo context manager.</p></li>
+<li><p><strong>exc_value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#BaseException" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseException</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Instância da exceção capturada pelo context manager.</p></li>
+<li><p><strong>traceback</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/types.html#types.TracebackType" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TracebackType</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Traceback associado à exceção capturada.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.AsyncHTTPClient.aclose">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">aclose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#AsyncHTTPClient.aclose"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.AsyncHTTPClient.aclose" title="Link para esta definição"></a></dt>
+<dd><p>Fecha conexões mantidas pelo cliente HTTP assíncrono.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.AsyncHTTPClient.request">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#AsyncHTTPClient.request"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.AsyncHTTPClient.request" title="Link para esta definição"></a></dt>
+<dd><p>Executa uma requisição HTTP assíncrona com retry e breaker.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Método HTTP.</p></li>
+<li><p><strong>url</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <code class="xref py py-class docutils literal notranslate"><span class="pre">URL</span></code></span>) – URL absoluta ou relativa à <code class="docutils literal notranslate"><span class="pre">base_url</span></code>.</p></li>
+<li><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Argumentos repassados ao <code class="docutils literal notranslate"><span class="pre">httpx.AsyncClient.request</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-odd">Retorna<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Resposta HTTPX validada com <code class="docutils literal notranslate"><span class="pre">raise_for_status()</span></code>.</p>
+</dd>
+<dt class="field-even">Levanta<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>httpx.TimeoutException</strong> – Quando a chamada expira.</p></li>
+<li><p><strong>httpx.RequestError</strong> – Quando ocorre falha de transporte.</p></li>
+<li><p><strong>httpx.HTTPStatusError</strong> – Quando a resposta é 4xx ou 5xx.</p></li>
+<li><p><strong>pybreaker.CircuitBreakerError</strong> – Quando o circuito está aberto.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.AsyncHTTPClient.get">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#AsyncHTTPClient.get"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.AsyncHTTPClient.get" title="Link para esta definição"></a></dt>
+<dd><p>Executa uma requisição <code class="docutils literal notranslate"><span class="pre">GET</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-even">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>URL</em>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.AsyncHTTPClient.post">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#AsyncHTTPClient.post"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.AsyncHTTPClient.post" title="Link para esta definição"></a></dt>
+<dd><p>Executa uma requisição <code class="docutils literal notranslate"><span class="pre">POST</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-even">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>URL</em>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.AsyncHTTPClient.put">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">put</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#AsyncHTTPClient.put"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.AsyncHTTPClient.put" title="Link para esta definição"></a></dt>
+<dd><p>Executa uma requisição <code class="docutils literal notranslate"><span class="pre">PUT</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-even">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>URL</em>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.AsyncHTTPClient.patch">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">patch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#AsyncHTTPClient.patch"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.AsyncHTTPClient.patch" title="Link para esta definição"></a></dt>
+<dd><p>Executa uma requisição <code class="docutils literal notranslate"><span class="pre">PATCH</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-even">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>URL</em>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.AsyncHTTPClient.delete">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#AsyncHTTPClient.delete"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.AsyncHTTPClient.delete" title="Link para esta definição"></a></dt>
+<dd><p>Executa uma requisição <code class="docutils literal notranslate"><span class="pre">DELETE</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-even">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>URL</em>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.AsyncHTTPClientProtocol">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.http.</span></span><span class="sig-name descname"><span class="pre">AsyncHTTPClientProtocol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/_types.html#AsyncHTTPClientProtocol"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.AsyncHTTPClientProtocol" title="Link para esta definição"></a></dt>
+<dd><p>Base: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a></p>
+<p>Contrato de tipo para clientes HTTP assíncronos.</p>
+<p>Destinado a anotações de tipo quando o código consumidor precisa
+chamar métodos HTTP com <code class="docutils literal notranslate"><span class="pre">await</span></code> sem depender da classe concreta
+retornada por <code class="docutils literal notranslate"><span class="pre">build_async_http_client</span></code>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.AsyncHTTPClientProtocol.get">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/_types.html#AsyncHTTPClientProtocol.get"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.AsyncHTTPClientProtocol.get" title="Link para esta definição"></a></dt>
+<dd><p>Declara a assinatura para solicitar um recurso ao upstream.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <code class="xref py py-class docutils literal notranslate"><span class="pre">URL</span></code></span>) – URL absoluta ou relativa à <code class="docutils literal notranslate"><span class="pre">base_url</span></code> do cliente.</p></li>
+<li><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Argumentos repassados ao cliente HTTP.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-odd">Retorna<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Resposta HTTP retornada pelo upstream.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.AsyncHTTPClientProtocol.post">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/_types.html#AsyncHTTPClientProtocol.post"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.AsyncHTTPClientProtocol.post" title="Link para esta definição"></a></dt>
+<dd><p>Declara a assinatura para criar ou submeter dados ao upstream.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <code class="xref py py-class docutils literal notranslate"><span class="pre">URL</span></code></span>) – URL absoluta ou relativa à <code class="docutils literal notranslate"><span class="pre">base_url</span></code> do cliente.</p></li>
+<li><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Argumentos repassados ao cliente HTTP.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-odd">Retorna<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Resposta HTTP retornada pelo upstream.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.AsyncHTTPClientProtocol.put">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">put</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/_types.html#AsyncHTTPClientProtocol.put"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.AsyncHTTPClientProtocol.put" title="Link para esta definição"></a></dt>
+<dd><p>Declara a assinatura para substituir um recurso no upstream.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <code class="xref py py-class docutils literal notranslate"><span class="pre">URL</span></code></span>) – URL absoluta ou relativa à <code class="docutils literal notranslate"><span class="pre">base_url</span></code> do cliente.</p></li>
+<li><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Argumentos repassados ao cliente HTTP.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-odd">Retorna<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Resposta HTTP retornada pelo upstream.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.AsyncHTTPClientProtocol.patch">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">patch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/_types.html#AsyncHTTPClientProtocol.patch"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.AsyncHTTPClientProtocol.patch" title="Link para esta definição"></a></dt>
+<dd><p>Declara a assinatura para atualizar parcialmente um recurso.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <code class="xref py py-class docutils literal notranslate"><span class="pre">URL</span></code></span>) – URL absoluta ou relativa à <code class="docutils literal notranslate"><span class="pre">base_url</span></code> do cliente.</p></li>
+<li><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Argumentos repassados ao cliente HTTP.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-odd">Retorna<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Resposta HTTP retornada pelo upstream.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.AsyncHTTPClientProtocol.delete">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/_types.html#AsyncHTTPClientProtocol.delete"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.AsyncHTTPClientProtocol.delete" title="Link para esta definição"></a></dt>
+<dd><p>Declara a assinatura para remover um recurso no upstream.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <code class="xref py py-class docutils literal notranslate"><span class="pre">URL</span></code></span>) – URL absoluta ou relativa à <code class="docutils literal notranslate"><span class="pre">base_url</span></code> do cliente.</p></li>
+<li><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Argumentos repassados ao cliente HTTP.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-odd">Retorna<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Resposta HTTP retornada pelo upstream.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.AsyncHTTPClientProtocol.aclose">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">aclose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/_types.html#AsyncHTTPClientProtocol.aclose"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.AsyncHTTPClientProtocol.aclose" title="Link para esta definição"></a></dt>
+<dd><p>Declara a assinatura para liberar recursos do cliente.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.HTTPClient">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.http.</span></span><span class="sig-name descname"><span class="pre">HTTPClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Separador de parâmetros somente-nomeados (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">client_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#HTTPClient"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.HTTPClient" title="Link para esta definição"></a></dt>
+<dd><p>Base: <code class="xref py py-class docutils literal notranslate"><span class="pre">_BaseHTTPClient</span></code></p>
+<p>Cliente HTTP síncrono com capacidades técnicas da SDK.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Nome lógico do upstream usado em logs e circuit breaker.</p></li>
+<li><p><strong>base_url</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <code class="xref py py-class docutils literal notranslate"><span class="pre">URL</span></code> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – URL base opcional repassada ao <code class="docutils literal notranslate"><span class="pre">httpx.Client</span></code>.</p></li>
+<li><p><strong>settings</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="config.html#sme_sidecar_sdk.config.Settings" title="sme_sidecar_sdk.config.Settings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Settings</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Configuração opcional. Quando omitida, utiliza a
+configuração cacheada da SDK.</p></li>
+<li><p><strong>**client_kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></span>) – Argumentos adicionais repassados ao cliente HTTPX
+construído pela SDK.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.HTTPClient.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Separador de parâmetros somente-nomeados (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">client_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#HTTPClient.__init__"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.HTTPClient.__init__" title="Link para esta definição"></a></dt>
+<dd><p>Inicializa o cliente síncrono compartilhado.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>base_url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>URL</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>settings</strong> (<a class="reference internal" href="config.html#sme_sidecar_sdk.config.Settings" title="sme_sidecar_sdk.config.Settings"><em>Settings</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>client_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(em Python v3.14)"><em>object</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.HTTPClient.__enter__">
+<span class="sig-name descname"><span class="pre">__enter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#HTTPClient.__enter__"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.HTTPClient.__enter__" title="Link para esta definição"></a></dt>
+<dd><p>Entra no contexto do cliente HTTP.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
+</dd>
+<dt class="field-even">Retorna<span class="colon">:</span></dt>
+<dd class="field-even"><p>Instância atual do cliente.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.HTTPClient.__exit__">
+<span class="sig-name descname"><span class="pre">__exit__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exc_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traceback</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#HTTPClient.__exit__"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.HTTPClient.__exit__" title="Link para esta definição"></a></dt>
+<dd><p>Fecha o cliente HTTP ao sair do contexto.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>exc_type</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#type" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#BaseException" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseException</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Tipo da exceção capturada pelo context manager.</p></li>
+<li><p><strong>exc_value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#BaseException" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseException</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Instância da exceção capturada pelo context manager.</p></li>
+<li><p><strong>traceback</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/types.html#types.TracebackType" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TracebackType</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Traceback associado à exceção capturada.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.HTTPClient.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#HTTPClient.close"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.HTTPClient.close" title="Link para esta definição"></a></dt>
+<dd><p>Fecha conexões mantidas pelo cliente HTTP.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.HTTPClient.request">
+<span class="sig-name descname"><span class="pre">request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#HTTPClient.request"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.HTTPClient.request" title="Link para esta definição"></a></dt>
+<dd><p>Executa uma requisição HTTP com retry, breaker e logging.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Método HTTP.</p></li>
+<li><p><strong>url</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <code class="xref py py-class docutils literal notranslate"><span class="pre">URL</span></code></span>) – URL absoluta ou relativa à <code class="docutils literal notranslate"><span class="pre">base_url</span></code>.</p></li>
+<li><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Argumentos repassados ao <code class="docutils literal notranslate"><span class="pre">httpx.Client.request</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-odd">Retorna<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Resposta HTTPX validada com <code class="docutils literal notranslate"><span class="pre">raise_for_status()</span></code>.</p>
+</dd>
+<dt class="field-even">Levanta<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>httpx.TimeoutException</strong> – Quando a chamada expira.</p></li>
+<li><p><strong>httpx.RequestError</strong> – Quando ocorre falha de transporte.</p></li>
+<li><p><strong>httpx.HTTPStatusError</strong> – Quando a resposta é 4xx ou 5xx.</p></li>
+<li><p><strong>pybreaker.CircuitBreakerError</strong> – Quando o circuito está aberto.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.HTTPClient.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#HTTPClient.get"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.HTTPClient.get" title="Link para esta definição"></a></dt>
+<dd><p>Executa uma requisição <code class="docutils literal notranslate"><span class="pre">GET</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-even">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>URL</em>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.HTTPClient.post">
+<span class="sig-name descname"><span class="pre">post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#HTTPClient.post"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.HTTPClient.post" title="Link para esta definição"></a></dt>
+<dd><p>Executa uma requisição <code class="docutils literal notranslate"><span class="pre">POST</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-even">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>URL</em>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.HTTPClient.put">
+<span class="sig-name descname"><span class="pre">put</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#HTTPClient.put"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.HTTPClient.put" title="Link para esta definição"></a></dt>
+<dd><p>Executa uma requisição <code class="docutils literal notranslate"><span class="pre">PUT</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-even">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>URL</em>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.HTTPClient.patch">
+<span class="sig-name descname"><span class="pre">patch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#HTTPClient.patch"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.HTTPClient.patch" title="Link para esta definição"></a></dt>
+<dd><p>Executa uma requisição <code class="docutils literal notranslate"><span class="pre">PATCH</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-even">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>URL</em>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.HTTPClient.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#HTTPClient.delete"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.HTTPClient.delete" title="Link para esta definição"></a></dt>
+<dd><p>Executa uma requisição <code class="docutils literal notranslate"><span class="pre">DELETE</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-even">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>URL</em>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.SyncHTTPClient">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.http.</span></span><span class="sig-name descname"><span class="pre">SyncHTTPClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/_types.html#SyncHTTPClient"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.SyncHTTPClient" title="Link para esta definição"></a></dt>
+<dd><p>Base: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a></p>
+<p>Contrato de tipo para clientes HTTP síncronos.</p>
+<p>Destinado a anotações de tipo quando o código consumidor precisa
+chamar métodos HTTP comuns sem depender da classe concreta retornada
+por <code class="docutils literal notranslate"><span class="pre">build_http_client</span></code>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.SyncHTTPClient.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/_types.html#SyncHTTPClient.get"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.SyncHTTPClient.get" title="Link para esta definição"></a></dt>
+<dd><p>Declara a assinatura para solicitar um recurso ao upstream.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <code class="xref py py-class docutils literal notranslate"><span class="pre">URL</span></code></span>) – URL absoluta ou relativa à <code class="docutils literal notranslate"><span class="pre">base_url</span></code> do cliente.</p></li>
+<li><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Argumentos repassados ao cliente HTTP.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-odd">Retorna<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Resposta HTTP retornada pelo upstream.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.SyncHTTPClient.post">
+<span class="sig-name descname"><span class="pre">post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/_types.html#SyncHTTPClient.post"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.SyncHTTPClient.post" title="Link para esta definição"></a></dt>
+<dd><p>Declara a assinatura para criar ou submeter dados ao upstream.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <code class="xref py py-class docutils literal notranslate"><span class="pre">URL</span></code></span>) – URL absoluta ou relativa à <code class="docutils literal notranslate"><span class="pre">base_url</span></code> do cliente.</p></li>
+<li><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Argumentos repassados ao cliente HTTP.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-odd">Retorna<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Resposta HTTP retornada pelo upstream.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.SyncHTTPClient.put">
+<span class="sig-name descname"><span class="pre">put</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/_types.html#SyncHTTPClient.put"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.SyncHTTPClient.put" title="Link para esta definição"></a></dt>
+<dd><p>Declara a assinatura para substituir um recurso no upstream.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <code class="xref py py-class docutils literal notranslate"><span class="pre">URL</span></code></span>) – URL absoluta ou relativa à <code class="docutils literal notranslate"><span class="pre">base_url</span></code> do cliente.</p></li>
+<li><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Argumentos repassados ao cliente HTTP.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-odd">Retorna<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Resposta HTTP retornada pelo upstream.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.SyncHTTPClient.patch">
+<span class="sig-name descname"><span class="pre">patch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/_types.html#SyncHTTPClient.patch"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.SyncHTTPClient.patch" title="Link para esta definição"></a></dt>
+<dd><p>Declara a assinatura para atualizar parcialmente um recurso.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <code class="xref py py-class docutils literal notranslate"><span class="pre">URL</span></code></span>) – URL absoluta ou relativa à <code class="docutils literal notranslate"><span class="pre">base_url</span></code> do cliente.</p></li>
+<li><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Argumentos repassados ao cliente HTTP.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-odd">Retorna<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Resposta HTTP retornada pelo upstream.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.SyncHTTPClient.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/_types.html#SyncHTTPClient.delete"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.SyncHTTPClient.delete" title="Link para esta definição"></a></dt>
+<dd><p>Declara a assinatura para remover um recurso no upstream.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <code class="xref py py-class docutils literal notranslate"><span class="pre">URL</span></code></span>) – URL absoluta ou relativa à <code class="docutils literal notranslate"><span class="pre">base_url</span></code> do cliente.</p></li>
+<li><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Argumentos repassados ao cliente HTTP.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-odd">Retorna<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Resposta HTTP retornada pelo upstream.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.SyncHTTPClient.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/_types.html#SyncHTTPClient.close"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.SyncHTTPClient.close" title="Link para esta definição"></a></dt>
+<dd><p>Declara a assinatura para liberar recursos do cliente.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.build_async_http_client">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.http.</span></span><span class="sig-name descname"><span class="pre">build_async_http_client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Separador de parâmetros somente-nomeados (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">client_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#build_async_http_client"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.build_async_http_client" title="Link para esta definição"></a></dt>
+<dd><p>Cria um cliente HTTP assíncrono compartilhado.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Nome lógico do upstream.</p></li>
+<li><p><strong>base_url</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <code class="xref py py-class docutils literal notranslate"><span class="pre">URL</span></code> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – URL base opcional.</p></li>
+<li><p><strong>settings</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="config.html#sme_sidecar_sdk.config.Settings" title="sme_sidecar_sdk.config.Settings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Settings</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Configuração opcional da SDK.</p></li>
+<li><p><strong>**client_kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></span>) – Argumentos adicionais repassados ao HTTPX.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#sme_sidecar_sdk.http.client.AsyncHTTPClient" title="sme_sidecar_sdk.http.client.AsyncHTTPClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncHTTPClient</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Retorna<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Cliente HTTP assíncrono configurado.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.build_http_client">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.http.</span></span><span class="sig-name descname"><span class="pre">build_http_client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Separador de parâmetros somente-nomeados (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">client_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#build_http_client"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.build_http_client" title="Link para esta definição"></a></dt>
+<dd><p>Cria um cliente HTTP síncrono compartilhado.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Nome lógico do upstream.</p></li>
+<li><p><strong>base_url</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <code class="xref py py-class docutils literal notranslate"><span class="pre">URL</span></code> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – URL base opcional.</p></li>
+<li><p><strong>settings</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="config.html#sme_sidecar_sdk.config.Settings" title="sme_sidecar_sdk.config.Settings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Settings</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Configuração opcional da SDK.</p></li>
+<li><p><strong>**client_kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></span>) – Argumentos adicionais repassados ao HTTPX.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#sme_sidecar_sdk.http.client.HTTPClient" title="sme_sidecar_sdk.http.client.HTTPClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPClient</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Retorna<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Cliente HTTP síncrono configurado.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<section id="module-sme_sidecar_sdk.http.client">
+<span id="client"></span><h2>client<a class="headerlink" href="#module-sme_sidecar_sdk.http.client" title="Link para este cabeçalho"></a></h2>
+<p>Wrapper HTTP compartilhado para comunicação entre serviços.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.client.HTTPClient">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.http.client.</span></span><span class="sig-name descname"><span class="pre">HTTPClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Separador de parâmetros somente-nomeados (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">client_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#HTTPClient"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.client.HTTPClient" title="Link para esta definição"></a></dt>
+<dd><p>Base: <code class="xref py py-class docutils literal notranslate"><span class="pre">_BaseHTTPClient</span></code></p>
+<p>Cliente HTTP síncrono com capacidades técnicas da SDK.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Nome lógico do upstream usado em logs e circuit breaker.</p></li>
+<li><p><strong>base_url</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <code class="xref py py-class docutils literal notranslate"><span class="pre">URL</span></code> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – URL base opcional repassada ao <code class="docutils literal notranslate"><span class="pre">httpx.Client</span></code>.</p></li>
+<li><p><strong>settings</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="config.html#sme_sidecar_sdk.config.Settings" title="sme_sidecar_sdk.config.Settings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Settings</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Configuração opcional. Quando omitida, utiliza a
+configuração cacheada da SDK.</p></li>
+<li><p><strong>**client_kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></span>) – Argumentos adicionais repassados ao cliente HTTPX
+construído pela SDK.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.client.HTTPClient.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Separador de parâmetros somente-nomeados (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">client_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#HTTPClient.__init__"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.client.HTTPClient.__init__" title="Link para esta definição"></a></dt>
+<dd><p>Inicializa o cliente síncrono compartilhado.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>base_url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>URL</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>settings</strong> (<a class="reference internal" href="config.html#sme_sidecar_sdk.config.Settings" title="sme_sidecar_sdk.config.Settings"><em>Settings</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>client_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(em Python v3.14)"><em>object</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.client.HTTPClient.__enter__">
+<span class="sig-name descname"><span class="pre">__enter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#HTTPClient.__enter__"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.client.HTTPClient.__enter__" title="Link para esta definição"></a></dt>
+<dd><p>Entra no contexto do cliente HTTP.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
+</dd>
+<dt class="field-even">Retorna<span class="colon">:</span></dt>
+<dd class="field-even"><p>Instância atual do cliente.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.client.HTTPClient.__exit__">
+<span class="sig-name descname"><span class="pre">__exit__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exc_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traceback</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#HTTPClient.__exit__"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.client.HTTPClient.__exit__" title="Link para esta definição"></a></dt>
+<dd><p>Fecha o cliente HTTP ao sair do contexto.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>exc_type</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#type" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#BaseException" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseException</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Tipo da exceção capturada pelo context manager.</p></li>
+<li><p><strong>exc_value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#BaseException" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseException</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Instância da exceção capturada pelo context manager.</p></li>
+<li><p><strong>traceback</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/types.html#types.TracebackType" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TracebackType</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Traceback associado à exceção capturada.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.client.HTTPClient.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#HTTPClient.close"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.client.HTTPClient.close" title="Link para esta definição"></a></dt>
+<dd><p>Fecha conexões mantidas pelo cliente HTTP.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.client.HTTPClient.request">
+<span class="sig-name descname"><span class="pre">request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#HTTPClient.request"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.client.HTTPClient.request" title="Link para esta definição"></a></dt>
+<dd><p>Executa uma requisição HTTP com retry, breaker e logging.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Método HTTP.</p></li>
+<li><p><strong>url</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <code class="xref py py-class docutils literal notranslate"><span class="pre">URL</span></code></span>) – URL absoluta ou relativa à <code class="docutils literal notranslate"><span class="pre">base_url</span></code>.</p></li>
+<li><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Argumentos repassados ao <code class="docutils literal notranslate"><span class="pre">httpx.Client.request</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-odd">Retorna<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Resposta HTTPX validada com <code class="docutils literal notranslate"><span class="pre">raise_for_status()</span></code>.</p>
+</dd>
+<dt class="field-even">Levanta<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>httpx.TimeoutException</strong> – Quando a chamada expira.</p></li>
+<li><p><strong>httpx.RequestError</strong> – Quando ocorre falha de transporte.</p></li>
+<li><p><strong>httpx.HTTPStatusError</strong> – Quando a resposta é 4xx ou 5xx.</p></li>
+<li><p><strong>pybreaker.CircuitBreakerError</strong> – Quando o circuito está aberto.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.client.HTTPClient.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#HTTPClient.get"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.client.HTTPClient.get" title="Link para esta definição"></a></dt>
+<dd><p>Executa uma requisição <code class="docutils literal notranslate"><span class="pre">GET</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-even">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>URL</em>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.client.HTTPClient.post">
+<span class="sig-name descname"><span class="pre">post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#HTTPClient.post"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.client.HTTPClient.post" title="Link para esta definição"></a></dt>
+<dd><p>Executa uma requisição <code class="docutils literal notranslate"><span class="pre">POST</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-even">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>URL</em>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.client.HTTPClient.put">
+<span class="sig-name descname"><span class="pre">put</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#HTTPClient.put"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.client.HTTPClient.put" title="Link para esta definição"></a></dt>
+<dd><p>Executa uma requisição <code class="docutils literal notranslate"><span class="pre">PUT</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-even">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>URL</em>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.client.HTTPClient.patch">
+<span class="sig-name descname"><span class="pre">patch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#HTTPClient.patch"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.client.HTTPClient.patch" title="Link para esta definição"></a></dt>
+<dd><p>Executa uma requisição <code class="docutils literal notranslate"><span class="pre">PATCH</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-even">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>URL</em>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.client.HTTPClient.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#HTTPClient.delete"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.client.HTTPClient.delete" title="Link para esta definição"></a></dt>
+<dd><p>Executa uma requisição <code class="docutils literal notranslate"><span class="pre">DELETE</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-even">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>URL</em>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.client.AsyncHTTPClient">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.http.client.</span></span><span class="sig-name descname"><span class="pre">AsyncHTTPClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Separador de parâmetros somente-nomeados (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">client_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#AsyncHTTPClient"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.client.AsyncHTTPClient" title="Link para esta definição"></a></dt>
+<dd><p>Base: <code class="xref py py-class docutils literal notranslate"><span class="pre">_BaseHTTPClient</span></code></p>
+<p>Cliente HTTP assíncrono com capacidades técnicas da SDK.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Nome lógico do upstream usado em logs e circuit breaker.</p></li>
+<li><p><strong>base_url</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <code class="xref py py-class docutils literal notranslate"><span class="pre">URL</span></code> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – URL base opcional repassada ao <code class="docutils literal notranslate"><span class="pre">httpx.AsyncClient</span></code>.</p></li>
+<li><p><strong>settings</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="config.html#sme_sidecar_sdk.config.Settings" title="sme_sidecar_sdk.config.Settings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Settings</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Configuração opcional. Quando omitida, utiliza a
+configuração cacheada da SDK.</p></li>
+<li><p><strong>**client_kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></span>) – Argumentos adicionais repassados ao cliente HTTPX
+construído pela SDK.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.client.AsyncHTTPClient.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Separador de parâmetros somente-nomeados (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">client_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#AsyncHTTPClient.__init__"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.client.AsyncHTTPClient.__init__" title="Link para esta definição"></a></dt>
+<dd><p>Inicializa o cliente assíncrono compartilhado.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>base_url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>URL</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>settings</strong> (<a class="reference internal" href="config.html#sme_sidecar_sdk.config.Settings" title="sme_sidecar_sdk.config.Settings"><em>Settings</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>client_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(em Python v3.14)"><em>object</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.client.AsyncHTTPClient.__aenter__">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">__aenter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#AsyncHTTPClient.__aenter__"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.client.AsyncHTTPClient.__aenter__" title="Link para esta definição"></a></dt>
+<dd><p>Entra no contexto assíncrono do cliente HTTP.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Self</span></code></span></p>
+</dd>
+<dt class="field-even">Retorna<span class="colon">:</span></dt>
+<dd class="field-even"><p>Instância atual do cliente.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.client.AsyncHTTPClient.__aexit__">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">__aexit__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exc_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traceback</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#AsyncHTTPClient.__aexit__"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.client.AsyncHTTPClient.__aexit__" title="Link para esta definição"></a></dt>
+<dd><p>Fecha o cliente HTTP ao sair do contexto assíncrono.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>exc_type</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#type" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#BaseException" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseException</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Tipo da exceção capturada pelo context manager.</p></li>
+<li><p><strong>exc_value</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#BaseException" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseException</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Instância da exceção capturada pelo context manager.</p></li>
+<li><p><strong>traceback</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/types.html#types.TracebackType" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TracebackType</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Traceback associado à exceção capturada.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.client.AsyncHTTPClient.aclose">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">aclose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#AsyncHTTPClient.aclose"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.client.AsyncHTTPClient.aclose" title="Link para esta definição"></a></dt>
+<dd><p>Fecha conexões mantidas pelo cliente HTTP assíncrono.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.client.AsyncHTTPClient.request">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#AsyncHTTPClient.request"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.client.AsyncHTTPClient.request" title="Link para esta definição"></a></dt>
+<dd><p>Executa uma requisição HTTP assíncrona com retry e breaker.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Método HTTP.</p></li>
+<li><p><strong>url</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <code class="xref py py-class docutils literal notranslate"><span class="pre">URL</span></code></span>) – URL absoluta ou relativa à <code class="docutils literal notranslate"><span class="pre">base_url</span></code>.</p></li>
+<li><p><strong>**kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Argumentos repassados ao <code class="docutils literal notranslate"><span class="pre">httpx.AsyncClient.request</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-odd">Retorna<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Resposta HTTPX validada com <code class="docutils literal notranslate"><span class="pre">raise_for_status()</span></code>.</p>
+</dd>
+<dt class="field-even">Levanta<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>httpx.TimeoutException</strong> – Quando a chamada expira.</p></li>
+<li><p><strong>httpx.RequestError</strong> – Quando ocorre falha de transporte.</p></li>
+<li><p><strong>httpx.HTTPStatusError</strong> – Quando a resposta é 4xx ou 5xx.</p></li>
+<li><p><strong>pybreaker.CircuitBreakerError</strong> – Quando o circuito está aberto.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.client.AsyncHTTPClient.get">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#AsyncHTTPClient.get"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.client.AsyncHTTPClient.get" title="Link para esta definição"></a></dt>
+<dd><p>Executa uma requisição <code class="docutils literal notranslate"><span class="pre">GET</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-even">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>URL</em>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.client.AsyncHTTPClient.post">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#AsyncHTTPClient.post"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.client.AsyncHTTPClient.post" title="Link para esta definição"></a></dt>
+<dd><p>Executa uma requisição <code class="docutils literal notranslate"><span class="pre">POST</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-even">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>URL</em>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.client.AsyncHTTPClient.put">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">put</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#AsyncHTTPClient.put"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.client.AsyncHTTPClient.put" title="Link para esta definição"></a></dt>
+<dd><p>Executa uma requisição <code class="docutils literal notranslate"><span class="pre">PUT</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-even">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>URL</em>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.client.AsyncHTTPClient.patch">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">patch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#AsyncHTTPClient.patch"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.client.AsyncHTTPClient.patch" title="Link para esta definição"></a></dt>
+<dd><p>Executa uma requisição <code class="docutils literal notranslate"><span class="pre">PATCH</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-even">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>URL</em>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.client.AsyncHTTPClient.delete">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#AsyncHTTPClient.delete"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.client.AsyncHTTPClient.delete" title="Link para esta definição"></a></dt>
+<dd><p>Executa uma requisição <code class="docutils literal notranslate"><span class="pre">DELETE</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></span></p>
+</dd>
+<dt class="field-even">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><em>str</em></a><em> | </em><em>URL</em>)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(em Python v3.14)"><em>Any</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.client.build_http_client">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.http.client.</span></span><span class="sig-name descname"><span class="pre">build_http_client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Separador de parâmetros somente-nomeados (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">client_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#build_http_client"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.client.build_http_client" title="Link para esta definição"></a></dt>
+<dd><p>Cria um cliente HTTP síncrono compartilhado.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Nome lógico do upstream.</p></li>
+<li><p><strong>base_url</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <code class="xref py py-class docutils literal notranslate"><span class="pre">URL</span></code> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – URL base opcional.</p></li>
+<li><p><strong>settings</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="config.html#sme_sidecar_sdk.config.Settings" title="sme_sidecar_sdk.config.Settings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Settings</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Configuração opcional da SDK.</p></li>
+<li><p><strong>**client_kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></span>) – Argumentos adicionais repassados ao HTTPX.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#sme_sidecar_sdk.http.client.HTTPClient" title="sme_sidecar_sdk.http.client.HTTPClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPClient</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Retorna<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Cliente HTTP síncrono configurado.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sme_sidecar_sdk.http.client.build_async_http_client">
+<span class="sig-prename descclassname"><span class="pre">sme_sidecar_sdk.http.client.</span></span><span class="sig-name descname"><span class="pre">build_async_http_client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Separador de parâmetros somente-nomeados (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">client_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/sme_sidecar_sdk/http/client.html#build_async_http_client"><span class="viewcode-link"><span class="pre">[código-fonte]</span></span></a><a class="headerlink" href="#sme_sidecar_sdk.http.client.build_async_http_client" title="Link para esta definição"></a></dt>
+<dd><p>Cria um cliente HTTP assíncrono compartilhado.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parâmetros<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Nome lógico do upstream.</p></li>
+<li><p><strong>base_url</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <code class="xref py py-class docutils literal notranslate"><span class="pre">URL</span></code> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – URL base opcional.</p></li>
+<li><p><strong>settings</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="config.html#sme_sidecar_sdk.config.Settings" title="sme_sidecar_sdk.config.Settings"><code class="xref py py-class docutils literal notranslate"><span class="pre">Settings</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(em Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Configuração opcional da SDK.</p></li>
+<li><p><strong>**client_kwargs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(em Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></span>) – Argumentos adicionais repassados ao HTTPX.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Tipo de retorno<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#sme_sidecar_sdk.http.client.AsyncHTTPClient" title="sme_sidecar_sdk.http.client.AsyncHTTPClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncHTTPClient</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Retorna<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Cliente HTTP assíncrono configurado.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Rodapé">
+        <a href="config.html" class="btn btn-neutral float-left" title="config" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Anterior</a>
+        <a href="observability.html" class="btn btn-neutral float-right" title="observability" accesskey="n" rel="next">Próximo <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Direitos autorais 2026, SME São Paulo.</p>
+  </div>
+
+  Compilado com <a href="https://www.sphinx-doc.org/">Sphinx</a> usando um
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    fornecido por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
