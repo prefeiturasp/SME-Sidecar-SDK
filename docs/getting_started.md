@@ -165,7 +165,9 @@ log.info("turmas_consultadas", quantidade=12)
 ```
 
 Os logs recebem automaticamente `service`, `environment`, `request_id` e,
-quando houver span ativo, `trace_id` e `span_id`.
+quando houver span ativo, `trace_id` e `span_id`. A SDK também envia os
+campos ECS equivalentes (`service.name`, `service.environment`, `trace.id`
+e `span.id`) para permitir correlação nas telas de logs do Elastic/Kibana.
 
 ### Tracing OpenTelemetry
 

@@ -63,6 +63,8 @@ mesmo pipeline. Cada evento JSON inclui:
 - serviço e ambiente;
 - nome do evento e seus campos de negócio;
 - `request_id`, `trace_id` e `span_id`, quando disponíveis.
+- campos ECS equivalentes, como `service.name`, `service.environment`,
+  `trace.id` e `span.id`, para correlação no Elastic/Kibana.
 
 Essa estrutura permite consultar campos diretamente no mecanismo de
 busca, sem interpretar o conteúdo textual de cada mensagem.
@@ -98,10 +100,14 @@ Exemplo de saída:
   "logger": "apps.turmas.services",
   "event": "turmas_consultadas",
   "service": "pedagogico-ms",
+  "service.name": "pedagogico-ms",
   "environment": "production",
+  "service.environment": "production",
   "request_id": "8d624936-4ab1-4a89-9f0b-6632b91e13ef",
   "trace_id": "4fd0bca66d5c02185d06ad77b6dfed46",
+  "trace.id": "4fd0bca66d5c02185d06ad77b6dfed46",
   "span_id": "62e72c734d66304d",
+  "span.id": "62e72c734d66304d",
   "quantidade": 12
 }
 ```
@@ -211,7 +217,8 @@ Quando habilitado, o runtime:
 1. cria um `TracerProvider` com a identidade do serviço;
 2. configura o exporter OTLP gRPC;
 3. instrumenta automaticamente os clientes `httpx`;
-4. adiciona `trace_id` e `span_id` aos logs durante spans ativos.
+4. adiciona `trace_id`, `span_id`, `trace.id` e `span.id` aos logs
+   durante spans ativos.
 
 O protocolo OTLP permite enviar os spans a um OpenTelemetry Collector ou
 diretamente a uma plataforma compatível, como o Elastic APM. Nos dois
