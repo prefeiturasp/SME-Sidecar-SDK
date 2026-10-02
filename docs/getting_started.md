@@ -193,6 +193,13 @@ Ao atender uma requisição Django, a chamada acima fica correlacionada ao trace
 da requisição original. No APM, o endpoint Django aparece como transação e a
 chamada para `pedagogico-ms` aparece como span HTTP externo.
 
+Ao usar OpenTelemetry com Elastic, alguns dados podem ser indexados sem
+aparecer em todas as visualizações nativas do APM. Por exemplo, stack traces
+de exceptions podem chegar em campos como `error.exception.attributes.stacktrace`
+ou em eventos de span, mas não serem renderizados como stack trace na aba visual
+de Errors. Nesses casos, valide também pelo Discover usando `trace.id`,
+`processor.event` e os campos `error.exception.*`.
+
 ### Contexto fora de uma requisição Django
 
 Em workers, scripts ou integrações sem middleware HTTP, use

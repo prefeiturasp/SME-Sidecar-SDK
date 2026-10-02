@@ -226,6 +226,26 @@ casos, a instrumentação continua sendo exclusivamente OpenTelemetry.
 Atualmente, `elastic` é o único backend de observabilidade homologado na
 configuração da SDK.
 
+### Limitações com Elastic APM
+
+A integração via OpenTelemetry usa o modelo OTLP. No Elastic/Kibana, alguns
+dados podem ser recebidos e indexados sem aparecerem em todas as telas nativas
+do APM com o mesmo formato do agente Elastic nativo.
+
+Pontos conhecidos:
+
+- stack traces podem chegar como `error.exception.attributes.stacktrace` ou
+  como eventos de exception em spans, mas a aba de Errors pode exibir
+  `No stack trace available`;
+- alguns gráficos específicos do APM, como tempo por tipo de span, podem
+  depender de mapeamentos que nem sempre são preenchidos no modelo OTLP;
+- a validação deve comparar a tela do APM com o documento bruto no Discover,
+  filtrando por `trace.id`, `processor.event` e `error.exception.*`.
+
+Quando a visualização do APM não mostrar todos os detalhes, use o Discover
+como fonte de diagnóstico para confirmar se o dado foi indexado. A limitação
+é de exibição/mapeamento no Elastic, não necessariamente de envio pela SDK.
+
 O Collector é recomendado quando a infraestrutura precisa centralizar
 autenticação, amostragem, processamento ou roteamento da telemetria.
 
@@ -329,6 +349,7 @@ contínuo do ambiente.
 ## Referências
 
 - [OpenTelemetry com Elastic APM](https://www.elastic.co/docs/solutions/observability/apm/opentelemetry)
+- [Limitações do OpenTelemetry no Elastic](https://www.elastic.co/docs/solutions/observability/apm/opentelemetry/limitations)
 - [Propagação OpenTelemetry](https://opentelemetry.io/docs/languages/python/propagation/)
 - [Instrumentação HTTPX](https://opentelemetry-python-contrib.readthedocs.io/en/latest/instrumentation/httpx/httpx.html)
 - [Instrumentação Django](https://opentelemetry-python-contrib.readthedocs.io/en/latest/instrumentation/django/django.html)
