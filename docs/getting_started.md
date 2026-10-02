@@ -107,6 +107,18 @@ O middleware reutiliza ou gera o `X-Request-ID`, devolve esse valor na
 resposta e registra o log HTTP da requisição. Quando tracing está ativo,
 a instrumentação oficial do OpenTelemetry para Django cria os spans HTTP.
 
+### Instrumentar aplicações ASGI
+
+Para aplicações ASGI, como Django Channels, envolva o `application` no
+`asgi.py`. Esse passo é opt-in e não altera o comportamento de aplicações
+WSGI.
+
+```python
+from sme_sidecar_sdk.integrations.asgi import instrument_asgi_application
+
+application = instrument_asgi_application(application)
+```
+
 ## Como Utilizar Os Recursos
 
 ### Cliente HTTP compartilhado

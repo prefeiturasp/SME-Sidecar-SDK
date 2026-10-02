@@ -107,7 +107,7 @@ ajustes de implementação.
 | Variável | Padrão | Descrição |
 | --- | --- | --- |
 | `SME_OBSERVABILITY_BACKEND` | `elastic` | Backend de observabilidade suportado pela configuração documentada. Atualmente, apenas `elastic` é aceito. |
-| `SME_OTEL_ENABLED` | `false` | Habilita provider, exporter e instrumentações HTTPX/Django. |
+| `SME_OTEL_ENABLED` | `false` | Habilita provider, exporter e instrumentações HTTPX/Django. Para ASGI, use também `instrument_asgi_application()`. |
 | `SME_OTEL_EXPORTER_OTLP_ENDPOINT` | `http://localhost:4317` | Endpoint OTLP gRPC do OpenTelemetry Collector ou backend compatível. |
 | `SME_OTEL_EXPORTER_OTLP_HEADERS` | vazio | Headers de autenticação no formato `chave=valor`, separados por vírgula. Valores percent-encoded são decodificados pela SDK. |
 | `SME_OTEL_EXPORTER_OTLP_INSECURE` | `true` | Quando `true`, usa transporte sem TLS; defina `false` para endpoints HTTPS. |

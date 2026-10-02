@@ -149,6 +149,22 @@ Registre o middleware antes das camadas que emitem logs. Ele cuida de
 são criados pela instrumentação oficial do OpenTelemetry quando o tracing
 está habilitado.
 
+### Uso em ASGI
+
+Em aplicações ASGI, como projetos com Django Channels, envolva a aplicação
+exposta no `asgi.py`:
+
+```python
+from sme_sidecar_sdk.integrations.asgi import instrument_asgi_application
+
+application = instrument_asgi_application(application)
+```
+
+Esse uso é explícito para não impactar aplicações WSGI. Quando tracing está
+habilitado, o wrapper adiciona o middleware ASGI oficial do OpenTelemetry;
+quando tracing está desligado, ele mantém apenas correlação e log estruturado
+das requisições HTTP.
+
 ### Propagação nas chamadas HTTP
 
 O cliente HTTP compartilhado da SDK propaga automaticamente o
