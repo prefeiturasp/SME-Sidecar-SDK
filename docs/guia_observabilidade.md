@@ -63,6 +63,8 @@ mesmo pipeline. Cada evento JSON inclui:
 - serviço e ambiente;
 - nome do evento e seus campos de negócio;
 - `request_id`, `trace_id` e `span_id`, quando disponíveis.
+- campos ECS equivalentes, como `service.name`, `service.environment`,
+  `trace.id` e `span.id`, para correlação no Elastic/Kibana.
 
 Essa estrutura permite consultar campos diretamente no mecanismo de
 busca, sem interpretar o conteúdo textual de cada mensagem.
@@ -98,10 +100,14 @@ Exemplo de saída:
   "logger": "apps.turmas.services",
   "event": "turmas_consultadas",
   "service": "pedagogico-ms",
+  "service.name": "pedagogico-ms",
   "environment": "production",
+  "service.environment": "production",
   "request_id": "8d624936-4ab1-4a89-9f0b-6632b91e13ef",
   "trace_id": "4fd0bca66d5c02185d06ad77b6dfed46",
+  "trace.id": "4fd0bca66d5c02185d06ad77b6dfed46",
   "span_id": "62e72c734d66304d",
+  "span.id": "62e72c734d66304d",
   "quantidade": 12
 }
 ```
@@ -211,13 +217,34 @@ Quando habilitado, o runtime:
 1. cria um `TracerProvider` com a identidade do serviço;
 2. configura o exporter OTLP gRPC;
 3. instrumenta automaticamente os clientes `httpx`;
-4. adiciona `trace_id` e `span_id` aos logs durante spans ativos.
+4. adiciona `trace_id`, `span_id`, `trace.id` e `span.id` aos logs
+   durante spans ativos.
 
 O protocolo OTLP permite enviar os spans a um OpenTelemetry Collector ou
 diretamente a uma plataforma compatível, como o Elastic APM. Nos dois
 casos, a instrumentação continua sendo exclusivamente OpenTelemetry.
 Atualmente, `elastic` é o único backend de observabilidade homologado na
 configuração da SDK.
+
+### Limitações com Elastic APM
+
+A integração via OpenTelemetry usa o modelo OTLP. No Elastic/Kibana, alguns
+dados podem ser recebidos e indexados sem aparecerem em todas as telas nativas
+do APM com o mesmo formato do agente Elastic nativo.
+
+Pontos conhecidos:
+
+- stack traces podem chegar como `error.exception.attributes.stacktrace` ou
+  como eventos de exception em spans, mas a aba de Errors pode exibir
+  `No stack trace available`;
+- alguns gráficos específicos do APM, como tempo por tipo de span, podem
+  depender de mapeamentos que nem sempre são preenchidos no modelo OTLP;
+- a validação deve comparar a tela do APM com o documento bruto no Discover,
+  filtrando por `trace.id`, `processor.event` e `error.exception.*`.
+
+Quando a visualização do APM não mostrar todos os detalhes, use o Discover
+como fonte de diagnóstico para confirmar se o dado foi indexado. A limitação
+é de exibição/mapeamento no Elastic, não necessariamente de envio pela SDK.
 
 O Collector é recomendado quando a infraestrutura precisa centralizar
 autenticação, amostragem, processamento ou roteamento da telemetria.
@@ -322,6 +349,7 @@ contínuo do ambiente.
 ## Referências
 
 - [OpenTelemetry com Elastic APM](https://www.elastic.co/docs/solutions/observability/apm/opentelemetry)
+- [Limitações do OpenTelemetry no Elastic](https://www.elastic.co/docs/solutions/observability/apm/opentelemetry/limitations)
 - [Propagação OpenTelemetry](https://opentelemetry.io/docs/languages/python/propagation/)
 - [Instrumentação HTTPX](https://opentelemetry-python-contrib.readthedocs.io/en/latest/instrumentation/httpx/httpx.html)
 - [Instrumentação Django](https://opentelemetry-python-contrib.readthedocs.io/en/latest/instrumentation/django/django.html)

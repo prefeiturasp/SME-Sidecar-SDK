@@ -64,6 +64,9 @@ def test_structured_log_contains_standard_context(
     assert payload["event"] == "consulta_concluida"
     assert payload["service"] == "pedagogico-ms"
     assert payload["environment"] == "qa"
+    assert payload["service.name"] == "pedagogico-ms"
+    assert payload["service.environment"] == "qa"
+    assert payload["event.dataset"] == "pedagogico-ms"
     assert payload["request_id"] == "request-42"
     assert payload["status_code"] == 200
     assert payload["level"] == "info"
@@ -84,6 +87,7 @@ def test_standard_library_logs_use_same_json_format(
     payload = _last_payload(capsys)
     assert payload["event"] == "falha temporaria"
     assert payload["service"] == "servico"
+    assert payload["service.name"] == "servico"
     assert payload["level"] == "warning"
 
 
@@ -113,6 +117,8 @@ def test_external_provider_receives_structured_json(
     assert payload["event"] == "consulta_falhou"
     assert payload["service"] == "pedagogico-ms"
     assert payload["environment"] == "qa"
+    assert payload["service.name"] == "pedagogico-ms"
+    assert payload["service.environment"] == "qa"
     assert payload["request_id"] == "request-42"
     assert payload["status_code"] == 500
 
