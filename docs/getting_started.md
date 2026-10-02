@@ -107,6 +107,18 @@ O middleware reutiliza ou gera o `X-Request-ID`, devolve esse valor na
 resposta e registra o log HTTP da requisição. Quando tracing está ativo,
 a instrumentação oficial do OpenTelemetry para Django cria os spans HTTP.
 
+### Instrumentar aplicações ASGI
+
+Para aplicações ASGI, como Django Channels, envolva o `application` no
+`asgi.py`. Esse passo é opt-in e não altera o comportamento de aplicações
+WSGI.
+
+```python
+from sme_sidecar_sdk.integrations.asgi import instrument_asgi_application
+
+application = instrument_asgi_application(application)
+```
+
 ## Como Utilizar Os Recursos
 
 ### Cliente HTTP compartilhado
@@ -153,7 +165,9 @@ log.info("turmas_consultadas", quantidade=12)
 ```
 
 Os logs recebem automaticamente `service`, `environment`, `request_id` e,
-quando houver span ativo, `trace_id` e `span_id`.
+quando houver span ativo, `trace_id` e `span_id`. A SDK também envia os
+campos ECS equivalentes (`service.name`, `service.environment`, `trace.id`
+e `span.id`) para permitir correlação nas telas de logs do Elastic/Kibana.
 
 ### Tracing OpenTelemetry
 
@@ -178,6 +192,13 @@ def listar_turmas() -> list[dict]:
 Ao atender uma requisição Django, a chamada acima fica correlacionada ao trace
 da requisição original. No APM, o endpoint Django aparece como transação e a
 chamada para `pedagogico-ms` aparece como span HTTP externo.
+
+Ao usar OpenTelemetry com Elastic, alguns dados podem ser indexados sem
+aparecer em todas as visualizações nativas do APM. Por exemplo, stack traces
+de exceptions podem chegar em campos como `error.exception.attributes.stacktrace`
+ou em eventos de span, mas não serem renderizados como stack trace na aba visual
+de Errors. Nesses casos, valide também pelo Discover usando `trace.id`,
+`processor.event` e os campos `error.exception.*`.
 
 ### Contexto fora de uma requisição Django
 

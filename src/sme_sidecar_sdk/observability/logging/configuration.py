@@ -12,6 +12,7 @@ from structlog.types import EventDict, Processor
 
 from ...config import Settings, get_settings
 from ..context import get_correlation_id
+from ..resource import build_resource_attributes
 from .providers.base import LogProvider
 from .providers.factory import build_log_providers
 
@@ -20,6 +21,7 @@ _LOG_PROVIDERS: list[LogProvider] = []
 
 def _add_service_context(settings: Settings) -> Processor:
     """Cria processor que adiciona identidade do serviço ao evento."""
+    resource_attributes = build_resource_attributes(settings)
 
     def processor(_: Any, __: str, event_dict: EventDict) -> EventDict:
         """Adiciona a identidade do serviço ao evento.
@@ -34,6 +36,12 @@ def _add_service_context(settings: Settings) -> Processor:
         """
         event_dict.setdefault("service", settings.service_name)
         event_dict.setdefault("environment", settings.environment)
+        event_dict.setdefault("service.name", settings.service_name)
+        event_dict.setdefault("service.version", settings.service_version)
+        event_dict.setdefault("service.environment", settings.environment)
+        event_dict.setdefault("event.dataset", settings.service_name)
+        for key, value in resource_attributes.items():
+            event_dict.setdefault(key, value)
         return event_dict
 
     return processor
@@ -75,8 +83,12 @@ def _add_trace_context(_: Any, __: str, event_dict: EventDict) -> EventDict:
 
     span_context = trace.get_current_span().get_span_context()
     if span_context.is_valid:
-        event_dict.setdefault("trace_id", f"{span_context.trace_id:032x}")
-        event_dict.setdefault("span_id", f"{span_context.span_id:016x}")
+        trace_id = f"{span_context.trace_id:032x}"
+        span_id = f"{span_context.span_id:016x}"
+        event_dict.setdefault("trace_id", trace_id)
+        event_dict.setdefault("span_id", span_id)
+        event_dict.setdefault("trace.id", trace_id)
+        event_dict.setdefault("span.id", span_id)
     return event_dict
 
 

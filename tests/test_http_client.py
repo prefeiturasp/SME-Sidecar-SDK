@@ -185,6 +185,53 @@ def test_http_client_uses_circuit_breaker() -> None:
             client.get("http://breaker.test/falha")
 
 
+def test_http_client_does_not_open_circuit_for_unconfigured_status() -> None:
+    settings = Settings(
+        SME_RETRY_ENABLED=False,
+        SME_CIRCUIT_BREAKER_FAIL_MAX=2,
+        SME_CIRCUIT_BREAKER_RESET_TIMEOUT=60,
+    )
+    calls = {"count": 0}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls["count"] += 1
+        return httpx.Response(404, request=request)
+
+    with build_http_client(
+        "breaker-404-ms",
+        settings=settings,
+        transport=httpx.MockTransport(handler),
+    ) as client:
+        with pytest.raises(httpx.HTTPStatusError):
+            client.get("http://breaker-404.test/ausente")
+        with pytest.raises(httpx.HTTPStatusError):
+            client.get("http://breaker-404.test/ausente")
+
+    assert calls["count"] == 2
+
+
+def test_http_client_opens_circuit_for_configured_status() -> None:
+    settings = Settings(
+        SME_RETRY_ENABLED=False,
+        SME_CIRCUIT_BREAKER_FAIL_MAX=2,
+        SME_CIRCUIT_BREAKER_RESET_TIMEOUT=60,
+        SME_CIRCUIT_BREAKER_FAILURE_STATUS_CODES="404,500",
+    )
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(404, request=request)
+
+    with build_http_client(
+        "breaker-configured-404-ms",
+        settings=settings,
+        transport=httpx.MockTransport(handler),
+    ) as client:
+        with pytest.raises(httpx.HTTPStatusError):
+            client.get("http://breaker-configured-404.test/ausente")
+        with pytest.raises(pybreaker.CircuitBreakerError):
+            client.get("http://breaker-configured-404.test/ausente")
+
+
 @pytest.mark.asyncio
 async def test_async_http_client_sends_request() -> None:
     def handler(request: httpx.Request) -> httpx.Response:
@@ -269,3 +316,31 @@ async def test_async_http_client_uses_circuit_breaker() -> None:
             await client.get("http://async-breaker.test/falha")
         with pytest.raises(pybreaker.CircuitBreakerError):
             await client.get("http://async-breaker.test/falha")
+
+
+@pytest.mark.asyncio
+async def test_async_http_client_ignores_unconfigured_status_for_breaker() -> (
+    None
+):
+    settings = Settings(
+        SME_RETRY_ENABLED=False,
+        SME_CIRCUIT_BREAKER_FAIL_MAX=2,
+        SME_CIRCUIT_BREAKER_RESET_TIMEOUT=60,
+    )
+    calls = {"count": 0}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls["count"] += 1
+        return httpx.Response(404, request=request)
+
+    async with build_async_http_client(
+        "async-breaker-404-ms",
+        settings=settings,
+        transport=httpx.MockTransport(handler),
+    ) as client:
+        with pytest.raises(httpx.HTTPStatusError):
+            await client.get("http://async-breaker-404.test/ausente")
+        with pytest.raises(httpx.HTTPStatusError):
+            await client.get("http://async-breaker-404.test/ausente")
+
+    assert calls["count"] == 2

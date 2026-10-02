@@ -18,6 +18,7 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
 from ..config import Settings, get_settings
+from .resource import build_resource_attributes
 
 _PROVIDER: TracerProvider | None = None
 _HTTPX_INSTRUMENTED = False
@@ -72,14 +73,7 @@ def configure_tracing(
     if _PROVIDER is not None:
         return _PROVIDER
 
-    resource = Resource.create(
-        {
-            "service.name": settings.service_name,
-            "service.version": settings.service_version,
-            "deployment.environment": settings.environment,
-            "deployment.environment.name": settings.environment,
-        }
-    )
+    resource = Resource.create(build_resource_attributes(settings))
     provider = TracerProvider(resource=resource)
     exporter = OTLPSpanExporter(
         endpoint=settings.otel_exporter_otlp_endpoint,
