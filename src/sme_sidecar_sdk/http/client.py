@@ -207,13 +207,17 @@ class HTTPClient(_BaseHTTPClient):
         """
 
         def call() -> httpx.Response:
-            return self._send_with_retry(method, url, **kwargs)
+            response = self._send_with_retry(method, url, **kwargs)
+            _raise_for_circuit_breaker_status(response, self.settings)
+            return response
 
         def protected_call() -> httpx.Response:
             response: httpx.Response = self._breaker.call(call)
             return response
 
-        return self._execute(method, url, protected_call)
+        response = self._execute(method, url, protected_call)
+        response.raise_for_status()
+        return response
 
     def get(self, url: str | httpx.URL, **kwargs: Any) -> httpx.Response:
         """Executa uma requisição ``GET``."""
@@ -252,12 +256,9 @@ class HTTPClient(_BaseHTTPClient):
             Resposta HTTPX validada com ``raise_for_status()``.
 
         Raises:
-            httpx.HTTPStatusError: Quando a resposta é 4xx ou 5xx.
             httpx.RequestError: Quando ocorre falha de transporte.
         """
-        response = self._client.request(method, url, **kwargs)
-        response.raise_for_status()
-        return response
+        return self._client.request(method, url, **kwargs)
 
     def _send_with_retry(
         self,
@@ -277,7 +278,6 @@ class HTTPClient(_BaseHTTPClient):
 
         Raises:
             RuntimeError: Quando a política de retry termina sem resposta.
-            httpx.HTTPStatusError: Quando a resposta é 4xx ou 5xx.
             httpx.RequestError: Quando ocorre falha de transporte.
         """
         if (
@@ -401,9 +401,11 @@ class AsyncHTTPClient(_BaseHTTPClient):
         """
 
         async def call() -> httpx.Response:
-            return await self._send_with_retry(method, url, **kwargs)
+            response = await self._send_with_retry(method, url, **kwargs)
+            _raise_for_circuit_breaker_status(response, self.settings)
+            return response
 
-        return await self._execute(
+        response = await self._execute(
             method,
             url,
             lambda: _call_async_with_breaker(
@@ -412,6 +414,8 @@ class AsyncHTTPClient(_BaseHTTPClient):
                 call,
             ),
         )
+        response.raise_for_status()
+        return response
 
     async def get(
         self,
@@ -471,7 +475,6 @@ class AsyncHTTPClient(_BaseHTTPClient):
 
         Raises:
             RuntimeError: Quando a política de retry termina sem resposta.
-            httpx.HTTPStatusError: Quando a resposta é 4xx ou 5xx.
             httpx.RequestError: Quando ocorre falha de transporte.
         """
         if (
@@ -502,12 +505,9 @@ class AsyncHTTPClient(_BaseHTTPClient):
             Resposta HTTPX validada com ``raise_for_status()``.
 
         Raises:
-            httpx.HTTPStatusError: Quando a resposta é 4xx ou 5xx.
             httpx.RequestError: Quando ocorre falha de transporte.
         """
-        response = await self._client.request(method, url, **kwargs)
-        response.raise_for_status()
-        return response
+        return await self._client.request(method, url, **kwargs)
 
     async def _execute(
         self,
@@ -600,6 +600,26 @@ def _duration_ms(started_at: float) -> float:
         Duração arredondada em milissegundos.
     """
     return round((perf_counter() - started_at) * 1000, 2)
+
+
+def _raise_for_circuit_breaker_status(
+    response: httpx.Response,
+    settings: Settings,
+) -> None:
+    """Sinaliza ao breaker apenas status configurados como falha."""
+    if response.status_code in _circuit_breaker_failure_status_codes(settings):
+        response.raise_for_status()
+
+
+def _circuit_breaker_failure_status_codes(settings: Settings) -> set[int]:
+    """Retorna os status HTTP que contam como falha de circuit breaker."""
+    status_codes: set[int] = set()
+    for item in settings.circuit_breaker_failure_status_codes.split(","):
+        value = item.strip()
+        if not value:
+            continue
+        status_codes.add(int(value))
+    return status_codes
 
 
 def _sync_propagation_hook(settings: Settings) -> EventHook:

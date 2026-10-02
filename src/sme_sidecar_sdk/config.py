@@ -20,7 +20,7 @@ from __future__ import annotations
 from functools import lru_cache
 from typing import Literal
 
-from pydantic import AliasChoices, Field
+from pydantic import AliasChoices, Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
@@ -61,6 +61,8 @@ class Settings(BaseSettings):
         circuit_breaker_reset_timeout: Tempo (em segundos) que o
             circuito permanece aberto antes de transitar para o estado
             meio-aberto.
+        circuit_breaker_failure_status_codes: Status HTTP que devem
+            ser contabilizados como falha pelo circuit breaker.
         logging_enabled: Habilita a padronização de logs.
         log_level: Nível mínimo emitido pelos loggers.
         log_format: Formato de saída, JSON ou console.
@@ -163,6 +165,13 @@ class Settings(BaseSettings):
         validation_alias=_aliases(
             "SME_CIRCUIT_BREAKER_RESET_TIMEOUT",
             "circuit_breaker_reset_timeout",
+        ),
+    )
+    circuit_breaker_failure_status_codes: str = Field(
+        default="500,502,503,504",
+        validation_alias=_aliases(
+            "SME_CIRCUIT_BREAKER_FAILURE_STATUS_CODES",
+            "circuit_breaker_failure_status_codes",
         ),
     )
 
@@ -268,6 +277,21 @@ class Settings(BaseSettings):
             "otel_exporter_otlp_insecure",
         ),
     )
+
+    @field_validator("circuit_breaker_failure_status_codes")
+    @classmethod
+    def _validate_failure_status_codes(cls, value: str) -> str:
+        """Valida lista de status HTTP do circuit breaker."""
+        for item in value.split(","):
+            status_code = item.strip()
+            if not status_code:
+                continue
+            if not status_code.isdigit():
+                raise ValueError(
+                    "SME_CIRCUIT_BREAKER_FAILURE_STATUS_CODES deve conter "
+                    "apenas status HTTP separados por vírgula"
+                )
+        return value
 
 
 @lru_cache(maxsize=1)
