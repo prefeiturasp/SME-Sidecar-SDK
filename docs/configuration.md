@@ -49,6 +49,7 @@ apresenta o valor padrão aplicado quando o valor não é informado.
 | `SME_CIRCUIT_BREAKER_ENABLED` | `true` | Habilita a proteção por circuit breaker. |
 | `SME_CIRCUIT_BREAKER_FAIL_MAX` | `5` | Falhas consecutivas necessárias para abrir o circuito. |
 | `SME_CIRCUIT_BREAKER_RESET_TIMEOUT` | `30` | Tempo, em segundos, antes de testar a recuperação do destino. |
+| `SME_CIRCUIT_BREAKER_FAILURE_STATUS_CODES` | `500,502,503,504` | Status HTTP que contam como falha para abrir o circuito. Demais `4xx`/`5xx` continuam gerando `HTTPStatusError`, mas não incrementam o breaker. |
 
 ## Logs e correlação
 
