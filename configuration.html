@@ -189,6 +189,10 @@ apresenta o valor padrão aplicado quando o valor não é informado.</p>
 <td><p><code class="docutils literal notranslate"><span class="pre">30</span></code></p></td>
 <td><p>Tempo, em segundos, antes de testar a recuperação do destino.</p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SME_CIRCUIT_BREAKER_FAILURE_STATUS_CODES</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">500,502,503,504</span></code></p></td>
+<td><p>Status HTTP que contam como falha para abrir o circuito. Demais <code class="docutils literal notranslate"><span class="pre">4xx</span></code>/<code class="docutils literal notranslate"><span class="pre">5xx</span></code> continuam gerando <code class="docutils literal notranslate"><span class="pre">HTTPStatusError</span></code>, mas não incrementam o breaker.</p></td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -301,7 +305,7 @@ ajustes de implementação.</p>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SME_OTEL_ENABLED</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
-<td><p>Habilita provider, exporter e instrumentações HTTPX/Django.</p></td>
+<td><p>Habilita provider, exporter e instrumentações HTTPX/Django. Para ASGI, use também <code class="docutils literal notranslate"><span class="pre">instrument_asgi_application()</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SME_OTEL_EXPORTER_OTLP_ENDPOINT</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">http://localhost:4317</span></code></p></td>

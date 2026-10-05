@@ -301,13 +301,17 @@
 <span class="sd">        """</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_with_retry</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_with_retry</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">_raise_for_circuit_breaker_status</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">response</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">protected_call</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
             <span class="n">response</span><span class="p">:</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_breaker</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">call</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">response</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">protected_call</span><span class="p">)</span></div>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">protected_call</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">response</span></div>
 
 
 <div class="viewcode-block" id="HTTPClient.get">
@@ -362,12 +366,9 @@
 <span class="sd">            Resposta HTTPX validada com ``raise_for_status()``.</span>
 
 <span class="sd">        Raises:</span>
-<span class="sd">            httpx.HTTPStatusError: Quando a resposta é 4xx ou 5xx.</span>
 <span class="sd">            httpx.RequestError: Quando ocorre falha de transporte.</span>
 <span class="sd">        """</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">response</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_send_with_retry</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -387,7 +388,6 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            RuntimeError: Quando a política de retry termina sem resposta.</span>
-<span class="sd">            httpx.HTTPStatusError: Quando a resposta é 4xx ou 5xx.</span>
 <span class="sd">            httpx.RequestError: Quando ocorre falha de transporte.</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="p">(</span>
@@ -528,9 +528,11 @@
 <span class="sd">        """</span>
 
         <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
-            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_with_retry</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_with_retry</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">_raise_for_circuit_breaker_status</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">response</span>
 
-        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute</span><span class="p">(</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute</span><span class="p">(</span>
             <span class="n">method</span><span class="p">,</span>
             <span class="n">url</span><span class="p">,</span>
             <span class="k">lambda</span><span class="p">:</span> <span class="n">_call_async_with_breaker</span><span class="p">(</span>
@@ -538,7 +540,9 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">,</span>
                 <span class="n">call</span><span class="p">,</span>
             <span class="p">),</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">response</span></div>
 
 
 <div class="viewcode-block" id="AsyncHTTPClient.get">
@@ -614,7 +618,6 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            RuntimeError: Quando a política de retry termina sem resposta.</span>
-<span class="sd">            httpx.HTTPStatusError: Quando a resposta é 4xx ou 5xx.</span>
 <span class="sd">            httpx.RequestError: Quando ocorre falha de transporte.</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="p">(</span>
@@ -645,12 +648,9 @@
 <span class="sd">            Resposta HTTPX validada com ``raise_for_status()``.</span>
 
 <span class="sd">        Raises:</span>
-<span class="sd">            httpx.HTTPStatusError: Quando a resposta é 4xx ou 5xx.</span>
 <span class="sd">            httpx.RequestError: Quando ocorre falha de transporte.</span>
 <span class="sd">        """</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">response</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_execute</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -750,6 +750,26 @@
 <span class="sd">        Duração arredondada em milissegundos.</span>
 <span class="sd">    """</span>
     <span class="k">return</span> <span class="nb">round</span><span class="p">((</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">started_at</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_raise_for_circuit_breaker_status</span><span class="p">(</span>
+    <span class="n">response</span><span class="p">:</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Response</span><span class="p">,</span>
+    <span class="n">settings</span><span class="p">:</span> <span class="n">Settings</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Sinaliza ao breaker apenas status configurados como falha."""</span>
+    <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">in</span> <span class="n">_circuit_breaker_failure_status_codes</span><span class="p">(</span><span class="n">settings</span><span class="p">):</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_circuit_breaker_failure_status_codes</span><span class="p">(</span><span class="n">settings</span><span class="p">:</span> <span class="n">Settings</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Retorna os status HTTP que contam como falha de circuit breaker."""</span>
+    <span class="n">status_codes</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">circuit_breaker_failure_status_codes</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">","</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">status_codes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">status_codes</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_sync_propagation_hook</span><span class="p">(</span><span class="n">settings</span><span class="p">:</span> <span class="n">Settings</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EventHook</span><span class="p">:</span>
