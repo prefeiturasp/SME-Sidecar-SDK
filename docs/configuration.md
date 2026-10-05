@@ -49,6 +49,7 @@ apresenta o valor padrão aplicado quando o valor não é informado.
 | `SME_CIRCUIT_BREAKER_ENABLED` | `true` | Habilita a proteção por circuit breaker. |
 | `SME_CIRCUIT_BREAKER_FAIL_MAX` | `5` | Falhas consecutivas necessárias para abrir o circuito. |
 | `SME_CIRCUIT_BREAKER_RESET_TIMEOUT` | `30` | Tempo, em segundos, antes de testar a recuperação do destino. |
+| `SME_CIRCUIT_BREAKER_FAILURE_STATUS_CODES` | `500,502,503,504` | Status HTTP que contam como falha para abrir o circuito. Demais `4xx`/`5xx` continuam gerando `HTTPStatusError`, mas não incrementam o breaker. |
 
 ## Logs e correlação
 
@@ -107,7 +108,7 @@ ajustes de implementação.
 | Variável | Padrão | Descrição |
 | --- | --- | --- |
 | `SME_OBSERVABILITY_BACKEND` | `elastic` | Backend de observabilidade suportado pela configuração documentada. Atualmente, apenas `elastic` é aceito. |
-| `SME_OTEL_ENABLED` | `false` | Habilita provider, exporter e instrumentações HTTPX/Django. |
+| `SME_OTEL_ENABLED` | `false` | Habilita provider, exporter e instrumentações HTTPX/Django. Para ASGI, use também `instrument_asgi_application()`. |
 | `SME_OTEL_EXPORTER_OTLP_ENDPOINT` | `http://localhost:4317` | Endpoint OTLP gRPC do OpenTelemetry Collector ou backend compatível. |
 | `SME_OTEL_EXPORTER_OTLP_HEADERS` | vazio | Headers de autenticação no formato `chave=valor`, separados por vírgula. Valores percent-encoded são decodificados pela SDK. |
 | `SME_OTEL_EXPORTER_OTLP_INSECURE` | `true` | Quando `true`, usa transporte sem TLS; defina `false` para endpoints HTTPS. |
